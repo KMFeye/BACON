@@ -1,4 +1,3 @@
-echo "Starting Annotation"
 
 process BAKTA_ANNOTATION {
     tag "$sample_id"
