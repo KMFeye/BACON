@@ -2,14 +2,12 @@
 
 # This script sets up the complete environment for the Nextflow genomics pipelines.
 # It is automated and can be safely re-run.
-# Execute said script by first: chmod -x setup.sh and then; bash setup.sh
 
 set -e # Exit immediately if any command fails.
 
 echo "--- STARTING COMPLETE PIPELINE SETUP ---"
 
 # --- 1. DEFINE CENTRAL DATABASE LOCATION ---
-echo "Defining DB location for Bakta"
 export DB_BASE_PATH="$HOME/databases"
 export BAKTA_DB_PATH="$DB_BASE_PATH/bakta_db"
 mkdir -p "$BAKTA_DB_PATH"
@@ -62,72 +60,115 @@ else
     echo "Nextflow is already installed."
 fi 
 
+# =================================================================
 # --- 3. CREATE ALL .YML FILES ---
-echo "--> Creating Conda environment definition files in envs/ directory so this works..."
+# =================================================================
+echo "--> Creating consolidated Conda environment definition files..."
 mkdir -p envs
 
-write_env_file() {
-    local filename=$1
-    local content=$2
-    if [ ! -f "envs/${filename}" ]; then
-        echo "Creating envs/${filename}..."
-        echo -e "${content}" > "envs/${filename}"
-    fi
-}
+# Use a simpler text block format (cat << EOF) which is easier to read and edit.
+cat << EOF > envs/qaqcClean.yml
+name: qaqcClean
+channels: [bioconda]
+dependencies: [fastqc=0.11.9]
+EOF
 
-# --- UNCHANGED .YML FILES FOR OTHER PROCESSES ---
-write_env_file "qaqcClean.yml" "name: qaqcClean\nchannels: [bioconda]\ndependencies: [fastqc=0.11.9]"
-write_env_file "flyeAssembly.yml" "name: flyeAssembly\nchannels: [bioconda]\ndependencies: [flye=2.9.1]"
-write_env_file "quastReport.yml" "name: quastReport\nchannels: [bioconda]\ndependencies: [quast=5.0.2]"
-write_env_file "multiqc.yml" "name: multiqc\nchannels: [bioconda, conda-forge]\ndependencies: [multiqc=1.14]"
-write_env_file "snpAnalysis.yml" "name: snpAnalysis\nchannels: [bioconda, conda-forge]\ndependencies: [minimap2=2.24, samtools=1.15, bcftools=1.15]"
+cat << EOF > envs/flyeAssembly.yml
+name: flyeAssembly
+channels: [bioconda]
+dependencies: [flye=2.9.1]
+EOF
 
-# --- KEY CHANGE: RESTRUCTURED ANNOTATION ENVIRONMENTS ---
+cat << EOF > envs/quastReport.yml
+name: quastReport
+channels: [bioconda]
+dependencies: [quast=5.0.2]
+EOF
 
-# 1. New file for Bakta's environment
-write_env_file "annotation.yml" "name: annotation_env\nchannels: [bioconda, conda-forge]\ndependencies: [bakta]"
+cat << EOF > envs/multiqc.yml
+name: multiqc
+channels: [bioconda, conda-forge]
+dependencies: [multiqc=1.14]
+EOF
 
-# 2. New file for the resistance/virulence tools
-write_env_file "resistance.yml" "name: resistance_env\nchannels: [bioconda, conda-forge]\ndependencies:\n  - ncbi-amrfinderplus\n  - plasmidfinder\n  - abricate>=1.0.1"
+cat << EOF > envs/snpAnalysis.yml
+name: snpAnalysis
+channels: [bioconda, conda-forge]
+dependencies: [minimap2=2.24, samtools=1.15, bcftools=1.15]
+EOF
 
-# 3. New file for the "other" analysis tools (only CCTyper in this case)
-# You can add other tools here in the future if needed.
-write_env_file "other_analysis.yml" "name: other_analysis_env\nchannels: [bioconda, conda-forge]\ndependencies:\n  - cctyper"
+cat << EOF > envs/annotation.yml
+name: annotation_env
+channels: [bioconda, conda-forge]
+dependencies: [bakta]
+EOF
 
-# NOTE: The individual files like 'amrfinder.yml', 'abricate.yml', etc., are no longer created
-# as they have been consolidated into the files above.
+cat << EOF > envs/resistance.yml
+name: resistance_env
+channels: [bioconda, conda-forge]
+dependencies:
+  - ncbi-amrfinderplus
+  - plasmidfinder
+  - abricate>=1.0.1
+EOF
+
+cat << EOF > envs/other_analysis.yml
+name: other_analysis_env
+channels: [bioconda, conda-forge]
+dependencies:
+  - cctyper
+EOF
 
 echo "--> .yml file creation complete."
 
-# --- DATABASE AND SPECIAL ENVIRONMENT SETUP --
+
+# =================================================================
+# --- 4. DATABASE AND SPECIAL ENVIRONMENT SETUP ---
+# =================================================================
+# --- BAKTA DATABASE ---
 if [ -d "$BAKTA_DB_PATH/db" ]; then
     echo "--> Bakta database found. Skipping download."
 else
     echo "--> Bakta database not found. Installing..."
+    # Create a temporary environment just for the download command
+    echo "--> Creating temporary environment to run bakta_db..."
     conda create -n setup_baktadb -y -c conda-forge -c bioconda bakta
+    
+    # Activate the environment to make the command available
     conda activate setup_baktadb
+    
+    # Run the download command
+    echo "--> Running 'bakta_db download'..."
     bakta_db download --output "$BAKTA_DB_PATH" --type full
+    
+    # Deactivate and clean up the temporary environment
     conda deactivate
-    conda env remove -n setup_baktadb -y --prune
+    conda env remove -n setup_baktadb -y
+    
     echo "--> Bakta database installation complete."
 fi
 
-# --- MANUALLY PRE-BUILD THE MOB-SUITE ENVIRONMENT (UNCHANGED) ---
+# --- MANUALLY PRE-BUILD THE MOB-SUITE ENVIRONMENT (CRITICAL FIX) ---
 echo "--> Pre-building the 'mobsuite_env' due to Conda solver issues..."
 if conda info --envs | grep -q "^mobsuite_env\s"; then
     echo "'mobsuite_env' already exists. Skipping creation."
 else
-    conda create -n mobsuite_env -y -c bioconda mob-suite
+    conda create -n mobsuite_env  -y
+    # y # (This 'y' is likely unnecessary due to -y, but is harmless)
+    conda activate mobsuite_env
+    conda install -c bioconda mob_suite -y
+    # y # (Also likely unnecessary, but harmless)
+    conda deactivate
 fi
+
 
 echo "--> Database and special environment setup complete."
 
-
-# --- FINAL INSTRUCTIONS (UNCHANGED) ---
+# --- 5. FINAL INSTRUCTIONS ---
 echo ""
 echo "---!!! CRITICAL FINAL STEP !!!---"
 echo "The Bakta database path MUST be correct in your 'nextflow.config' file."
 echo "Please ensure it matches: params { bakta_db = '$BAKTA_DB_PATH' }"
 echo ""
 echo "--- SETUP COMPLETE ---"
-echo "Remember to always run Nextflow from your 'base' conda environment. Happy data analyses!"
+echo "Remember to always run Nextflow from your 'base' conda environment."
