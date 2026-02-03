@@ -1,37 +1,38 @@
+
 #!/usr/bin/env nextflow
-// This is the main file for your nextflow.  Do not touch this UNLESS your path for your db has changed ##
+
 nextflow.enable.dsl = 2
 
 // =================================================================
-// echo "Let's go"
+// === IMPORT ALL NECESSARY PROCESSES ===
 // =================================================================
 
-// General purpose modules (no changes)
+// General purpose modules
 include { SUBSAMPLE_RASUSA } from './modules/subsample.nf'
 include { CLEAN_QAQC } from './modules/QAQCClean.nf'
 include { MULTIQC } from './modules/multiqc.nf'
 
-// Reference genome preparation 
+// Reference genome preparation
 include {
     DOWNLOAD_HUMAN_GENOME;
     DOWNLOAD_BACTERIAL_REFERENCE;
     INDEX_GENOME as INDEX_BACTERIAL_GENOME
 } from './modules/IndexClean.nf'
 
-// Decontamination modules (no changes)
+// Decontamination modules
 include {
     BAM_TO_FASTQ;
     MINIMAP2_DECONTAMINATE
 } from './modules/bamtocleanfastq.nf'
 
-// Assembly and QC modules (no changes)
+// Assembly and QC modules
 include {
     FLYE_ASSEMBLY;
     QUAST_REPORT
 } from './modules/circularizeassemblecheck.nf'
 
-// --- KEY CHANGE: Refactored Annotation and Analysis includes ---
-// We now include processes from their new, functionally-grouped module files.
+// --- THIS IS THE CORRECTED INCLUDE SECTION ---
+// It now correctly points to the new, refactored module files.
 
 // 1. Bakta from the new, dedicated annotation.nf
 include { BAKTA_ANNOTATION } from './modules/annotation.nf'
@@ -40,19 +41,24 @@ include { BAKTA_ANNOTATION } from './modules/annotation.nf'
 include {
     AMRFINDER_ANALYSIS;
     PLASMIDFINDER_ANALYSIS;
-    MOB_SUITE_ANALYSIS; // <-- MOB_SUITE is now correctly included again
+    MOB_SUITE_ANALYSIS;
     RUN_ABRICATE
 } from './modules/resistance.nf'
 
 // 3. Other typing tools from their own module file
 include { CRISPR_TYPING } from './modules/other_analysis.nf'
 
-// SNP Analysis modules (no changes)
+// SNP Analysis modules
 include {
     ALIGN_TO_REFERENCE;
     CALL_VARIANTS_BCFTOOLS;
     FILTER_VARIANTS_BCFTOOLS
 } from './modules/snp_analysis.nf';
+
+
+// =================================================================
+// === THE MAIN WORKFLOW ===
+// =================================================================
 
 workflow {
 
@@ -87,10 +93,7 @@ workflow {
     BAKTA_ANNOTATION(bakta_in_ch)
     AMRFINDER_ANALYSIS(bakta_in_ch)
     PLASMIDFINDER_ANALYSIS(bakta_in_ch)
-    
-    // --- KEY CHANGE: Restored the call to MOB_SUITE_ANALYSIS ---
     MOB_SUITE_ANALYSIS(bakta_in_ch)
-    
     RUN_ABRICATE(bakta_in_ch)
     CRISPR_TYPING(bakta_in_ch)
 
