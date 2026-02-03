@@ -1,5 +1,3 @@
-echo "Time to prevent the oversampling of our reads!"
-
 process SUBSAMPLE_RASUSA {
     label 'process_low'
     conda 'bioconda::rasusa=0.7.0'
