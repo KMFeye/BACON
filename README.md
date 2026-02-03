@@ -96,13 +96,13 @@ Step 2: Run the Full Analysis on Your Data
 
 You must provide three key pieces of information in the command.
 
-*   --input: The path to your BAM files. This will be 'inputs/*.bam'.
+*   --input: The path to your BAM files. This will be 'inputs_bam/*.bam'.
 *   --species_name: The scientific name of your bacterium (e.g., "Citrobacter freundii").
 *   --genome_size: The estimated genome size (e.g., '5.2m').
 
 Here is the full command. Copy it, but be sure to change the species name and genome size.
 
-    nextflow run main.nf -resume --input 'inputs/*.bam' --species_name "Citrobacter freundii" --genome_size '5.2m'
+    nextflow run main.nf -resume --input_bam 'inputs/*.bam' --species_name "Citrobacter freundii" --genome_size '5.2m'
 
 The "-resume" part is very important. If your run is interrupted, you can use this exact same command to pick up where you left off.
 
