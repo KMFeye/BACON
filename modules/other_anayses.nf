@@ -1,4 +1,3 @@
-echo "Beginning CRISPR Typing"
 
 process CRISPR_TYPING {
     tag "CRISPR typing for ${sample_id}"
