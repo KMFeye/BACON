@@ -1,5 +1,3 @@
-echo "Life is a good qulaity report"
-
 process MULTIQC {
     tag "Aggregating QC reports"
     label 'process_low'
