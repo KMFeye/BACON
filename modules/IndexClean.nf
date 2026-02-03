@@ -1,4 +1,4 @@
-echo "Downloading Genomes"
+
 
 process DOWNLOAD_HUMAN_GENOME {
     label 'process_low'
