@@ -1,13 +1,15 @@
 #!/bin/bash
-## This file is your setup file and it is autonomous.  It downloads everything needed, sets up your conda files.  It can stop and be resumed at any time.  It may take all night to set up the files, so please be prepared for that.
-## To make the file executable, navigate to your desktop and put in the code: chmod -x setup.sh, then to start it, run bash setup.sh
-## Ensure your directories for your program are confirmed and updated in your main.nf file
+
+# This script sets up the complete environment for the Nextflow genomics pipelines.
+# It is automated and can be safely re-run.
+# Execute said script by first: chmod -x setup.sh and then; bash setup.sh
 
 set -e # Exit immediately if any command fails.
 
-echo "--- STARTING COMPLETE PIPELINE SETUP, Please launch this setup and come back in the morning to run the machine ---"
+echo "--- STARTING COMPLETE PIPELINE SETUP ---"
 
 # --- 1. DEFINE CENTRAL DATABASE LOCATION ---
+echo "Defining DB location for Bakta"
 export DB_BASE_PATH="$HOME/databases"
 export BAKTA_DB_PATH="$DB_BASE_PATH/bakta_db"
 mkdir -p "$BAKTA_DB_PATH"
@@ -60,57 +62,44 @@ else
     echo "Nextflow is already installed."
 fi 
 
-# =================================================================
-# --- KEY CHANGE: CREATE NEW CONSOLIDATED .YML FILES ---
-# =================================================================
-echo "--> Creating new consolidated Conda environment definition files..."
+# --- 3. CREATE ALL .YML FILES ---
+echo "--> Creating Conda environment definition files in envs/ directory so this works..."
 mkdir -p envs
 
-# --- Annotation Environment (for Bakta) ---
-cat << EOF > envs/annotation.yml
-name: annotation_env
-channels:
-  - bioconda
-  - conda-forge
-dependencies:
-  - bakta # Let conda choose the latest compatible version
-EOF
+write_env_file() {
+    local filename=$1
+    local content=$2
+    if [ ! -f "envs/${filename}" ]; then
+        echo "Creating envs/${filename}..."
+        echo -e "${content}" > "envs/${filename}"
+    fi
+}
 
-# --- Resistance/Virulence Environment ---
-cat << EOF > envs/resistance.yml
-name: resistance_env
-channels:
-  - bioconda
-  - conda-forge
-dependencies:
-  - ncbi-amrfinderplus
-  - plasmidfinder
-  - abricate>=1.0.1
-EOF
+# --- UNCHANGED .YML FILES FOR OTHER PROCESSES ---
+write_env_file "qaqcClean.yml" "name: qaqcClean\nchannels: [bioconda]\ndependencies: [fastqc=0.11.9]"
+write_env_file "flyeAssembly.yml" "name: flyeAssembly\nchannels: [bioconda]\ndependencies: [flye=2.9.1]"
+write_env_file "quastReport.yml" "name: quastReport\nchannels: [bioconda]\ndependencies: [quast=5.0.2]"
+write_env_file "multiqc.yml" "name: multiqc\nchannels: [bioconda, conda-forge]\ndependencies: [multiqc=1.14]"
+write_env_file "snpAnalysis.yml" "name: snpAnalysis\nchannels: [bioconda, conda-forge]\ndependencies: [minimap2=2.24, samtools=1.15, bcftools=1.15]"
 
-# --- SNP and Other Analysis Environment ---
-cat << EOF > envs/analysis.yml
-name: analysis_env
-channels:
-  - bioconda
-  - conda-forge
-dependencies:
-  - minimap2=2.24
-  - samtools=1.15
-  - bcftools=1.15
-  - fastqc=0.11.9
-  - quast=5.0.2
-  - cctyper
-  - multiqc=1.14
-EOF
+# --- KEY CHANGE: RESTRUCTURED ANNOTATION ENVIRONMENTS ---
 
-echo "--> Consolidated .yml file creation complete."
+# 1. New file for Bakta's environment
+write_env_file "annotation.yml" "name: annotation_env\nchannels: [bioconda, conda-forge]\ndependencies: [bakta]"
 
+# 2. New file for the resistance/virulence tools
+write_env_file "resistance.yml" "name: resistance_env\nchannels: [bioconda, conda-forge]\ndependencies:\n  - ncbi-amrfinderplus\n  - plasmidfinder\n  - abricate>=1.0.1"
 
-# =================================================================
-# --- CONSOLIDATED DATABASE & SPECIAL ENVIRONMENT SETUP ---
-# =================================================================
-# --- BAKTA DATABASE (UNCHANGED) ---
+# 3. New file for the "other" analysis tools (only CCTyper in this case)
+# You can add other tools here in the future if needed.
+write_env_file "other_analysis.yml" "name: other_analysis_env\nchannels: [bioconda, conda-forge]\ndependencies:\n  - cctyper"
+
+# NOTE: The individual files like 'amrfinder.yml', 'abricate.yml', etc., are no longer created
+# as they have been consolidated into the files above.
+
+echo "--> .yml file creation complete."
+
+# --- DATABASE AND SPECIAL ENVIRONMENT SETUP --
 if [ -d "$BAKTA_DB_PATH/db" ]; then
     echo "--> Bakta database found. Skipping download."
 else
@@ -133,6 +122,7 @@ fi
 
 echo "--> Database and special environment setup complete."
 
+
 # --- FINAL INSTRUCTIONS (UNCHANGED) ---
 echo ""
 echo "---!!! CRITICAL FINAL STEP !!!---"
@@ -140,4 +130,4 @@ echo "The Bakta database path MUST be correct in your 'nextflow.config' file."
 echo "Please ensure it matches: params { bakta_db = '$BAKTA_DB_PATH' }"
 echo ""
 echo "--- SETUP COMPLETE ---"
-echo "Remember to always run Nextflow from your 'base' conda environment."
+echo "Remember to always run Nextflow from your 'base' conda environment. Happy data analyses!"
