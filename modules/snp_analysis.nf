@@ -1,4 +1,3 @@
-echo "Let's get some good SNP Analyses completed"
 
 process ALIGN_TO_REFERENCE {
     tag "Align reads for ${sample_id} with minimap2"
