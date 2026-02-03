@@ -1,9 +1,8 @@
 # C3PacBio
 Pacbio Nextflow for Unaligned Sequences Using a Non-SCRUM Computing System
 
-============================================================
-Nextflow Pipeline Guide for PrecisionFDA
-============================================================
+This is your pipeline for unaligned PACBIO bam files using either a local workstation or your favorite cloud computing system.  Adjust the workflow
+accordingly.  The program is automated. 
 
 Part 1: Introduction
 --------------------
