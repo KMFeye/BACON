@@ -2,7 +2,9 @@
 
 nextflow.enable.dsl = 2
 
+// =================================================================
 // === IMPORT ALL NECESSARY PROCESSES ===
+// =================================================================
 
 // General purpose modules
 include { SUBSAMPLE_RASUSA } from './modules/subsample.nf'
@@ -28,7 +30,7 @@ include {
     QUAST_REPORT
 } from './modules/circularizeassemblecheck.nf'
 
-// Annotation modules
+// Annotation modules (from your refactored structure)
 include { BAKTA_ANNOTATION } from './modules/annotation.nf'
 include {
     AMRFINDER_ANALYSIS;
@@ -37,15 +39,21 @@ include {
     RUN_ABRICATE
 } from './modules/resistance.nf'
 include { CRISPR_TYPING } from './modules/other_analysis.nf'
+
+// SNP Analysis modules
 include {
     ALIGN_TO_REFERENCE;
     CALL_VARIANTS_BCFTOOLS;
     FILTER_VARIANTS_BCFTOOLS
 } from './modules/snp_analysis.nf'
+
+// Final Summarization module
 include { SUMMARIZE_RESULTS } from './modules/summarize.nf'
 
 
+// =================================================================
 // === THE MAIN WORKFLOW ===
+// =================================================================
 
 workflow {
 
@@ -88,17 +96,15 @@ workflow {
     CALL_VARIANTS_BCFTOOLS(ALIGN_TO_REFERENCE.out.aligned_bam, bacterial_ref_fasta_val)
     FILTER_VARIANTS_BCFTOOLS(CALL_VARIANTS_BCFTOOLS.out.raw_vcf)
 
-    // --- 4. FINAL AGGREGATION & SUMMARY (NEW SECTION) ---
+    // --- 4. FINAL AGGREGATION & SUMMARY ---
 
     vcf_ch = FILTER_VARIANTS_BCFTOOLS.out.filtered_vcf
     gff_ch = BAKTA_ANNOTATION.out.bakta_report.map { sample_id, path -> [ sample_id, file("${path}/*.gff3") ] }
-    fasta_ch = FLYE_ASSEMBLY.out.assembly_fasta
-    gfa_ch = FLYE_ASSEMBLY.out.assembly_gfa
+    flye_dir_ch = FLYE_ASSEMBLY.out.assembly_dir
     mob_ch = MOB_SUITE_ANALYSIS.out.mobsuite_report
 
     vcf_ch.join(gff_ch)
-          .join(fasta_ch)
-          .join(gfa_ch)
+          .join(flye_dir_ch)
           .join(mob_ch)
           .set { summary_input_ch }
 
