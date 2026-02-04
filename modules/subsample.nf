@@ -13,6 +13,6 @@ process SUBSAMPLE_RASUSA {
     rasusa \\
         -c ${params.coverage} \\
         -g ${params.genome_size} \\
-	-i ${fastq_in} > ${sample_id}.subsampled.fastq
+        -i ${fastq_in} > ${sample_id}.subsampled.fastq
     """
 }
