@@ -5,7 +5,7 @@ This repository contains a robust, end-to-end Nextflow pipeline for the complete
 
 The workflow begins with raw, unaligned BAM files and performs host DNA decontamination, *de novo* assembly, assembly quality control, comprehensive functional annotation (including antibiotic resistance, virulence factors, plasmid typing, and CRISPR arrays), and comparative SNP analysis against a provided reference. The entire software environment is managed through Nextflow's native integration with Conda, ensuring complete reproducibility of results.
 
-## Key Features
+# Key Features
 
 -   **Automated Setup:** A single `setup.sh` script installs all dependencies and downloads required databases.
 -   **User-Friendly:** Interactive prompts for key parameters like genome size and coverage.
@@ -14,83 +14,61 @@ The workflow begins with raw, unaligned BAM files and performs host DNA decontam
 -   **Comparative Genomics:** Includes a full SNP-calling workflow for phylogenetic and outbreak analysis.
 -   **Reproducibility:** All software dependencies are explicitly managed by Nextflow and Conda, guaranteeing a consistent environment.
 
-## Installation & Setup
+# Installation & Setup
 
 This pipeline is designed to be set up with a single script. This will install Miniconda (if not present), Nextflow, all required databases, and special software environments.
 
-##1. Clone the Repository**
+-  **1. Clone the Repository and Prepare Input Data**
+Place your PacBio unaligned .bam files into the inputs/ directory.
+Now you want to create your folder and move your bam files into that folder.
+
 ```bash
+mkdir ./Desktop/My_Bacterial_Pipeline
+cd ./Desktop/My_Bacterial_Pipeline
+mkdir -p inputs
+mv /path/to/your/*.bam inputs/
 git clone [URL to your new GitHub repository]
 cd [repository-name]
 ```
+Your setup should match this exact layout:
 
-##2. Make the Setup Script Executable
+~/Desktop/
++-- My_Bacterial_Pipeline/
+    +-- main.nf
+    +-- nextflow.config
+    +-- setup.sh
+    |
+    +-- inputs/
+    |   +-- sample_01.bam
+    |   +-- sample_02.bam
+    |   +-- ... (and so on)
+    |
+    +-- modules/
+    |   +-- annotation.nf
+    |   +-- bamtocleanfastq.nf
+    |   +-- resistance.nf
+    |   +-- ... (all other .nf files)
+    |
+
+-  **2. Make the Setup Script Executable**
 This only needs to be done once.
 
 ```bash
-chmod +x setup.sh
-bash setup.sh
+chmod +x setup.sh #You can drag and drop the setup.sh file into terminal#
+bash setup.sh #Runs the show#
 ```
-
-##3. Run the Setup Script
-This is the main installation step. It is idempotent, meaning it can be safely re-run if it fails. Note: The initial download of the Bakta database is very large and may take a significant amount of time. It is recommended to run this step overnight.
-
-```bash
-bash setup.sh
-```
-##4. Prepare Input Data
-Place your PacBio unaligned .bam files into the inputs/ directory.
-Now you want to create your folder and move your bam files into that folder.  Your setup should match this exact layout:
-
- ~/Desktop/
-??? My_Bacterial_Pipeline/
-    ??? main.nf
-    ??? nextflow.config
-    ??? setup.sh
-    ?
-    ??? inputs/
-    ?   ??? sample_01.bam
-    ?   ??? sample_02.bam
-    ?   ??? ... (and so on for all 50 samples)
-    ?
-    ??? modules/
-    ?   ??? annotation.nf
-    ?   ??? bamtocleanfastq.nf
-    ?   ??? other_analysis.nf
-    ?   ??? resistance.nf
-    ?   ??? ... (all other .nf files)
-    ?
-    ??? envs/
-    ?   ??? annotation.yml
-    ?   ??? resistance.yml
-    ?   ??? other_analysis.yml
-    ?   ??? ... (all other .yml files created by setup.sh)
-    ?
-    ??? results/
-    ?   ??? (This directory will be created by Nextflow on the first successful run)
-    ?
-    ??? work/
-        ??? (This directory will be created by Nextflow to store intermediate files)
-
-
-
-```bash
-mkdir -p inputs
-mv /path/to/your/*.bam inputs/
-```
-
-Usage
+# Usage
 Always launch the pipeline from the base Conda environment. If you have another environment active (e.g., (mobsuite_env)), deactivate it first with conda deactivate.
 
 Interactive Mode:
-The pipeline will prompt you to enter the required parameters if they are not provided on the command line.
+- The pipeline will prompt you to enter the required parameters if they are not provided on the command line.*
 
 ```bash
 nextflow run main.nf
 ```
 
-# OR
-# Command-Line Mode (Recommended):
+OR
+- *Command-Line Mode (Recommended):*
 Provide all parameters as flags for automated runs. This is the most reproducible method.
 
 ```bash
