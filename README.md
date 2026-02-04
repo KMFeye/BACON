@@ -1,5 +1,5 @@
 # C3PacBio
-# A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files (If you have a different bam, contact me or see future updates)
+# A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files
 
 This repository contains a robust, end-to-end Nextflow pipeline for the complete analysis of bacterial genomes from PacBio HiFi sequencing data. It is designed for ease of use, reproducibility, and scalability.
 
@@ -22,24 +22,28 @@ This pipeline is designed to be set up with a single script. This will install M
 ```bash
 git clone [URL to your new GitHub repository]
 cd [repository-name]
+'''
+
 2. Make the Setup Script Executable
 This only needs to be done once.
 
-bash
+'''bash
 chmod +x setup.sh
 bash setup.sh
+'''
+
 3. Run the Setup Script
 This is the main installation step. It is idempotent, meaning it can be safely re-run if it fails. Note: The initial download of the Bakta database is very large and may take a significant amount of time. It is recommended to run this step overnight.
 
-bash
+'''bash
 bash setup.sh
 4. Prepare Input Data
 Place your PacBio unaligned .bam files into the inputs/ directory.
 '''
+
 Now you want to create your folder and move your bam files into that folder
 
-'''
-bash
+'''bash
 mkdir -p inputs
 mv /path/to/your/*.bam inputs/
 ,,,
@@ -50,16 +54,15 @@ Always launch the pipeline from the base Conda environment. If you have another 
 Interactive Mode:
 The pipeline will prompt you to enter the required parameters if they are not provided on the command line.
 
-'''
-bash
+'''bash
 nextflow run main.nf
 '''
-#OR
-Command-Line Mode (Recommended):
+
+# OR
+# Command-Line Mode (Recommended):
 Provide all parameters as flags for automated runs. This is the most reproducible method.
 
-'''
-bash
+'''bash
 nextflow run main.nf --input_bam 'inputs/*.bam' --genome_size 'Size in m' --coverage 100
 '''
 
