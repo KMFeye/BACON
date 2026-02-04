@@ -1,20 +1,25 @@
 process CLEAN_QAQC {
     tag "FastQC on ${sample_id}"
-    label 'process_medium'
+    label 'process_high'
     conda 'envs/qaqcClean.yml'
-    publishDir "${params.outdir}/qc", mode: 'copy'
+
+    publishDir "${params.outdir}/qc/${sample_id}", mode: 'copy'
 
     input:
     tuple val(sample_id), path(fastq)
 
     output:
-    path "*.html", emit: html
-    path "*.zip", emit: zip
+    path "fastqc/*.html", emit: html
+    path "fastqc/*.zip", emit: zip
 
     script:
     """
-    echo -e "\033[38;5;81mStarting FastQC for ${sample_id}\033[0m"
-    fastqc -o . "${fastq}"
-    echo -e "\033[38;5;81mFastQC for ${sample_id} completed\033[0m"
+    # --- THIS IS THE FINAL, DEFINITIVE FIX ---
+    # We are explicitly setting the Java max heap size (-Xmx) to 70g.
+    # This tells the JVM to use up to 70GB of the 80GB allocated to this process,
+    export _JAVA_OPTIONS="-Xmx70g"
+
+    mkdir fastqc
+    fastqc --noextract -o fastqc "${fastq}"
     """
 }
