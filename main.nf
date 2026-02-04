@@ -2,9 +2,7 @@
 
 nextflow.enable.dsl = 2
 
-// =================================================================
 // === IMPORT ALL NECESSARY PROCESSES ===
-// =================================================================
 
 // General purpose modules
 include { SUBSAMPLE_RASUSA } from './modules/subsample.nf'
@@ -30,34 +28,24 @@ include {
     QUAST_REPORT
 } from './modules/circularizeassemblecheck.nf'
 
-// --- THIS IS THE CORRECTED INCLUDE SECTION ---
-// It now correctly points to the new, refactored module files.
-
-// 1. Bakta from the new, dedicated annotation.nf
+// Annotation modules
 include { BAKTA_ANNOTATION } from './modules/annotation.nf'
-
-// 2. AMR/Virulence/Plasmid tools from the new resistance.nf
 include {
     AMRFINDER_ANALYSIS;
     PLASMIDFINDER_ANALYSIS;
     MOB_SUITE_ANALYSIS;
     RUN_ABRICATE
 } from './modules/resistance.nf'
-
-// 3. Other typing tools from their own module file
 include { CRISPR_TYPING } from './modules/other_analysis.nf'
-
-// SNP Analysis modules
 include {
     ALIGN_TO_REFERENCE;
     CALL_VARIANTS_BCFTOOLS;
     FILTER_VARIANTS_BCFTOOLS
-} from './modules/snp_analysis.nf';
+} from './modules/snp_analysis.nf'
+include { SUMMARIZE_RESULTS } from './modules/summarize.nf'
 
 
-// =================================================================
 // === THE MAIN WORKFLOW ===
-// =================================================================
 
 workflow {
 
@@ -100,7 +88,26 @@ workflow {
     CALL_VARIANTS_BCFTOOLS(ALIGN_TO_REFERENCE.out.aligned_bam, bacterial_ref_fasta_val)
     FILTER_VARIANTS_BCFTOOLS(CALL_VARIANTS_BCFTOOLS.out.raw_vcf)
 
-    // --- 4. FINAL AGGREGATION STEP ---
+    // --- 4. FINAL AGGREGATION & SUMMARY (NEW SECTION) ---
+
+    vcf_ch = FILTER_VARIANTS_BCFTOOLS.out.filtered_vcf
+    gff_ch = BAKTA_ANNOTATION.out.bakta_report.map { sample_id, path -> [ sample_id, file("${path}/*.gff3") ] }
+    fasta_ch = FLYE_ASSEMBLY.out.assembly_fasta
+    gfa_ch = FLYE_ASSEMBLY.out.assembly_gfa
+    mob_ch = MOB_SUITE_ANALYSIS.out.mobsuite_report
+
+    vcf_ch.join(gff_ch)
+          .join(fasta_ch)
+          .join(gfa_ch)
+          .join(mob_ch)
+          .set { summary_input_ch }
+
+    SUMMARIZE_RESULTS(summary_input_ch)
+
+    bacterial_ref_fasta_ch
+        .collectFile(name: 'reference.fasta', storeDir: "${params.outdir}/summary")
+
+    // --- 5. MULTIQC AGGREGATION ---
     multiqc_ch = Channel.empty()
         .mix(CLEAN_QAQC.out.zip)
         .mix(QUAST_REPORT.out.quast_report)
