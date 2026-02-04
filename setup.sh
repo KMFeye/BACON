@@ -2,6 +2,14 @@
 
 # This script sets up the complete environment for the Nextflow genomics pipelines.
 # It is automated and can be safely re-run.
+# Before running the program, change to your desired working directory and execute the file.  Otherwise, you'll run everything from $Home and need to set your WD for nextflow.  
+
+echo "Remember, don't change your working directory from hereon out and make sure you add the necessary changes to Rasusa and grab the correct reference assembly and change the wget function.  If you have yet to do so, please hit control and C
+at the same time, make the necessary changes as per the read me file, and then resume this setup when the tasks are complete.  A failure to do so will end in a weird subsampling experience and confusion.  No one wants that. Also, there are 
+specific changes that need to be made IF you have an aligned bam vs. the unaligned (this specific pipeline) or a raw HIFI.  If you have those files, contact FeyeKM for the modified Nextflow if it hasn't already been posted as an option.  If you
+do not know your species epithet nor your genome size, you'll need to pull the fastq and blast it manually on NCBI unless I already have a nextflow developed for that purpose.  But yeah, here we go!  This is a de novo alignment (the reference
+is for downstream work like SNP analysis and it is the NCBI suggested reference. May the science be with you!"
+
 
 set -e # Exit immediately if any command fails.
 
@@ -60,9 +68,8 @@ else
     echo "Nextflow is already installed."
 fi 
 
-# =================================================================
 # --- 3. CREATE ALL .YML FILES ---
-# =================================================================
+
 echo "--> Creating consolidated Conda environment definition files..."
 mkdir -p envs
 
@@ -121,10 +128,9 @@ EOF
 
 echo "--> .yml file creation complete."
 
-
-# =================================================================
 # --- 4. DATABASE AND SPECIAL ENVIRONMENT SETUP ---
-# =================================================================
+   echo "Setting up Bakta and the other databases!"
+   
 # --- BAKTA DATABASE ---
 if [ -d "$BAKTA_DB_PATH/db" ]; then
     echo "--> Bakta database found. Skipping download."
@@ -154,10 +160,8 @@ if conda info --envs | grep -q "^mobsuite_env\s"; then
     echo "'mobsuite_env' already exists. Skipping creation."
 else
     conda create -n mobsuite_env  -y
-    # y # (This 'y' is likely unnecessary due to -y, but is harmless)
     conda activate mobsuite_env
     conda install -c bioconda mob_suite -y
-    # y # (Also likely unnecessary, but harmless)
     conda deactivate
 fi
 
@@ -167,8 +171,8 @@ echo "--> Database and special environment setup complete."
 # --- 5. FINAL INSTRUCTIONS ---
 echo ""
 echo "---!!! CRITICAL FINAL STEP !!!---"
-echo "The Bakta database path MUST be correct in your 'nextflow.config' file."
+echo "The Bakta database path MUST be correct in your 'nextflow.config' file. If you did what I told you, you should be fine"
 echo "Please ensure it matches: params { bakta_db = '$BAKTA_DB_PATH' }"
 echo ""
-echo "--- SETUP COMPLETE ---"
+echo "--- SETUP COMPLETE ---CONTACT FeyeKM if you have challenges, happy data hunting!!"
 echo "Remember to always run Nextflow from your 'base' conda environment."
