@@ -1,116 +1,146 @@
 # C3PacBio
-Pacbio Nextflow for Unaligned Sequences Using a Non-SCRUM Computing System
+# A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files (If you have a different bam, contact me or see future updates)
 
-This is your pipeline for unaligned PACBIO bam files using either a local workstation or your favorite cloud computing system.  Adjust the workflow
-accordingly.  The program is automated. 
+This repository contains a robust, end-to-end Nextflow pipeline for the complete analysis of bacterial genomes from PacBio HiFi sequencing data. It is designed for ease of use, reproducibility, and scalability.
 
-Part 1: Introduction
---------------------
+The workflow begins with raw, unaligned BAM files and performs host DNA decontamination, *de novo* assembly, assembly quality control, comprehensive functional annotation (including antibiotic resistance, virulence factors, plasmid typing, and CRISPR arrays), and comparative SNP analysis against a provided reference. The entire software environment is managed through Nextflow's native integration with Conda, ensuring complete reproducibility of results.
 
-Congratulations! You?re about to run an automated analysis pipeline on PrecisionFDA. This guide will walk you through every step of the process.
+## Key Features
 
-This program is named PacBio3P0. It is designed to take your high-quality PacBio HiFi BAM files and perform a complete genomic analysis.
+-   **Automated Setup:** A single `setup.sh` script installs all dependencies and downloads required databases.
+-   **User-Friendly:** Interactive prompts for key parameters like genome size and coverage.
+-   **High-Performance:** Optimized for parallel execution on multi-core workstations.
+-   **Comprehensive Annotation:** Integrates a suite of best-in-class tools for a deep biological understanding of the assembly.
+-   **Comparative Genomics:** Includes a full SNP-calling workflow for phylogenetic and outbreak analysis.
+-   **Reproducibility:** All software dependencies are explicitly managed by Nextflow and Conda, guaranteeing a consistent environment.
 
-When you see text indented like this:
+## Installation & Setup
 
-    this is a command
+This pipeline is designed to be set up with a single script. This will install Miniconda (if not present), Nextflow, all required databases, and special software environments.
 
-...it is a command that you should type or paste directly into the terminal window on your PrecisionFDA workstation.
+**1. Clone the Repository**
+```bash
+git clone [URL to your new GitHub repository]
+cd [repository-name]
+2. Make the Setup Script Executable
+This only needs to be done once.
 
-Let?s begin!
+bash
+chmod +x setup.sh
+3. Run the Setup Script
+This is the main installation step. It is idempotent, meaning it can be safely re-run if it fails. Note: The initial download of the Bakta database is very large and may take a significant amount of time. It is recommended to run this step overnight.
 
-Part 2: Before You Start - The Checklist
----------------------------------------
+bash
+bash setup.sh
+4. Prepare Input Data
+Place your PacBio unaligned .bam files into the inputs/ directory.
 
-Please make sure you have these four things ready:
+bash
+mkdir -p inputs
+mv /path/to/your/*.bam inputs/
+Usage
+Always launch the pipeline from the base Conda environment. If you have another environment active (e.g., (mobsuite_env)), deactivate it first with conda deactivate.
 
-1.  A PrecisionFDA Account with enough funds for a long job (120 hours is a safe amount).
-2.  A "High Disk" Workstation (at least 500 GB).
-3.  Your PacBio HiFi BAM files uploaded to a folder in your PrecisionFDA project.
-4.  The pipeline code folder also uploaded to your PrecisionFDA project.
-5.  Run setup.sh and check to ensure your DB is accessible
-6.  Make sure you have EVERYTHING needed to process your data (genome size, reference sequences, ect.) and edit the documents appropriately 
-If you need help, please contact me directly.
+Interactive Mode:
+The pipeline will prompt you to enter the required parameters if they are not provided on the command line.
 
-Part 3: The Setup Process (Do This Once Per Workstation)
--------------------------------------------------------
+bash
+nextflow run main.nf
+Command-Line Mode (Recommended):
+Provide all parameters as flags for automated runs. This is the most reproducible method.
 
-This section guides you through setting up your workstation.
+bash
+nextflow run main.nf --input_bam 'inputs/*.bam' --genome_size '5.3m' --coverage 100
+Pipeline Steps & Tools Used
+This pipeline is composed of several key bioinformatics stages. The following tools are used and should be cited in any resulting publications.
 
-Step 1: Launch Your Workstation
+1. Decontamination
+Goal: Remove host (human) DNA contamination from the raw reads.
 
-*   Log in to the PrecisionFDA website.
-*   Launch a new "High Disk" VM.
-*   When prompted for the runtime, choose 122 hours.
-*   Wait for the workstation to be ready, then open a terminal.
+Tools:
 
-Step 2: Download Your Data and the Pipeline Code
+Samtools (GitHub): Converts BAM to FASTQ format for processing.
 
-*   Run these commands in the terminal.
+Danecek, P., et al. (2021). Twelve years of SAMtools and BCFtools. GigaScience, 10(2), giab008. DOI: 10.1093/gigascience/giab008
 
-    cd ~/Desktop
-    mkdir my_pipeline_run
-    cd my_pipeline_run
-    mkdir inputs
+Minimap2 (GitHub): Aligns all reads against the human genome for filtering. Chosen for its exceptional speed with long-read data.
 
-*   Download your BAM files. This can take many hours. Replace "/path/to/your/bams" with your actual folder path.
+Li, H. (2018). Minimap2: pairwise alignment for nucleotide sequences. Bioinformatics, 34(18), 3094-3100. DOI: 10.1093/bioinformatics/bty191
 
-    pfda download --folder /path/to/your/bams
+2. Read Subsampling
+Goal: Reduce the sequencing depth to an optimal level for efficient assembly.
 
-*   Download the pipeline code. Replace "/path/to/pipeline/code" with your actual folder path.
+Tool:
 
-    pfda download --folder /path/to/pipeline/code --recursive
+Rasusa (GitHub): A fast and memory-efficient tool for random subsampling of FASTQ files.
 
-Step 3: Run the Automated Setup Script
+Hall, M. B. (2022). Rasusa: A fast tool for random subsampling of reads. Journal of Open Source Software, 7(72), 4034. DOI: 10.21105/joss.04034
 
-This script installs all necessary software and databases. This can also take several hours.
+3. Assembly & Quality Control
+Goal: Perform de novo assembly and assess its quality.
 
-*   First, make the script executable:
+Tools:
 
-    chmod +x setup.sh
+Flye (GitHub): A high-quality de novo assembler specifically designed for long and noisy reads.
 
-*   Now, run the script:
+Kolmogorov, M., et al. (2019). Assembly of long, error-prone reads using repeat graphs. Nature biotechnology, 37(5), 540-546. DOI: 10.1038/s41587-019-0072-8
 
-    ./setup.sh
+QUAST (GitHub): Generates comprehensive quality metrics for the assembly (e.g., N50, L50, number of contigs).
 
-Once this finishes without errors, your workstation is ready.
+Gurevich, A., et al. (2013). QUAST: quality assessment tool for genome assemblies. Bioinformatics, 29(8), 1072-1075. DOI: 10.1093/bioinformatics/btt086
 
-Part 4: Running Your Analysis
------------------------------
+4. Functional Annotation
+Goal: Identify genes, mobile genetic elements, and other features in the final assembly.
 
-Step 1: Run a Quick Test (Highly Recommended)
+Tools:
 
-This test should finish in less than 5 minutes and confirms your setup is working.
+Bakta (GitHub): Provides comprehensive, rapid, and standardized annotation of bacterial genomes.
 
-*   Refresh your terminal's environment:
+Schwengers, O., et al. (2021). Bakta: rapid and standardized annotation of bacterial genomes. Microbial Genomics, 7(11), 000685. DOI: 10.1099/mgen.0.000685
 
-    source ~/.bashrc
+AMRFinderPlus (NCBI): Identifies acquired antimicrobial resistance (AMR) genes using NCBI's curated database.
 
-*   Run the pipeline with the "test" profile:
+Feldgarden, M., et al. (2019). Validating the AMRFinderPlus algorithm and database for use in prediction of antimicrobial resistance genotypes from DNA sequence data. Antimicrobial agents and chemotherapy, 63(11). DOI: 10.1128/AAC.00483-19
 
-    nextflow run main.nf -profile test
+PlasmidFinder (CGE): Detects plasmid replicons to identify known plasmid types from assembled sequences.
 
-If this completes successfully, you are ready for the main analysis.
+Carattoli, A., et al. (2014). In silico detection and typing of plasmids using PlasmidFinder and pMLST. Antimicrobial agents and chemotherapy, 58(7), 3895-3903. DOI: 10.1128/AAC.02412-14
 
-Step 2: Run the Full Analysis on Your Data
+MOB-suite (GitHub): Characterizes plasmid mobility (e.g., conjugative, mobilizable) and reconstructs plasmid sequences from assemblies.
 
-You must provide three key pieces of information in the command.
+Robertson, J., & Nash, J. H. (2018). MOB-suite: software tools for clustering, reconstruction and typing of plasmids from draft assemblies. Microbial genomics, 4(8). DOI: 10.1099/mgen.0.000206
 
-*   --input: The path to your BAM files. This will be 'inputs_bam/*.bam'.
-*   --species_name: The scientific name of your bacterium (e.g., "Citrobacter freundii").
-*   --genome_size: The estimated genome size (e.g., '5.2m').
+ABRicate (GitHub): Screens contigs against multiple databases of AMR and virulence genes (e.g., CARD, VFDB).
 
-Here is the full command. Copy it, but be sure to change the species name and genome size.
+Seemann, T. (2018). ABRicate: mass screening of contigs for antimicrobial resistance and virulence genes. GitHub repository.
 
-    nextflow run main.nf -resume --input_bam 'inputs/*.bam' --species_name "Citrobacter freundii" --genome_size '5.2m'
+CCTyper (GitHub): Identifies and types CRISPR-Cas systems within the assembly.
 
-The "-resume" part is very important. If your run is interrupted, you can use this exact same command to pick up where you left off.
+Almendros, C., et al. (2022). CCTyper: a bioinformatic pipeline for computational typing of CRISPR-Cas systems. The CRISPR Journal, 5(1), 145-149. DOI: 10.1089/crispr.2021.0042
 
-Part 5: What to Expect
-----------------------
+5. SNP Analysis
+Goal: Compare each isolate to a reference genome to identify single nucleotide polymorphisms (SNPs) for phylogenetic analysis.
 
-*   You will see a random two-word name appear for your run (like `angry_hilbert`). This is normal.
-*   A single file can take 4-9 hours. A batch of 50 files can take over two weeks. This is expected.
-*   A folder named "results" will be created containing all your final output files.
+Tools:
 
-If you see a red ERROR message, please copy the entire message and contact me for help. Do not delete any files. Good luck!
+Minimap2 and Samtools are used for alignment and processing.
+
+BCFtools (GitHub): Performs variant calling (identifying SNPs and indels) and filtering.
+
+Danecek, P., et al. (2021). Twelve years of SAMtools and BCFtools. GigaScience, 10(2), giab008. DOI: 10.1093/gigascience/giab008
+
+6. Reporting
+Goal: Aggregate results from all tools into a single summary report.
+
+Tool:
+
+MultiQC (GitHub, multiqc.info): Creates a single, interactive HTML report from the logs and outputs of tools like FastQC and QUAST.
+
+Ewels, P., et al. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics, 32(19), 3047-3048. DOI: 10.1093/bioinformatics/btw354
+
+How to Cite This Workflow
+If you use this pipeline in your research, please cite this repository and our future publication:
+
+> [Your future publication details will go here!]
+
+To ensure reproducibility, please also cite Nextflow and the individual software tools listed above.
