@@ -18,13 +18,13 @@ The workflow begins with raw, unaligned BAM files and performs host DNA decontam
 
 This pipeline is designed to be set up with a single script. This will install Miniconda (if not present), Nextflow, all required databases, and special software environments.
 
-**1. Clone the Repository**
+##1. Clone the Repository**
 ```bash
 git clone [URL to your new GitHub repository]
 cd [repository-name]
 ```
 
-2. Make the Setup Script Executable
+##2. Make the Setup Script Executable
 This only needs to be done once.
 
 ```bash
@@ -32,15 +32,47 @@ chmod +x setup.sh
 bash setup.sh
 ```
 
-3. Run the Setup Script
+##3. Run the Setup Script
 This is the main installation step. It is idempotent, meaning it can be safely re-run if it fails. Note: The initial download of the Bakta database is very large and may take a significant amount of time. It is recommended to run this step overnight.
 
 ```bash
 bash setup.sh
 ```
-4. Prepare Input Data
+##4. Prepare Input Data
 Place your PacBio unaligned .bam files into the inputs/ directory.
-Now you want to create your folder and move your bam files into that folder
+Now you want to create your folder and move your bam files into that folder.  Your setup should match this exact layout:
+
+ ~/Desktop/
+??? My_Bacterial_Pipeline/
+    ??? main.nf
+    ??? nextflow.config
+    ??? setup.sh
+    ?
+    ??? inputs/
+    ?   ??? sample_01.bam
+    ?   ??? sample_02.bam
+    ?   ??? ... (and so on for all 50 samples)
+    ?
+    ??? modules/
+    ?   ??? annotation.nf
+    ?   ??? bamtocleanfastq.nf
+    ?   ??? other_analysis.nf
+    ?   ??? resistance.nf
+    ?   ??? ... (all other .nf files)
+    ?
+    ??? envs/
+    ?   ??? annotation.yml
+    ?   ??? resistance.yml
+    ?   ??? other_analysis.yml
+    ?   ??? ... (all other .yml files created by setup.sh)
+    ?
+    ??? results/
+    ?   ??? (This directory will be created by Nextflow on the first successful run)
+    ?
+    ??? work/
+        ??? (This directory will be created by Nextflow to store intermediate files)
+
+
 
 ```bash
 mkdir -p inputs
