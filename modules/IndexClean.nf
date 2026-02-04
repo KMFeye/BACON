@@ -1,5 +1,3 @@
-
-
 process DOWNLOAD_HUMAN_GENOME {
     label 'process_low'
     conda 'conda-forge::wget=1.21.4'
@@ -9,10 +7,12 @@ process DOWNLOAD_HUMAN_GENOME {
 
     script:
     """
-    wget -O human_genome.fasta.gz "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.29_GRCh38.p14/GCA_000001405.29_GRCh38.p14_genomic.fna.gz"
+    wget --no-check-certificate -O human_genome.fasta.gz "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.29_GRCh38.p14/GCA_000001405.29_GRCh38.p14_genomic.fna.gz"
+    
     gunzip human_genome.fasta.gz
     """
 }
+
 
 process DOWNLOAD_BACTERIAL_REFERENCE {
     label 'process_low'
@@ -30,7 +30,7 @@ process DOWNLOAD_BACTERIAL_REFERENCE {
 }
 
 process INDEX_GENOME {
-    label 'process_high'
+    label 'process_medium'
     conda 'bioconda::bwa=0.7.17'
 
     input:
