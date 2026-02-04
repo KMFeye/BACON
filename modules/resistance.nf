@@ -37,9 +37,8 @@ process PLASMIDFINDER_ANALYSIS {
 
 process MOB_SUITE_ANALYSIS {
     tag "MOB-suite analysis for ${sample_id}"
-    label 'process_medium'
-    // CORRECT: Uses the special, pre-built environment.
-    conda 'mobsuite_env'
+    label 'process_med'
+    conda "$HOME/miniconda3/envs/mobsuite_env"
 
     input:
     tuple val(sample_id), path(fasta)
