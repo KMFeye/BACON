@@ -1,9 +1,13 @@
+// In: modules/other_analysis.nf (or wherever CRISPR_TYPING is)
 
 process CRISPR_TYPING {
     tag "CRISPR typing for ${sample_id}"
     label 'process_medium'
-    // Uses its new, dedicated environment file
-    conda 'envs/other_analysis.yml'
+    
+    // --- THIS IS THE KEY FIX ---
+    // We are abandoning the simple directive and creating a clean, explicit environment.
+    // By specifying the python version, we help the conda solver make better choices.
+    conda 'bioconda::cctyper conda-forge::python=3.9'
 
     input:
     tuple val(sample_id), path(fasta)
@@ -13,7 +17,7 @@ process CRISPR_TYPING {
 
     script:
     """
-    # This command correctly uses positional arguments instead of flags.
+    # This command is already correct and uses positional arguments.
     cctyper \\
         "${fasta}" \\
         crispr_output \\
