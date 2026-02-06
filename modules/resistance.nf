@@ -22,10 +22,15 @@ process AMRFINDER_ANALYSIS {
     """
 }
 
+// In: modules/resistance.nf
+
 process PLASMIDFINDER_ANALYSIS {
     tag "PlasmidFinder analysis for ${sample_id}"
     label 'process_medium'
-    // This environment is correct.
+    
+    // --- KEY CHANGE No. 1: Update the environment ---
+    // We now need 'git' to clone the database and 'kma' to index it.
+    // We will add these to our consolidated resistance environment file.
     conda 'envs/resistance.yml'
 
     input:
@@ -36,10 +41,23 @@ process PLASMIDFINDER_ANALYSIS {
 
     script:
     """
-    echo "Downloading PlasmidFinder database..."
-    download_plasmidfinder_db.sh -d .
+    # --- THIS IS THE FINAL, CORRECTED SCRIPT BASED ON GITHUB ---
+
+    # Step 1: Clone the database repository.
+    echo "Cloning PlasmidFinder database..."
+    git clone https://bitbucket.org/genomicepidemiology/plasmidfinder_db.git
+
+    # Step 2: Run the database installation script.
+    # This uses kma_index to prepare the database for use.
+    echo "Indexing PlasmidFinder database..."
+    python3 plasmidfinder_db/INSTALL.py kma_index
+
+    # Step 3: Create the output directory.
     mkdir plasmidfinder_output
-    plasmidfinder.py -i "${fasta}" -o "plasmidfinder_output"
+
+    # Step 4: Run the analysis, pointing to the database we just prepared.
+    # The -p flag should point to the cloned 'plasmidfinder_db' directory.
+    plasmidfinder.py -i "${fasta}" -o "plasmidfinder_output" -p plasmidfinder_db
     """
 }
 
