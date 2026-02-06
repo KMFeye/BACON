@@ -1,39 +1,48 @@
-// modules/resistance.nf
-// This is the final, corrected version of this module file.
-
 process AMRFINDER_ANALYSIS {
     tag "AMRFinder analysis for ${sample_id}"
     label 'process_medium'
-    // CORRECT: Uses the consolidated environment for stable tools.
-    conda 'envs/resistance.yml'
+    // The environment needs wget now. We'll add it to the yml file later.
+    // For now, let's define it here to be certain.
+    conda 'bioconda::ncbi-amrfinderplus conda-forge::wget'
 
     input:
     tuple val(sample_id), path(fasta)
+
     output:
     path "${sample_id}_amrfinder.txt", emit: amrfinder_report
+
     script:
     """
-    amrfinder -u
-    amrfinder -n "${fasta}" -o "${sample_id}_amrfinder.txt"
+    echo "Downloading AMRFinderPlus database manually..."
+    wget --no-check-certificate -O amrfinderplus.tar.gz "https://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/latest/amrfinderplus.tar.gz"
+    mkdir amr_db
+    tar -xzf amrfinderplus.tar.gz -C amr_db
+    echo "Running AMRFinder analysis..."
+    amrfinder -n "${fasta}" -o "${sample_id}_amrfinder.txt" -d amr_db/latest
     """
 }
 
 process PLASMIDFINDER_ANALYSIS {
     tag "PlasmidFinder analysis for ${sample_id}"
     label 'process_medium'
-    // CORRECT: Uses the consolidated environment for stable tools.
+    // This environment is correct.
     conda 'envs/resistance.yml'
 
     input:
     tuple val(sample_id), path(fasta)
+
     output:
     path "plasmidfinder_output", emit: plasmidfinder_report
+
     script:
     """
+    echo "Downloading PlasmidFinder database..."
+    download_plasmidfinder_db.sh -d .
     mkdir plasmidfinder_output
     plasmidfinder.py -i "${fasta}" -o "plasmidfinder_output"
     """
 }
+
 
 process MOB_SUITE_ANALYSIS {
     tag "MOB-suite analysis for ${sample_id}"
