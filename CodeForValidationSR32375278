@@ -1,0 +1,29 @@
+## This markdown is for the publication that validates my pipeline.  HOWEVER if you happen to want to try using a single PacBio raw sequencing read that has public data attached to it and that you can compare to my publication
+##here you go friend, here you go. I used a 36 High Disk Apache Guacamole Workstation to accomplish this task. The workstation uses 2 tb of RAM and 36 CPUs
+
+## Setting up my program.  
+cd ,/Desktop
+mkdir ./ProjectVerify
+##Uploaded project files from my local machine, this can be through github
+program upload [MaskedID] ##this was my setup.shell
+chmod -x setup.shell
+bash setup.shell
+
+##This took about 2 hours to finish, results may vary based on your internet speed. 
+
+##I closed terminal and reopened terminal and got my files
+conda activate
+conda create -n sra-tools -y
+conda 
+conda
+conda install sra-tools
+conda activate sra-tools
+fasterq-dump SRR32375278
+minimap2 -a /dev/null /home/dnanexus/Desktop/SRR32375278.fastq > SRR32375278.unaligned.sam
+samtools view -bS SRR32375278.unaligned.sam > SRR32375278.unaligned.bam
+#I then removed ".unaligned" and reanmed the file SRR32375278.bam
+conda deactivate
+mkdir ./Desktop/referenceInfo
+
+
+
