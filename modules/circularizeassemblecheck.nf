@@ -1,7 +1,12 @@
 process FLYE_ASSEMBLY {
     tag "Flye assembly for ${sample_id}"
     label 'process_high'
-    conda 'envs/flyeAssembly.yml'
+    
+    // --- THIS IS THE KEY FIX ---
+    // We are abandoning the .yml file and creating a clean, explicit environment.
+    // By specifying the python version, we help the conda solver make better choices.
+    conda 'bioconda::flye=2.9.1 conda-forge::python=3.9'
+
     publishDir "${params.outdir}/flye/${sample_id}", mode: 'copy'
 
     input:
@@ -13,9 +18,11 @@ process FLYE_ASSEMBLY {
 
     script:
     """
-    echo -e "\033[38;5;81mStarting Flye assembly for ${sample_id}\033[0m"
-    flye --nano-raw "${fastq}" --out-dir "flye_assembly"
-    echo -e "\033[38;5;81mFlye assembly for ${sample_id} completed\033[0m"
+    echo -e "\\033[38;5;81mStarting Flye assembly for ${sample_id}\\033[0m"
+    
+    flye --pacbio-hifi "${fastq}" --out-dir "flye_assembly" --threads ${task.cpus}
+
+    echo -e "\\033[38;5;81mFlye assembly for ${sample_id} completed\\033[0m"
     """
 }
 
