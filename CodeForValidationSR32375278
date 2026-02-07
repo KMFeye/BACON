@@ -27,3 +27,8 @@ mkdir ./Desktop/referenceInfo
 
 
 
+nextflow run main.nf --genome_size '4.8m' --coverage 100
+
+
+
+
