@@ -11,12 +11,13 @@ process AMRFINDER_ANALYSIS {
     output:
     path "${sample_id}_amrfinder.txt", emit: amrfinder_report
 
-    script:
-    """
+    echo "Updating AMRFinderPlus database..."
     amrfinder --update
+
+    # Step 2: Run the analysis. By REMOVING the '-d' flag, we tell amrfinder
+    # to use the default database that it just successfully downloaded.
     echo "Running AMRFinder analysis..."
-    amrfinder -n "${fasta}" -o "${sample_id}_amrfinder.txt" -d amr_db/latest
-    """
+    amrfinder -n "${fasta}" -o "${sample_id}_amrfinder.txt"
 }
 
 process PLASMIDFINDER_ANALYSIS {
