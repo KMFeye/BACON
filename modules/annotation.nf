@@ -1,17 +1,21 @@
-
 process BAKTA_ANNOTATION {
-    tag "$sample_id"
-    input:
-    tuple val(sample_id), path(assembly)
+    tag "Bakta annotation for ${sample_id}"
+    label 'process_high'
+    // This explicit conda directive is the most robust solution for your system.
+    conda 'bioconda::bakta conda-forge::python=3.9'
+    publishDir "${params.outdir}/bakta/${sample_id}", mode: 'copy'
 
-    // Add this block!
-    publishDir "${params.outdir}/Annotation/BAKTA/${sample_id}", mode: 'copy'
+    input:
+    tuple val(sample_id), path(fasta)
 
     output:
-    tuple val(sample_id), path("${sample_id}.*")
+    // --- THIS IS THE CRITICAL FIX ---
+    // The `emit: bakta_report` part creates the named channel that main.nf is looking for.
+    tuple val(sample_id), path("bakta_output"), emit: bakta_report
 
     script:
     """
-    bakta ${assembly} --output ${sample_id} --prefix ${sample_id}
+    # This correctly uses the pre-downloaded database path from nextflow.config
+    bakta --db ${params.bakta_db} --output "bakta_output" "${fasta}"
     """
 }
