@@ -30,7 +30,7 @@ include {
     QUAST_REPORT
 } from './modules/circularizeassemblecheck.nf'
 
-// Annotation modules (from your refactored structure)
+// Annotation modules
 include { BAKTA_ANNOTATION } from './modules/annotation.nf'
 include {
     AMRFINDER_ANALYSIS;
@@ -48,7 +48,7 @@ include {
 } from './modules/snp_analysis.nf'
 
 // Final Summarization module
-include { SUMMARIZE_RESULTS } from './modules/summarize.nf'
+include { SUMMARIZE_RESULTS } from './modules/summarize.nf';
 
 
 // =================================================================
@@ -79,33 +79,44 @@ workflow {
     
     cleaned_reads_ch = SUBSAMPLE_RASUSA.out.rasusa_fastq
 
-    // --- 3. PARALLEL ANALYSIS BRANCHES ---
+    // --- 3. PARALLEL & SEQUENTIAL ANALYSIS BRANCHES ---
     CLEAN_QAQC(cleaned_reads_ch)
     FLYE_ASSEMBLY(cleaned_reads_ch)
     QUAST_REPORT(FLYE_ASSEMBLY.out.assembly_fasta)
     
+    // --- Sequential Annotation Chain to prevent race conditions ---
     bakta_in_ch = FLYE_ASSEMBLY.out.assembly_fasta
     BAKTA_ANNOTATION(bakta_in_ch)
-    AMRFINDER_ANALYSIS(bakta_in_ch)
-    PLASMIDFINDER_ANALYSIS(bakta_in_ch)
-    MOB_SUITE_ANALYSIS(bakta_in_ch)
-    RUN_ABRICATE(bakta_in_ch)
-    CRISPR_TYPING(bakta_in_ch)
+    AMRFINDER_ANALYSIS(BAKTA_ANNOTATION.out.map { it }.first())
+    PLASMIDFINDER_ANALYSIS(AMRFINDER_ANALYSIS.out.amrfinder_report.map { it -> bakta_in_ch })
+    MOB_SUITE_ANALYSIS(PLASMIDFINDER_ANALYSIS.out.plasmidfinder_report.map { it -> bakta_in_ch })
+    RUN_ABRICATE(MOB_SUITE_ANALYSIS.out.mobsuite_report.map { it -> bakta_in_ch })
+    CRISPR_TYPING(RUN_ABRICATE.out.report.map { it -> bakta_in_ch })
 
+    // --- SNP Analysis Branch (runs in parallel) ---
     ALIGN_TO_REFERENCE(cleaned_reads_ch, bacterial_ref_fasta_ch)
     CALL_VARIANTS_BCFTOOLS(ALIGN_TO_REFERENCE.out.aligned_bam, bacterial_ref_fasta_val)
     FILTER_VARIANTS_BCFTOOLS(CALL_VARIANTS_BCFTOOLS.out.raw_vcf)
 
     // --- 4. FINAL AGGREGATION & SUMMARY ---
-
     vcf_ch = FILTER_VARIANTS_BCFTOOLS.out.filtered_vcf
     gff_ch = BAKTA_ANNOTATION.out.bakta_report.map { sample_id, path -> [ sample_id, file("${path}/*.gff3") ] }
     flye_dir_ch = FLYE_ASSEMBLY.out.assembly_dir
     mob_ch = MOB_SUITE_ANALYSIS.out.mobsuite_report
+    amr_ch = AMRFINDER_ANALYSIS.out.amrfinder_report
+    abricate_ch = RUN_ABRICATE.out.report
+    crispr_ch = CRISPR_TYPING.out.crispr_dir
+    plasmid_ch = PLASMIDFINDER_ANALYSIS.out.plasmidfinder_report
+    rasusa_stats_ch = SUBSAMPLE_RASUSA.out.rasusa_stats
 
     vcf_ch.join(gff_ch)
           .join(flye_dir_ch)
           .join(mob_ch)
+          .join(amr_ch)
+          .join(abricate_ch)
+          .join(crispr_ch)
+          .join(plasmid_ch)
+          .join(rasusa_stats_ch)
           .set { summary_input_ch }
 
     SUMMARIZE_RESULTS(summary_input_ch)
