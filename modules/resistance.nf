@@ -13,10 +13,7 @@ process AMRFINDER_ANALYSIS {
 
     script:
     """
-    echo "Downloading AMRFinderPlus database manually..."
-    wget --no-check-certificate -O amrfinderplus.tar.gz "https://ftp.ncbi.nlm.nih.gov/pathogen/Antimicrobial_resistance/AMRFinderPlus/database/latest/amrfinderplus.tar.gz"
-    mkdir amr_db
-    tar -xzf amrfinderplus.tar.gz -C amr_db
+    amrfinder --update
     echo "Running AMRFinder analysis..."
     amrfinder -n "${fasta}" -o "${sample_id}_amrfinder.txt" -d amr_db/latest
     """
