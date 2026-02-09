@@ -80,8 +80,7 @@ process MOB_SUITE_ANALYSIS {
 process RUN_ABRICATE {
     tag "Screening ${sample_id} with ABRicate"
     label 'process_medium'
-    // CORRECT: Uses the consolidated environment for stable tools.
-    conda 'envs/resistance.yml'
+    conda 'bioconda::ncbi-amrfinderplus conda-forge::wget'
 
     input:
     tuple val(sample_id), path(fasta)
