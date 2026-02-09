@@ -1,8 +1,10 @@
+// FINAL, DEFINITIVE, AND CORRECTED VERSION: modules/snp_analysis.nf
 
 process ALIGN_TO_REFERENCE {
     tag "Align reads for ${sample_id} with minimap2"
     label 'process_medium'
-    conda 'envs/snpAnalysis.yml'
+    // CORRECTED: Using a direct, explicit Conda directive.
+    conda 'bioconda::minimap2=2.24 bioconda::samtools=1.15'
     publishDir "${params.outdir}/snp_analysis/aligned_bams", mode: 'copy'
 
     input:
@@ -14,7 +16,7 @@ process ALIGN_TO_REFERENCE {
 
     script:
     """
-    minimap2 -ax sr "${reference_fasta}" "${fastq}" | samtools sort -o "${sample_id}.sorted.bam" -
+    minimap2 -ax map-pb "${reference_fasta}" "${fastq}" | samtools sort -o "${sample_id}.sorted.bam" -
     samtools index "${sample_id}.sorted.bam"
     """
 }
@@ -22,7 +24,9 @@ process ALIGN_TO_REFERENCE {
 process CALL_VARIANTS_BCFTOOLS {
     tag "Call variants for ${sample_id} with bcftools"
     label 'process_medium'
-    conda 'envs/snpAnalysis.yml'
+    // CORRECTED: Using a direct, explicit Conda directive.
+    conda 'bioconda::samtools=1.15 bioconda::bcftools=1.15'
+    publishDir "${params.outdir}/snp_analysis/raw_vcfs/${sample_id}", mode: 'copy'
 
     input:
     tuple val(sample_id), path(bam), path(bai)
@@ -40,7 +44,8 @@ process CALL_VARIANTS_BCFTOOLS {
 process FILTER_VARIANTS_BCFTOOLS {
     tag "Filter variants for ${sample_id}"
     label 'process_low'
-    conda 'envs/snpAnalysis.yml'
+    // CORRECTED: Using a direct, explicit Conda directive.
+    conda 'bioconda::bcftools=1.15'
     publishDir "${params.outdir}/snp_analysis/final_vcfs", mode: 'copy'
 
     input:
@@ -50,7 +55,6 @@ process FILTER_VARIANTS_BCFTOOLS {
     tuple val(sample_id), path("${sample_id}.filtered.vcf.gz"), emit: filtered_vcf
 
     script:
-    // This is a basic filter. It keeps variants with a quality score > 20.
     """
     bcftools filter -i 'QUAL > 20' -Oz -o "${sample_id}.filtered.vcf.gz" "${raw_vcf}"
     """
