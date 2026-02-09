@@ -80,7 +80,7 @@ process MOB_SUITE_ANALYSIS {
 process RUN_ABRICATE {
     tag "Screening ${sample_id} with ABRicate"
     label 'process_medium'
-    conda 'bioconda::ncbi-amrfinderplus conda-forge::wget'
+    conda 'bioconda::abricate>=1.0.1'
 
     input:
     tuple val(sample_id), path(fasta)
