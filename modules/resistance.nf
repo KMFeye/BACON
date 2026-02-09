@@ -25,7 +25,7 @@ process AMRFINDER_ANALYSIS {
 process PLASMIDFINDER_ANALYSIS {
     tag "PlasmidFinder analysis for ${sample_id}"
     label 'process_medium'
-    conda 'envs/resistance.yml'
+    conda 'bioconda::plasmidfinder bioconda::kma conda-forge::git conda-forge::python=3.9'
 
     input:
     tuple val(sample_id), path(fasta)
@@ -60,6 +60,7 @@ process PLASMIDFINDER_ANALYSIS {
     """
 }
 
+// In: modules/resistance.nf
 
 process MOB_SUITE_ANALYSIS {
     tag "MOB-suite analysis for ${sample_id}"
