@@ -16,6 +16,6 @@ process BAKTA_ANNOTATION {
     script:
     """
     # This correctly uses the pre-downloaded database path from nextflow.config
-    bakta --db ${params.bakta_db} --output "bakta_output" "${fasta}"
+    bakta --db ${params.bakta_db} --output "bakta_output" "${fasta}" --threads ${task.cpus}
     """
 }
