@@ -27,7 +27,33 @@ mkdir ./Desktop/referenceInfo
 
 
 
-nextflow run main.nf --genome_size '4.8m' --coverage 100
+nextflow run main.nf --genome_size '4.1m' --coverage 100
+
+# Extract, sort, and count unique product names from file 1
+grep -o 'product=[^;]*' /path/to/your/first.gff3 | sed 's/product=//' | sort | uniq > products_file1.txt
+
+# Do the same for file 2
+grep -o 'product=[^;]*' /path/to/your/second.gff3 | sed 's/product=//' | sort | uniq > products_file2.txt
+
+
+# Find product names that are ONLY in file 1
+comm -23 products_file1.txt products_file2.txt
+
+# Find product names that are ONLY in file 2
+comm -13 products_file1.txt products_file2.txt
+##Better than bakta as the annotation v. may be different and provide unique results. 
+
+##NOW MAUVE
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda create -n mauve_env
+conda activate mauve_env
+conda install -c bioconda progressive-mauve
+progressiveMauve --output=my_alignment.xmfa genome_A.fasta genome_B.fasta
+
+
+
 
 
 
