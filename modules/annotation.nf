@@ -1,21 +1,24 @@
+// In: modules/annotation.nf
 process BAKTA_ANNOTATION {
     tag "Bakta annotation for ${sample_id}"
     label 'process_high'
-    // This explicit conda directive is the most robust solution for your system.
-    conda 'bioconda::bakta conda-forge::python=3.9'
-    publishDir "${params.outdir}/bakta/${sample_id}", mode: 'copy'
+    conda 'bioconda::bakta'
+
+    publishDir "${params.outdir}/${sample_id}/bakta", mode: 'copy'
 
     input:
     tuple val(sample_id), path(fasta)
 
     output:
-    // --- THIS IS THE CRITICAL FIX ---
-    // The `emit: bakta_report` part creates the named channel that main.nf is looking for.
+    tuple val(sample_id), path("${sample_id}.gff3"), emit: gff_file
     tuple val(sample_id), path("bakta_output"), emit: bakta_report
 
     script:
+    // This is the fix: It now uses the 'params.bakta_db' value
+    // from your nextflow.config file.
     """
-    # This correctly uses the pre-downloaded database path from nextflow.config
-    bakta --db ${params.bakta_db} --output "bakta_output" "${fasta}" --threads ${task.cpus}
+    bakta --db ${params.bakta_db} --output bakta_output --prefix ${sample_id} ${fasta}
+    
+    cp bakta_output/${sample_id}.gff3 .
     """
 }
