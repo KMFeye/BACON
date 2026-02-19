@@ -1,4 +1,3 @@
-
 process BAM_TO_FASTQ {
     tag "BAM to FASTQ for ${sample_id}"
     label 'process_medium'
