@@ -1,4 +1,3 @@
-// In: modules/annotation.nf
 process BAKTA_ANNOTATION {
     tag "Bakta annotation for ${sample_id}"
     label 'process_high'
