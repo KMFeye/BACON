@@ -2,7 +2,6 @@ process MULTIQC {
     tag "Aggregating QC reports"
     label 'process_low'
     
-    // Use a clean, explicit definition to avoid dependency issues.
     conda 'bioconda::multiqc=1.14 conda-forge::python=3.9'
 
     publishDir "${params.outdir}/multiqc", mode: 'copy'
