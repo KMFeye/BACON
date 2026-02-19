@@ -103,14 +103,11 @@ workflow {
     ALIGN_TO_REFERENCE(cleaned_reads_ch, bacterial_ref_fasta_ch)
 
     // --- CORRECTED: The process now receives the value channel 'bacterial_ref_fasta_ch'
-    // directly, instead of the incorrect collected list.
     CALL_VARIANTS_BCFTOOLS(ALIGN_TO_REFERENCE.out.aligned_bam, bacterial_ref_fasta_ch)
     
     FILTER_VARIANTS_BCFTOOLS(CALL_VARIANTS_BCFTOOLS.out.raw_vcf)
 
     // --- 4. FINAL AGGREGATION & SUMMARY ---
-    // This structure is correct for joining many results channels by sample ID.
-    // It has been updated to include the new BOSCO report.
     SUMMARIZE_RESULTS (
         FILTER_VARIANTS_BCFTOOLS.out.filtered_vcf
             .join(BAKTA_ANNOTATION.out.gff_file)
