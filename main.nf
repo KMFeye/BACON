@@ -1,5 +1,4 @@
 #!/usr/bin/env nextflow
-
 nextflow.enable.dsl = 2
 
 // =================================================================
@@ -27,17 +26,20 @@ include {
 // Assembly and QC modules
 include {
     FLYE_ASSEMBLY;
-    QUAST_REPORT
+    QUAST_REPORT;
+    BOSCO
 } from './modules/circularizeassemblecheck.nf'
 
 // Annotation modules
 include { BAKTA_ANNOTATION } from './modules/annotation.nf'
+
 include {
     AMRFINDER_ANALYSIS;
     PLASMIDFINDER_ANALYSIS;
     MOB_SUITE_ANALYSIS;
     RUN_ABRICATE
 } from './modules/resistance.nf'
+
 include { CRISPR_TYPING } from './modules/other_analysis.nf'
 
 // SNP Analysis modules
@@ -50,7 +52,6 @@ include {
 // Final Summarization module
 include { SUMMARIZE_RESULTS } from './modules/summarize.nf';
 
-
 // =================================================================
 // === THE MAIN WORKFLOW ===
 // =================================================================
@@ -60,9 +61,13 @@ workflow {
     // --- 1. PREPARATION ---
     human_genome_fasta_ch = DOWNLOAD_HUMAN_GENOME()
     bacterial_ref_fasta_ch = DOWNLOAD_BACTERIAL_REFERENCE()
-    bacterial_ref_fasta_val = bacterial_ref_fasta_ch.collect()
     bacterial_ref_index_ch = INDEX_BACTERIAL_GENOME(bacterial_ref_fasta_ch)
-    bacterial_ref_val = bacterial_ref_index_ch.collect()
+
+    // --- CORRECTED: Removed unnecessary .collect() calls.
+    // The original value channels are used directly by downstream processes,
+    // which is more efficient and correct.
+    // bacterial_ref_fasta_val = bacterial_ref_fasta_ch.collect() <-- REMOVED
+    // bacterial_ref_val = bacterial_ref_index_ch.collect() <-- REMOVED
 
     // --- 2. INITIAL PER-SAMPLE PROCESSING ---
     Channel
@@ -92,24 +97,31 @@ workflow {
     MOB_SUITE_ANALYSIS(assembly_ch)
     RUN_ABRICATE(assembly_ch)
     CRISPR_TYPING(assembly_ch)
+    BOSCO(assembly_ch) // <-- BOSCO is now called here
 
     // --- SNP Analysis Branch (runs in parallel) ---
     ALIGN_TO_REFERENCE(cleaned_reads_ch, bacterial_ref_fasta_ch)
-    CALL_VARIANTS_BCFTOOLS(ALIGN_TO_REFERENCE.out.aligned_bam, bacterial_ref_fasta_val)
+
+    // --- CORRECTED: The process now receives the value channel 'bacterial_ref_fasta_ch'
+    // directly, instead of the incorrect collected list.
+    CALL_VARIANTS_BCFTOOLS(ALIGN_TO_REFERENCE.out.aligned_bam, bacterial_ref_fasta_ch)
+    
     FILTER_VARIANTS_BCFTOOLS(CALL_VARIANTS_BCFTOOLS.out.raw_vcf)
 
     // --- 4. FINAL AGGREGATION & SUMMARY ---
-    // This section is now much cleaner and more robust
+    // This structure is correct for joining many results channels by sample ID.
+    // It has been updated to include the new BOSCO report.
     SUMMARIZE_RESULTS (
         FILTER_VARIANTS_BCFTOOLS.out.filtered_vcf
             .join(BAKTA_ANNOTATION.out.gff_file)
-            .join(FLYE_ASSEMBLY.out.assembly_dir) // Assuming this already emits a tuple [id, path]
+            .join(FLYE_ASSEMBLY.out.assembly_dir)
             .join(MOB_SUITE_ANALYSIS.out.mobsuite_report)
             .join(AMRFINDER_ANALYSIS.out.amrfinder_report)
             .join(RUN_ABRICATE.out.report)
             .join(CRISPR_TYPING.out.crispr_dir)
             .join(PLASMIDFINDER_ANALYSIS.out.plasmidfinder_report)
             .join(SUBSAMPLE_RASUSA.out.rasusa_stats)
+            .join(BOSCO.out.busco_report) // <-- BUSCO output is now joined
     )
 
     bacterial_ref_fasta_ch
