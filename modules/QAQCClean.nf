@@ -14,9 +14,6 @@ process CLEAN_QAQC {
 
     script:
     """
-    # --- THIS IS THE FINAL, DEFINITIVE FIX ---
-    # We are explicitly setting the Java max heap size (-Xmx) to 70g.
-    # This tells the JVM to use up to 70GB of the 80GB allocated to this process,
     export _JAVA_OPTIONS="-Xmx70g"
 
     mkdir fastqc
