@@ -9,7 +9,6 @@ process CRISPR_TYPING {
     tuple val(sample_id), path(fasta)
 
     output:
-    // Ensures the output is a tuple for the join
     tuple val(sample_id), path("crispr_output"), emit: crispr_dir
 
     script:
