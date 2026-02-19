@@ -1,9 +1,6 @@
-// FINAL, DEFINITIVE, AND CORRECTED VERSION: modules/snp_analysis.nf
-
 process ALIGN_TO_REFERENCE {
     tag "Align reads for ${sample_id} with minimap2"
     label 'process_medium'
-    // CORRECTED: Using a direct, explicit Conda directive.
     conda 'bioconda::minimap2=2.24 bioconda::samtools=1.15'
     publishDir "${params.outdir}/snp_analysis/aligned_bams", mode: 'copy'
 
@@ -24,7 +21,6 @@ process ALIGN_TO_REFERENCE {
 process CALL_VARIANTS_BCFTOOLS {
     tag "Call variants for ${sample_id} with bcftools"
     label 'process_medium'
-    // CORRECTED: Using a direct, explicit Conda directive.
     conda 'bioconda::samtools=1.15 bioconda::bcftools=1.15'
     publishDir "${params.outdir}/snp_analysis/raw_vcfs/${sample_id}", mode: 'copy'
 
@@ -44,7 +40,6 @@ process CALL_VARIANTS_BCFTOOLS {
 process FILTER_VARIANTS_BCFTOOLS {
     tag "Filter variants for ${sample_id}"
     label 'process_low'
-    // CORRECTED: Using a direct, explicit Conda directive.
     conda 'bioconda::bcftools=1.15'
     publishDir "${params.outdir}/snp_analysis/final_vcfs", mode: 'copy'
 
