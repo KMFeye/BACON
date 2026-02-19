@@ -1,10 +1,6 @@
 process FLYE_ASSEMBLY {
     tag "Flye assembly for ${sample_id}"
     label 'process_high'
-    
-    // --- THIS IS THE KEY FIX ---
-    // We are abandoning the .yml file and creating a clean, explicit environment.
-    // By specifying the python version, we help the conda solver make better choices.
     conda 'bioconda::flye=2.9.1 conda-forge::python=3.9'
 
     publishDir "${params.outdir}/flye/${sample_id}", mode: 'copy'
@@ -40,8 +36,25 @@ process QUAST_REPORT {
 
     script:
     """
-    echo -e "\033[38;5;81mStarting QUAST report for ${sample_id}\033[0m"
+    echo -e 
     quast -o "quast_output" "${assembly_fasta}"
     echo -e "\033[38;5;81mQUAST report for ${sample_id} completed\033[0m"
+    """
+}
+
+process BOSCO {
+    tag "Busco report for ${sample_id}"
+    label 'process_medium'
+    conda 'bioconda::busco'
+    
+    input:
+    tuple val(sample_id), path(assembly_fasta)
+
+    output:
+    tuple val(sample_id), path("busco_output"), emit: busco_report
+
+    script:
+    """
+    busco -i "${assembly_fasta}" -m genome -o "busco_output" -l enterobacterales_odb10
     """
 }
