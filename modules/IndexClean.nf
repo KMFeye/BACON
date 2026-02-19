@@ -16,7 +16,6 @@ process DOWNLOAD_HUMAN_GENOME {
 
 process DOWNLOAD_BACTERIAL_REFERENCE {
     label 'process_low'
-    // **FIXED**: Pointing to the correct conda-forge channel for wget
     conda 'conda-forge::wget=1.21.4'
 
     output:
