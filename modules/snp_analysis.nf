@@ -2,7 +2,8 @@ process ALIGN_TO_REFERENCE {
     tag "Align reads for ${sample_id} with minimap2"
     label 'process_medium'
     conda 'bioconda::minimap2=2.24 bioconda::samtools=1.15'
-    publishDir "${params.outdir}/snp_analysis/aligned_bams", mode: 'copy'
+
+    publishDir "${params.outdir}/rawdata/snp_analysis/aligned_bams", mode: 'copy'
 
     input:
     tuple val(sample_id), path(fastq)
@@ -22,7 +23,8 @@ process CALL_VARIANTS_BCFTOOLS {
     tag "Call variants for ${sample_id} with bcftools"
     label 'process_medium'
     conda 'bioconda::samtools=1.15 bioconda::bcftools=1.15'
-    publishDir "${params.outdir}/snp_analysis/raw_vcfs/${sample_id}", mode: 'copy'
+
+    publishDir "${params.outdir}/rawresults/snp_analysis/raw_vcfs/${sample_id}", mode: 'copy'
 
     input:
     tuple val(sample_id), path(bam), path(bai)
@@ -41,7 +43,8 @@ process FILTER_VARIANTS_BCFTOOLS {
     tag "Filter variants for ${sample_id}"
     label 'process_low'
     conda 'bioconda::bcftools=1.15'
-    publishDir "${params.outdir}/snp_analysis/final_vcfs", mode: 'copy'
+
+    publishDir "${params.outdir}/rawresults/snp_analysis/final_vcfs", mode: 'copy'
 
     input:
     tuple val(sample_id), path(raw_vcf)
@@ -52,5 +55,27 @@ process FILTER_VARIANTS_BCFTOOLS {
     script:
     """
     bcftools filter -i 'QUAL > 20' -Oz -o "${sample_id}.filtered.vcf.gz" "${raw_vcf}"
+    """
+}
+
+process FIX_VCF_HEADER {
+    tag "Fixing VCF header for ${sample_id}"
+    label 'process_low'
+
+    conda 'bioconda::bcftools=1.19'
+
+    input:
+    tuple val(sample_id), path(vcf)
+
+    output:
+    tuple val(sample_id), path("${sample_id}.fixed.vcf.gz"), emit: vcf
+
+    script:
+    """
+    bcftools annotate \\
+        --remove 'INFO/MQ' \\
+        -o ${sample_id}.fixed.vcf.gz \\
+        -O z \\
+        ${vcf}
     """
 }
