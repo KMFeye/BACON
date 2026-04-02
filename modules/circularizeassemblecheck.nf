@@ -1,60 +1,85 @@
 process FLYE_ASSEMBLY {
-    tag "Flye assembly for ${sample_id}"
+    tag "Flye assembly for ${sample_id} (Attempt ${task.attempt})"
     label 'process_high'
-    conda 'bioconda::flye=2.9.1 conda-forge::python=3.9'
+    conda 'bioconda::flye=2.9.1'
 
-    publishDir "${params.outdir}/flye/${sample_id}", mode: 'copy'
+    maxRetries 1
+    errorStrategy {
+        if (task.attempt == 1 && task.exitStatus != 0) {
+            println "Flye attempt 1 for ${sample_id} failed. Retrying with --pacbio-raw..."
+            return 'retry'
+        }
+        else {
+            println "Flye attempt 2 for ${sample_id} also failed. Ignoring sample."
+            return 'ignore'
+        }
+    }
+    
+    publishDir "${params.outdir}/rawresults/flye/${sample_id}", mode: 'copy'
 
     input:
     tuple val(sample_id), path(fastq)
 
     output:
-    tuple val(sample_id), path("flye_assembly/assembly.fasta"), emit: assembly_fasta
-    path "flye_assembly", emit: assembly_dir
+    tuple val(sample_id), path("flye_assembly"), emit: assembly_dir
+    tuple val(sample_id), path("flye_assembly/assembly.fasta"), emit: assembly_fasta, optional: true
 
     script:
-    """
-    echo -e "\\033[38;5;81mStarting Flye assembly for ${sample_id}\\033[0m"
+    def command
+    if (task.attempt == 1) {
+        command = "flye --pacbio-hifi '${fastq}' --out-dir flye_assembly --threads ${task.cpus}"
+    } else {
+        command = "flye --pacbio-raw '${fastq}' --out-dir flye_assembly --threads ${task.cpus}"
+    }
     
-    flye --pacbio-hifi "${fastq}" --out-dir "flye_assembly" --threads ${task.cpus}
-
-    echo -e "\\033[38;5;81mFlye assembly for ${sample_id} completed\\033[0m"
+    """
+    echo "Running command: ${command}"
+    ${command}
     """
 }
+
 
 process QUAST_REPORT {
-    tag "QUAST report for ${sample_id}"
+    tag "Running QUAST for ${sample_id}"
     label 'process_medium'
-    conda 'envs/quastReport.yml'
-    publishDir "${params.outdir}/quast/${sample_id}", mode: 'copy'
-
+    conda 'bioconda::quast'
+   
+    publishDir "${params.outdir}/rawdata/${sample_id}/quast",
+        mode: 'copy',
+        pattern: "quast_results/*"
+   
+    publishDir "${params.outdir}/tables",
+    mode: 'copy',
+    pattern: "quast_results/report.tsv",
+    saveAs: { "${sample_id}.quast_report.tsv" } 
+    
     input:
-    tuple val(sample_id), path(assembly_fasta)
+    tuple val(sample_id), path(assembly)
 
     output:
-    path "quast_output", emit: quast_report
+    path("quast_results"), emit: quast_report
 
     script:
+
     """
-    echo -e 
-    quast -o "quast_output" "${assembly_fasta}"
-    echo -e "\033[38;5;81mQUAST report for ${sample_id} completed\033[0m"
+    quast.py ${assembly} -o quast_results
     """
 }
+
+
 
 process BOSCO {
     tag "Busco report for ${sample_id}"
     label 'process_medium'
     conda 'bioconda::busco'
-    
-    input:
-    tuple val(sample_id), path(assembly_fasta)
+    publishDir "${params.outdir}/tables/bosco", mode: 'copy'
 
+    input:
+    tuple val(sample_id), path(fasta)
     output:
     tuple val(sample_id), path("busco_output"), emit: busco_report
-
     script:
     """
-    busco -i "${assembly_fasta}" -m genome -o "busco_output" -l enterobacterales_odb10
+    busco -i "${fasta}" -m genome -o busco_output -l bacteria_odb12
     """
 }
