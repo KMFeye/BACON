@@ -1,38 +1,76 @@
-process SUMMARIZE_RESULTS {
-    tag "Summarizing all key outputs for ${sample_id}"
+process SUMMARIZE_AND_ORGANIZE {
+    tag "Consolidating all results and organizing final files"
     label 'process_low'
-
-    publishDir "${params.outdir}/summary/${sample_id}", mode: 'copy'
+    
+    publishDir "${params.outdir}/files", mode: 'copy'
 
     input:
-    tuple val(sample_id),
-          path(vcf),
-          path(gff),
-          path(flye_dir),
-          path(mob_suite_report),
-          path(amr_report),
-          path(abricate_report),
-          path(crispr_dir),
-          path(plasmid_report),
-          path(rasusa_stats),
-          path(busco_report) // <-- ADDED
+    val(done_signal)
+    path(assemblies)
+    path(raw_results_dir)
+    path(tables_dir)
 
     output:
-    path "${sample_id}"
+    path "final_files"
 
     script:
-    """
-    mkdir -p "${sample_id}"
+    '''
+    #!/usr/bin/env python
+    import pandas as pd
+    import glob
+    import os
+    import shutil
 
-    cp "${vcf}" "${sample_id}/${sample_id}.filtered.vcf.gz"
-    cp "${gff}" "${sample_id}/${sample_id}.bakta.gff3"
-    cp -r "${flye_dir}" "${sample_id}/flye_output"
-    cp -r "${mob_suite_report}" "${sample_id}/mob_suite_output"
-    cp "${amr_report}" "${sample_id}/amrfinder_report.txt"
-    cp "${abricate_report}" "${sample_id}/abricate_report.tsv"
-    cp -r "${crispr_dir}" "${sample_id}/crispr_output"
-    cp -r "${plasmid_report}" "${sample_id}/plasmidfinder_output"
-    cp "${rasusa_stats}" "${sample_id}/rasusa_stats.txt"
-    cp -r "${busco_report}" "${sample_id}/busco_output" // <-- ADDED
-    """
+    print("--- Starting Final Summary and Organization ---")
+    
+    os.makedirs('final_files/summary_csvs', exist_ok=True)
+    os.makedirs('final_files/assemblies', exist_ok=True)
+
+    # 1. Organize Final Assembly Files
+    print("Organizing final assembly files...")
+    for f in glob.glob("*.fasta"):
+        if os.path.isfile(f):
+            try:
+                shutil.copy(f, "final_files/assemblies/")
+            except Exception as e:
+                print(f"Could not copy assembly {f}: {e}")
+    
+    # 2. Consolidate Summary Tables into CSVs
+    def safe_read_and_concat(search_dir, glob_pattern, out_name, id_level, sep='\\t', comment=None, header=0):
+        files = glob.glob(f"{search_dir}/**/{glob_pattern}", recursive=True)
+        if not files:
+            print(f"Warning: No files found for pattern '{glob_pattern}' in '{search_dir}'")
+            return
+        
+        dfs = []
+        for f in files:
+            try:
+                if os.path.getsize(f) > 0:
+                    sample_id = f.split('/')[id_level]
+                    df = pd.read_csv(f, sep=sep, comment=comment, low_memory=False, header=header)
+                    df['sample_id'] = sample_id
+                    dfs.append(df)
+            except Exception as e:
+                print(f"Warning: Could not read or process file {f}: {e}")
+        
+        if dfs:
+            out_path = os.path.join('final_files/summary_csvs', out_name)
+            pd.concat(dfs, ignore_index=True).to_csv(out_path, index=False)
+            print(f"Successfully created {out_path}")
+
+    # --- Call the function for all reports ---
+    print("Consolidating analysis reports into summary CSVs...")
+    safe_read_and_concat(str(tables_dir), 'abricate/*.tsv', 'all_abricate_data.csv', 2)
+    safe_read_and_concat(str(tables_dir), 'amrfinder/*.txt', 'all_amrfinder_data.csv', 2)
+    safe_read_and_concat(str(tables_dir), 'mobsuite/contig_report.txt', 'all_mobsuite_data.csv', 3)
+    safe_read_and_concat(str(tables_dir), 'quast/report.tsv', 'all_quast_metrics.csv', 2)
+    safe_read_and_concat(str(tables_dir), 'bosco/short_summary.specific.*.txt', 'all_busco_summaries.csv', 2, comment='#', header=None)
+    safe_read_and_concat(str(raw_results_dir), '*/platon/*.tsv', 'all_platon_data.csv', 3)
+    safe_read_and_concat(str(raw_results_dir), '*/crispr/crispr_output/spacers.tab', 'all_crispr_spacers.csv', 3)
+    safe_read_and_concat(str(raw_results_dir), '*/flye/assembly_info.txt', 'all_flye_info.csv', 2)
+    safe_read_and_concat(str(raw_results_dir), '*/subsampling/*.rasusa_stats.txt', 'all_rasusa_stats.csv', 3, header=None)
+    safe_read_and_concat(str(raw_results_dir), '*/functional_analysis/panther_results/*.tsv', 'all_panther_results.csv', 4)
+    
+    print("--- Final Organization Complete ---")
+    '''
 }
