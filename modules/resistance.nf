@@ -1,91 +1,88 @@
 process AMRFINDER_ANALYSIS {
     tag "AMRFinder analysis for ${sample_id}"
     label 'process_medium'
-    conda 'bioconda::ncbi-amrfinderplus conda-forge::wget'
+    conda 'bioconda::ncbi-amrfinderplus'
 
-    publishDir "${params.outdir}/${sample_id}/amrfinder", mode: 'copy'
+    publishDir "${params.outdir}/tables/amrfinder", mode: 'copy'
 
     input:
     tuple val(sample_id), path(fasta)
+    path amrfinder_ready_signal // This now takes the signal file
 
     output:
     tuple val(sample_id), path("${sample_id}_amrfinder.txt"), emit: amrfinder_report
 
     script:
     """
-    echo "Updating AMRFinderPlus database..."
-    amrfinder --update
-    echo "Running AMRFinder analysis..."
-    amrfinder -n "${fasta}" -o "${sample_id}_amrfinder.txt"
+    amrfinder -n "${fasta}" -o "${sample_id}_amrfinder.txt" --plus 
     """
 }
+
 
 process PLASMIDFINDER_ANALYSIS {
     tag "PlasmidFinder analysis for ${sample_id}"
     label 'process_medium'
-    conda 'bioconda::plasmidfinder bioconda::kma conda-forge::git conda-forge::python=3.9'
-
-    publishDir "${params.outdir}/${sample_id}/plasmidfinder", mode: 'copy'
+    conda 'bioconda::plasmidfinder'
+    
+    publishDir "${params.outdir}/tables/plasmidfinder", mode: 'copy'
 
     input:
-    tuple val(sample_id), path(fasta)
+    tuple val(sample_id), path(fasta), path(plasmidfinder_db)
 
     output:
     tuple val(sample_id), path("plasmidfinder_output"), emit: plasmidfinder_report
 
     script:
     """
-    echo "Cloning PlasmidFinder database..."
-    git clone https://bitbucket.org/genomicepidemiology/plasmidfinder_db.git
-    cd plasmidfinder_db
-    echo "Indexing PlasmidFinder database..."
-    python3 INSTALL.py kma_index
-    cd ..
-    mkdir plasmidfinder_output
-    plasmidfinder.py -i "${fasta}" -o "plasmidfinder_output" -p plasmidfinder_db
+    mkdir -p plasmidfinder_output
+    plasmidfinder.py -i "${fasta}" -o "plasmidfinder_output" -p "${plasmidfinder_db}"
     """
 }
 
+
 process MOB_SUITE_ANALYSIS {
     tag "MOB-suite analysis for ${sample_id}"
-    label 'process_med'
-    conda "$HOME/miniconda3/envs/mobsuite_env"
+    label 'process_medium'
+    conda "${System.getenv('HOME')}/miniconda3/envs/mobsuite_env" 
+    
+    publishDir "${params.outdir}/tables/mobsuite", mode: 'copy'
 
-    publishDir "${params.outdir}/${sample_id}/mobsuite", mode: 'copy'
-
-    input:
-    tuple val(sample_id), path(fasta)
-
-    output:
-    tuple val(sample_id), path("mobsuite_output"), emit: mobsuite_report
-
-    script:
+    input: tuple val(sample_id), path(fasta)
+    
+    output: tuple val(sample_id), path("mobsuite_output"), emit: mobsuite_report
+    
+    script: 
     """
-    mob_recon -i "${fasta}" -o "mobsuite_output"
+    mob_recon -i '${fasta}' -o mobsuite_output
     """
 }
 
 process RUN_ABRICATE {
     tag "Screening ${sample_id} with ABRicate"
     label 'process_medium'
-    conda 'bioconda::abricate>=1.0.1'
+    conda 'bioconda::abricate>=1.0.1 bioconda::blast=2.9.0'
 
-    publishDir "${params.outdir}/${sample_id}/abricate", mode: 'copy'
+    maxRetries 2
+    errorStrategy 'retry'
+
+    publishDir "${params.outdir}/tables/abricate", mode: 'copy'
 
     input:
     tuple val(sample_id), path(fasta)
 
     output:
-    tuple val(sample_id), path("abricate_report.tsv"), emit: report
+    tuple val(sample_id), path("${sample_id}_abricate_report.tsv"), emit: report
 
     script:
     """
     abricate-get_db --db card
     abricate-get_db --db vfdb
-    abricate --db vfdb --threads ${task.cpus} "${fasta}" > abricate_vfdb.tsv
-    abricate --db card --threads ${task.cpus} "${fasta}" > abricate_card.tsv
-    head -n 1 abricate_vfdb.tsv > abricate_report.tsv
-    tail -n +2 abricate_vfdb.tsv >> abricate_report.tsv
-    tail -n +2 abricate_card.tsv >> abricate_report.tsv
+
+    echo "Running ABRicate with databases: card, vfdb"
+
+    abricate --summary \
+        <(abricate --db card --threads ${task.cpus} --nocolour --noheader "${fasta}") \
+        <(abricate --db vfdb --threads ${task.cpus} --nocolour --noheader "${fasta}") \
+        > "${sample_id}_abricate_report.tsv"
     """
 }
