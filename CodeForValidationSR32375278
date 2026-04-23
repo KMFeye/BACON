@@ -11,21 +11,23 @@ bash setup.shell
 
 ##This took about 2 hours to finish, results may vary based on your internet speed. 
 
-##I closed terminal and reopened terminal and got my files
+##I setup my conda environment for harvesting the target sequences.  I made sure that the terminal was 
+closed terminal and reopened. 
+
 conda activate
 conda create -n sra-tools -y
 conda 
 conda
 conda install sra-tools
 conda activate sra-tools
-fasterq-dump SRR32375278
-minimap2 -a /dev/null /home/dnanexus/Desktop/SRR32375278.fastq > SRR32375278.unaligned.sam
-samtools view -bS SRR32375278.unaligned.sam > SRR32375278.unaligned.bam
-#I then removed ".unaligned" and reanmed the file SRR32375278.bam
+fasterq-dump SRR332
+minimap2 -a /dev/null /home/dnanexus/Desktop/SRR3324231.fastq > SRR33242431.unaligned.sam
+samtools view -bS SRR33242431.unaligned.sam > SRR33242431.unaligned.bam
+#I then removed ".unaligned" and reanmed the file SRR33242431.bam
+
+##I then moved my unaligned bam files to the inputs. 
 conda deactivate
 mkdir ./Desktop/referenceInfo
-
-
 
 nextflow run main.nf --genome_size '4.1m' --coverage 100
 
@@ -51,6 +53,21 @@ conda create -n mauve_env
 conda activate mauve_env
 conda install -c bioconda progressive-mauve
 progressiveMauve --output=my_alignment.xmfa genome_A.fasta genome_B.fasta
+
+
+## Okay so I got more files once I got the control in place. I manually went to the ncbi page just to ensure that everything
+## was working properly.  I searched "Bacillus subtilis" and clicked on DNA, which had 10,022 Sequences.  I further narrowed
+## down the files to PacBioSMRT (331) and genome (75) and BAM files (19).  I then physically downloaded the file
+m# manifest by clicking "send to run selector".  I then copied the entire manifest into a csv file and the SRA Biosample column
+## into its own txt file named "biosample.txt".  I then ran this command: 
+
+cat /home/dnanexus/Desktop/biosample.txt | xargs -I {} fasterq-dump --split-files {}
+
+
+## Within a few interations of this, I noticed that the SRA files are poorly performing.  So, my goal at this point was to
+verify that the SRA files that are downloaded are clean and appropriately sized.  Ultimately, the big challenge is that there is 
+a lot of variability with data submitted to NCBI.  So, I have included my validation pipeline below, where I primarily 
+used SAMTOOLS and inspected the files manually. The point of this entire workflow is to see the upscale using SRA bam files.  
 
 
 
