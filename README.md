@@ -1,95 +1,125 @@
-# BACON (Bacterial Analysis Comprehensive Nextflow) 🥓 
+# BACON (Bacterial Analysis Comprehensive Nextflow) :bacon: ????
 # A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files and Downloaded SRA Files
 
-Welcome!  Are you new to PacBio and struggle to manage massive data files? Do graphical user interfaces (GUI) websites lead to additional challenges due to the sheer size of PacBio files?  Do you want more opportunities to personalize your workflow with program settings that interest you?  Do you love automated figure generation but still want to pick the colors and tailor the output to your target journal?  
+Welcome!  Are you new to PacBio and struggle to manage massive data files? Do graphical user interfaces (GUI) websites lead to additional challenges due to the sheer size of PacBio files?  Do you want more opportunities to personalize your workflow with settings you can tailor to your bacteria of interest?  Do you love automated figure generation but still want to pick the colors and tailor the output to your target journal or do the work yourself all together?  
 
 Hello!  In walks BACON, a Nextflow pipeline developed to make massive files easier to manage and provide common analyses for Microbial Genomics in an ecosystem that hates big files.  
 
-
-Of note, the views expressed on this GitHub are personal and do not reflect any other viewpoints or endorsements of any organization or entity.  
+??Of note, the views expressed on this GitHub are personal and do not reflect any other viewpoints or endorsements of any organization or entity.  
 
 # Key Features
 
- - Automated Setup: A single setup.sh script installs all dependencies and downloads required databases
- - User-Friendly: Interactive prompts for key parameters like genome size and coverage
- - High-Performance: Optimized for parallel execution on multi-core scientific workstations
- - Comprehensive Annotation: Integrates a suite of best-in-class tools for a deep biological understanding of the sample or sample
- - Can process 1 to 100 samples without modifications to the pipeline
- - If applicable, pangenomics and GWAS analyses are performed
- - Reproducibility: All software dependencies are explicitly managed by Nextflow and    
-   Conda, guaranteeing a consistent environment
+ - ?? Automated Setup: A single setup.sh script installs all dependencies and downloads required databases
+ - ? User-Friendly: Interactive prompts for key parameters like genome size and coverage
+ - ? High-Performance: Optimized for parallel execution on multi-core scientific workstations
+ - ??Comprehensive Annotation: Integrates a suite of best-in-class tools for a deep biological understanding of the sample or sample
+ - ?? High-Throughput: Processes 1 to 100 samples without modifications to the pipeline provided the computer has the power to do the work 
+ - ??Easy to manage: All software dependencies are explicitly managed by Nextflow and    Conda, guaranteeing a consistent environment
 
-# Getting Started: The Download 
-
-# Downloading and Installing C3PacBio with Dependencies
-
-The program titled shell.sh in the list of files at the top of this page does the following tasks: 
-
- 1. Installs Nextflow
-    	Why: Well, how else should it run? 
- 3. Installs and Updates Javascript
-     Why: Nextflow needs this
- 5. Installs Conda
-     Why: Because Docker can be confusing for folks, so conda is managing everything
- 7. Installs R
-    	Why: C3PacBio uses R for some of the work
- 9. Installs R Studio
-     Why: Easy user interface!!  If modifications to the files are needed, R Studio is much friendlier
- 11. Installs GitHub Dependencies
-     Why: So you can get this repository and run the program!
- 14. Installs the databases and unpacks them
-     Why: So the programs can run, make sure the paths in the setup file and the nextflow.config file match.  
- 16. Makes everything executable (aka you can run the program).
-     	Why: We want the program to work. 
-
-Once the setup.sh file sets up, close the terminal and reopen it for the changes to take effect.  If you want to doublecheck, go through the check ✈️:
-
-``` 
-bash check.sh
-```
-Everything should pass.  If not, let me know on the discussion board. 
-
-# Setup Requirements and Automatic Dowwnload
-
-From start to finish, on a naive (or uninstalled) system, it takes about 1 to 2 hours if there is a good internet connection.   
-
-So how do you use the setup file (setup.sh) file?  First, you need to make sure your system has some very basic requirements satisfied prior to installing C3PacBio.  
+# Getting Started: Start to Finish ?????
 
 ## Program requirements are as follows:
 
- 1. Operating System Requirements: This program works best on a Linux Workstation OR a virtual machine using a Linux operating system. Ideally, BACON is installed on a fresh VM.  However, the setup.sh
-    command will scan your computer and ensure the program works properly. However, memory may become a challenge and the user needs to adjust the Nextflow to work within their workstation ecosystem.
-    BACON should work on a Mac, but I have not checked.  BACON will not work on Windows as the computing languages used to run this program are not the same. If you need to initiate the bash language i
-    If an Apple computer is being used, that is great but the directions herein will need to be modified to satisfiy the reuqirements of an Apple ecosystem. 
+ - **Operating System Requirements:** This program works best on a Linux Workstation OR a virtual machine using a Linux operating system.  If an Apple computer is being used, that is great but the directions herein will need to be modified to satisfy the requirements of an Apple ecosystem. 
     
- 2. Memory Requirements: Most standard computing systems (VMs, Linux Workstations) have this covered as of February 2026.
-    Minimum Harddrive: 1 TB (smaller if you have a smaller dataset but don't go below 500 GB)
-    Minimum Memory: 16 to 32 GB 
-  
- 3. Program dependencies:  Have a working Operating System. The setup.sh scans your system and ensures you have the necessary programs to give you complete control of your system.  Conda was chosen as
-    it is a lot easier to manage for people new to this kind of analysis and in ecosystems where data security is scrutinized, is easier. Once your setup.sh is executed, Nextflow will operate in the
-    folder where the file is initiated.
+	 - **Memory Requirements:** 16 to 32 GB
+    
+	 - **Minimum Harddrive:** 1 TB (smaller if you have a smaller dataset but
+   don't go below 500 GB)
+ 
+ - **Program dependencies:**  Have a working Operating System (Linux). 
+
+
+
+## Explanation of Dependencies  ??
+
+The shell file named "setup.sh" in the list of files at the top of this page does the following tasks: 
+
+ 1. Installs Nextflow ???????
+    	Why: Well, how else should it run? 
+ 2. Installs and Updates Javascript ??
+     Why: Nextflow has needs!
+ 3. Installs Conda ??
+     Why: Because Docker can be confusing for folks or present other challenges, so Nextflow uses Conda to manage the programs
+ 4. Installs R ??
+    	Why: BACON uses R for some of the work
+ 5. Installs R Studio ??
+     Why: If modifications to the files are needed, R Studio is much friendlier than R
+ 6. Installs GitHub Dependencies ??
+     Why: Easily pull and install BACON
+ 7. Installs the databases and unpacks them ???
+     Why: So the programs can run
+ 8. Makes everything executable (aka you can run the program) ??
+     	Why: We want the program to work. 
+  9. Pre-written conda environments ??
+       Why: Challenges must be overcome!  Some conda environments were not easily incorporated into Nextflow. 
+
+
+
+# Let's Go: Downloading and Running the Setup File and Modifying Nextflow Documents for Success?? ?.? ?????.? ??
+
+Using a fresh virtual machine, the setup.sh program takes about 1 to 4 hours.  The program automatically accepts the user agreements, downloads and unpacks databases, pulls the GIT repository, and downloads everything needed for a successful run as described above. 
+
    
-## Downloading setup.sh 
+## 1. Download: setup.sh 
 
 Follow these steps precisely: 
 
- 1. Download shell.sh or copy and paste it and save it in a text file as "startup.sh" **in the working directory you intend to work**.  
- 2. Make the shell program executable with the following command:
+ 1. Download shell.sh or copy and paste it and save it in a text file as "startup.sh" **in the working directory you intend to work**.   I like to see my files, so I typically navigate to my working directory as follows:
+ ```
+ cd Desktop
+ mkdir project
+ cd project 
+ ```
+ 
+ 3. Make the shell program executable with the following command:
     ```chmod -x shell.sh```
- 3. Execute the command. 
+ 4. Execute the command. 
      ```bash shell.sh ```
 
-**IMPORTANT:** The install system is fully automated and assumes that you accept the terms and conditions of every program that is downloading.  If you do not accept the terms and conditions, you cannot use the programs.  You will see a lot of stuff tick across the screen as the shell program executes.  This is normal.  So, go get some coffee, have a couple of meetings, and come back in 1 to 4 hours and be ready to work.  If an error shows up, please let me know in the QA section of this GitHub page and I'll figure something out.  
+**IMPORTANT:** The install system is fully automated and assumes that you accept the terms and conditions of every program that is downloading.  You will see a lot of stuff tick across the screen as the shell program executes.  This is normal.  So, go get some coffee or tea, have a couple of meetings, and come back in 1 to 4 hours and be ready to work.  If an error shows up, please let me know in the QA section of this GitHub page and I'll figure something out.  
 
-The shell will download BACON.
+The shell will automatically download BACON.
 
+Once the setup.sh file sets up, close the terminal and reopen it for the changes to take effect.  
 
-# Setup the Nextflow Program 
+Another shell file is downloaded with the git repository, called check.sh.  This program ensures that everything is set up properly.  
+
+??Pro Tip: Run this program twice!
+
+ 1. After the setup.sh
+ 2. After the modifications to Nextflow files
+ 
+ ```
+chmod -x check.sh 
+bash check.sh
+```
+
+??????Everything should pass.  If not, let me know on the discussion board after troubleshooting your files, paths, and syntax. ??????
+
+## 2. Modify the Nextflow Program Files
 The following steps set up the nextflow program once the setup.sh file completes its tasks.  There are modifications that will need to be made so they are listed below by document
 
-##nextflow.config
+### 1. nextflow.config
 The nextflow.config file is below.  The areas that need to be adjusted have a [BRACKET].  An example of a complete NEXTFLOW.CONFIG file is the one downloaded by setup.sh. 
+
+#### ?? Determine the computational power of your system:
+```
+lscpu  ## This tells you how many CPUs and cores you have onboard ##
+free -h ## This tells you your available memory, used, and total ##
+vmstat 12  ## Another way to tell how much memory a computer has
+```
+Use this information provided by the output in your terminal to modify the computing resources
+
+??Pro Tip: Take the total memory and divide it by a comfortable number.  If there are 32 GB of RAM and there are 20 samples to process, find a comfortable number like 4 and divide the total RAM available by that number (in our case 8 GB).  That number will become your **MAX** memory useage per sample for the high demand process.  Then, taper off similar to what was done in the example file for the medium and low level processes.  For time, think about how many samples need to run and give your program time to run.  
+
+#### ?? Directories are set by the user
+The setup.sh file will start from your root directory and download the databases and other files there.  Ahead of executing startup.sh, ensures the working directory is where everything is downloading and fully accessible by the user.  Copy and paste the directory path for the missing directories below (don't forget the ') 
+
+### ?? Microbial information is provided by the user
+???? PantherDB: https://pantherdb.org/validateHuman.jsp
+?? NCBI Taxonomy Browser: https://www.ncbi.nlm.nih.gov/taxonomy
+These databases will help you identify all of the information below specific to your bug of interest.  
 
 ```
 conda.enabled = true
@@ -146,10 +176,11 @@ multiqc {
 
 How do I know my memory?  Run this command:
 
-```
-vmstat 1 2
-```
+
 I always make sure that I have the target number of sequences that I want to process (say 3 at a time) and use that number to divide by the available memory.  The longer your program runs, the more time you will want to aliquot. 
+## 2. The Module File Changes
+Each module has the file extension 'nf'.  BACON is designed to be modular, which enables users to possibly modify whether or not specific modules are executed.  Because each program that the system uses is unique, changes may need to occur within the nf files.  The files listed below are the only ones that require a change.  At any time, users can modify the code within each process to satisfy their needs.  
+
 
 ## Working Directory File Structure
 
@@ -158,22 +189,26 @@ Make sure the directory (or folder) you want to have your files created in is yo
 The directories (files) should be ordered as follows: 
 
 Project/
-??? main.nf
-??? nextflow.config
-??? envs/
-??? modules/
-??? asset/
-??? databases/
+--- main.nf
+-- nextflow.config
+-- envs/
+-- modules/
+-- asset/
+-- databases/
 
-
-You will want to navigate to that directory and execute exactly this code (again assuming it is on the desktop)
+A directory is missing!  The inputs directory needs to be created.  
 ```
    cd ./Desktop/Project
    mkdir inputs
   ```  
-Now, take your unaligned bam files and drop them into the inputs folder.  Do not change the names of the folders.  
 
-## Public Repository Data Mining/Scraping
+Drop the unaligned bam files and drop them into the inputs folder.  
+
+??Pro Tip: Do not change the names of the folders or mess with anything not specifically defined in the setup directions.  
+
+
+
+## OPTIONS: Public Repository Data
 Most files you get from NCBI are going to be fastq.  So, the shell file in the folder named 'getsra.sh' is geared towards doing just that.  C3PacBio will not process straight fastq files so instead that program will convert the fastq to an unaligned bam file after downloading it.  I have noticed that occasionally if the files are large that the files time out.  Get an idea of the size of the files from NCBI prior to downloading them with the sh file and if the files are not appropriately sized, redownload them one by one or manually (see the documentation inside the shell file).  
 
 Also, don't assume the files from public repositories are well executed by the depositor.  You can read more about that here: https://pubmed.ncbi.nlm.nih.gov/32398145/
