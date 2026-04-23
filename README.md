@@ -157,14 +157,14 @@ Make sure the directory (or folder) you want to have your files created in is yo
 
 The directories (files) should be ordered as follows: 
 
-Desktop (already exists, don't add this directory the rest should be part of the repository)
--Project
---main.nf
---nextflow.config
---envs (this is where your conda environments will be housed)
---modules (this is where your modules are located that you can adjust if need be)
---asset (if you are running only one sample)
---databases
+Project/
+??? main.nf
+??? nextflow.config
+??? envs/
+??? modules/
+??? asset/
+??? databases/
+
 
 You will want to navigate to that directory and execute exactly this code (again assuming it is on the desktop)
 ```
