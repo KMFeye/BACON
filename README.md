@@ -10,21 +10,23 @@ Of note, the views expressed on this GitHub are personal and do not reflect any 
 
 # Key Features
 
- - Automated Setup: A single setup.sh script installs all dependencies and downloads required databases. 
+ - Automated Setup: A single setup.sh script installs all dependencies and downloads required databases
  - User-Friendly: Interactive prompts for key parameters like genome size and coverage
  - High-Performance: Optimized for parallel execution on multi-core scientific workstations
- - Comprehensive Annotation: Integrates a suite of best-in-class tools for a deep biological understanding of the sample or sample. 
+ - Comprehensive Annotation: Integrates a suite of best-in-class tools for a deep biological understanding of the sample or sample
  - Can process 1 to 100 samples without modifications to the pipeline
  - If applicable, pangenomics and GWAS analyses are performed
  - Reproducibility: All software dependencies are explicitly managed by Nextflow and    
-   Conda, guaranteeing a consistent environment.
+   Conda, guaranteeing a consistent environment
+
+# Getting Started: The Download 
 
 # Downloading and Installing C3PacBio with Dependencies
 
 The program titled shell.sh in the list of files at the top of this page does the following tasks: 
 
  1. Installs Nextflow
-    	Why: Well, how else should it run? :)
+    	Why: Well, how else should it run? 
  3. Installs and Updates Javascript
      Why: Nextflow needs this
  5. Installs Conda
@@ -40,20 +42,14 @@ The program titled shell.sh in the list of files at the top of this page does th
  16. Makes everything executable (aka you can run the program).
      	Why: We want the program to work. 
 
-Once the setup.sh file sets up, close the terminal and reopen it for the changes to take effect.  If you want to doublecheck, go through the preflight checklist ✈️:
+Once the setup.sh file sets up, close the terminal and reopen it for the changes to take effect.  If you want to doublecheck, go through the check ✈️:
+
 ``` 
-bash preflightcheck.sh
+bash check.sh
 ```
+Everything should pass.  If not, let me know on the discussion board. 
 
-If you're satisfied, navigate to your desired working directory and go 🏃‍♀️  If there is an issue, let me know on the discussion board. 
-
-### ⚠️ If the computer that is running the analysis is used for multiple programs, there should not be any redundancy (aka the programs won't download multiple times).  But, the available memory available on your system to use this program may be reduced. This program works best on a fresh instance (virtual machine) or a scientific workstation dedicated to data analysis that has the full memory of the system available to the Nextflow.  If multiple users have access to a computer, each user is usually given a piece of the memory pie.  So, check your free RAM and memory with the following command and adjust accordingly;
-
-```
-vmstat 1 2
-```
-
-# Setup the Setup file
+# Setup Requirements and Automatic Dowwnload
 
 From start to finish, on a naive (or uninstalled) system, it takes about 1 to 2 hours if there is a good internet connection.   
 
@@ -61,29 +57,103 @@ So how do you use the setup file (setup.sh) file?  First, you need to make sure 
 
 ## Program requirements are as follows:
 
- 1. You are using an Apple Desktop or a Linux Workstation OR a cloud using a Linux operating system.  This program will not work on Windows as the computing languages used to run this program are not the same. If you need to initiate the bash language in terminal (Apple) ahead of the installation program's execution (setup.sh), the command should just be:
-    ```bash```
-    This should not be necessary for Linux.
- 3. You have enough memory to run this program.  Most standard computing systems (Apple Desktop, Linux Workstations) have this covered as of February 2026.  But, if you use the computer for other tasks, you'll want to make sure there is enough harddrive present to analyze the massive files.  If you are using the SRA download option, the burdeon isn't as massive.  But, if you are using HiFi BAM files, you are looking at between 50 and 100 GB per file.  Your output will not come close to that (about 5 GB per file) but if you expect it to run, you need to have hard drive (at least 500 GB if you have 3 files to run (HiFi BAM)), 16 to 32 GB of memory, and 500 GB of RAM.  
- 4. The setup.sh scans your system and ensures you have the necessary programs to give you complete control of your system.  Conda was chosen as it is a lot easier to manage for people new to this kind of analysis and in ecosystems where data security is scrutinized, is easier.  The file that downloads works with Linux, it does not work with Apple.  That file download will need to change.
- 5. Once your setup.sh is executed, Nextflow will operate in the folder where the file is initiated.  If you don't like that, set your path. 
-
-So, how does this work?  What do I do? 
+ 1. Operating System Requirements: This program works best on a Linux Workstation OR a virtual machine using a Linux operating system. Ideally, BACON is installed on a fresh VM.  However, the setup.sh
+    command will scan your computer and ensure the program works properly. However, memory may become a challenge and the user needs to adjust the Nextflow to work within their workstation ecosystem.
+    BACON should work on a Mac, but I have not checked.  BACON will not work on Windows as the computing languages used to run this program are not the same. If you need to initiate the bash language i
+    If an Apple computer is being used, that is great but the directions herein will need to be modified to satisfiy the reuqirements of an Apple ecosystem. 
+    
+ 2. Memory Requirements: Most standard computing systems (VMs, Linux Workstations) have this covered as of February 2026.
+    Minimum Harddrive: 1 TB (smaller if you have a smaller dataset but don't go below 500 GB)
+    Minimum Memory: 16 to 32 GB 
+  
+ 3. Program dependencies:  Have a working Operating System. The setup.sh scans your system and ensures you have the necessary programs to give you complete control of your system.  Conda was chosen as
+    it is a lot easier to manage for people new to this kind of analysis and in ecosystems where data security is scrutinized, is easier. Once your setup.sh is executed, Nextflow will operate in the
+    folder where the file is initiated.
+   
+## Downloading setup.sh 
 
 Follow these steps precisely: 
 
- 1. Download shell.sh or copy and paste it and save it in a text file as "shell.sh" **in the working directory you intend to work**.  If you save it as shell.txt, you will have problems. If you mess around with your working directories, you'll be unhappy. 
+ 1. Download shell.sh or copy and paste it and save it in a text file as "startup.sh" **in the working directory you intend to work**.  
  2. Make the shell program executable with the following command:
     ```chmod -x shell.sh```
  3. Execute the command. 
      ```bash shell.sh ```
 
-**IMPORTANT:** The install system is fully automated and assumes that you accept the terms and conditions of every program that is downloading.  If you do not accept the terms and conditions, you cannot use the programs.  That is a you problem, not a me problem.  So, make your choices as you make them, ensure you're following company policies with data security, and relax.  You will see a lot of stuff tick across the screen as the shell program executes.  This is normal.  So, go get some coffee, have a couple of meetings, and come back in 2 to 4 hours and be ready to work.  If an error shows up, please let me know in the QA section of this GitHub page and I'll figure something out. 
+**IMPORTANT:** The install system is fully automated and assumes that you accept the terms and conditions of every program that is downloading.  If you do not accept the terms and conditions, you cannot use the programs.  You will see a lot of stuff tick across the screen as the shell program executes.  This is normal.  So, go get some coffee, have a couple of meetings, and come back in 1 to 4 hours and be ready to work.  If an error shows up, please let me know in the QA section of this GitHub page and I'll figure something out.  
+
+The shell will download BACON.
 
 
 # Setup the Nextflow Program 
+The following steps set up the nextflow program once the setup.sh file completes its tasks.  There are modifications that will need to be made so they are listed below by document
 
-Make sure the directory (or file) you want to have your files created in and deposited into is the file termed as your "working directory".  Make sure your project directory is in the paths identified in the files.  The big issue is that Nextflow only puts things where it puts them based on the program that is already written.  So, if the outputs (in the nextflow.config) do not match your file path, nextflow may get confused and crash. 
+##nextflow.config
+The nextflow.config file is below.  The areas that need to be adjusted have a [BRACKET].  An example of a complete NEXTFLOW.CONFIG file is the one downloaded by setup.sh. 
+
+```
+conda.enabled = true
+conda.cacheDir = "${projectDir}/conda"
+
+executor {
+    name = 'local'
+    cpus = [DETERMINE]
+    memory = [MAX MEMORY DETERMINED]
+}
+
+
+params {
+    input_bam             = 'inputs/*.bam'
+    bakta_db              = [SET DIRECTORY]
+    platon_db             = [SET DIRECTORY]
+    kraken2_db_path       = [SET DIRECTORY]
+    outdir                = "${projectDir}/results"
+    genome_size           = [DETERMINE AND WRITE IT LIKE THIS...'SIZE m']
+    coverage              = 100 
+    target_taxid          = [LOOK UP AT THIS SITE: https://www.ncbi.nlm.nih.gov/taxonomy]
+    traits_file           = "${projectDir}/metadata.csv"
+    tree_color_column     = 'sequence_type'
+    panther_organism      = [NAME OF ORGANISM, VALIDATE ON PANTHER THAT IT IS THERE]
+    panther_annot_dataset = 'GO:0008150' [YOU CAN CHANGE THIS IF YOU WANT]
+    rbioapi_organism_id   = [LOOK THIS UP]
+    rbioapi_annot_dataset = 'GO:0008150' [YOU CAN CHANGE THIS IF YOU WANT]
+}
+
+process {
+    // --- Default Resources ---
+    cpus   = 4
+    memory = '8 GB'
+    time   = '122h'
+
+    // --- Resource Labels ---
+    withLabel: 'process_low'    { cpus = 2;  memory = '4 GB';   time = '48h'  } [ADJUST IF YOU NEED TO, THIS IS OPTIMIZED FOR 32 GB RAM AND 1 TB HD]
+    withLabel: 'process_medium' { cpus = 8;  memory = '32 GB';  time = '48h'  } [ADJUST IF YOU NEED TO, THIS IS OPTIMIZED FOR 32 GB RAM AND 1 TB HD]
+    withLabel: 'process_high'   { cpus = 12; memory = '120 GB'; time = '122h' } [ADJUST IF YOU NEED TO, THIS IS OPTIMIZED FOR 32 GB RAM AND 1 TB HD]
+}
+
+// --- Reporting ---
+report.overwrite   = true
+timeline.overwrite = true
+trace.overwrite    = true
+dag.overwrite      = true
+
+// --- Tool-specific configs ---
+multiqc {
+    files_ignore = ['work', '.nextflow', 'nextflow.config']
+}
+```
+
+
+How do I know my memory?  Run this command:
+
+```
+vmstat 1 2
+```
+I always make sure that I have the target number of sequences that I want to process (say 3 at a time) and use that number to divide by the available memory.  The longer your program runs, the more time you will want to aliquot. 
+
+## Working Directory File Structure
+
+Make sure the directory (or folder) you want to have your files created in is your "working directory".  Make sure your project directory is in the paths identified in the files.  The big issue is that Nextflow only puts things where it puts them based on the program that is already written.  So, if the outputs (in the nextflow.config) do not match your file path, nextflow may get confused and crash. 
 
 The directories (files) should be ordered as follows: 
 
@@ -93,15 +163,15 @@ Desktop (already exists, don't add this directory the rest should be part of the
 --nextflow.config
 --envs (this is where your conda environments will be housed)
 --modules (this is where your modules are located that you can adjust if need be)
---asset
+--asset (if you are running only one sample)
+--databases
 
 You will want to navigate to that directory and execute exactly this code (again assuming it is on the desktop)
 ```
    cd ./Desktop/Project
    mkdir inputs
-  ```
-  
-Now, take your unaligned bam files and drop them into the inputs folder.  Do not change the names of the folders.  I know inputs seems silly but here we are. 
+  ```  
+Now, take your unaligned bam files and drop them into the inputs folder.  Do not change the names of the folders.  
 
 ## Public Repository Data Mining/Scraping
 Most files you get from NCBI are going to be fastq.  So, the shell file in the folder named 'getsra.sh' is geared towards doing just that.  C3PacBio will not process straight fastq files so instead that program will convert the fastq to an unaligned bam file after downloading it.  I have noticed that occasionally if the files are large that the files time out.  Get an idea of the size of the files from NCBI prior to downloading them with the sh file and if the files are not appropriately sized, redownload them one by one or manually (see the documentation inside the shell file).  
