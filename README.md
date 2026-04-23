@@ -1,25 +1,21 @@
-# C3PacBio
-# A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files
+# BACON (Bacterial Analysis Comprehensive Nextflow) 🥓 
+# A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files and Downloaded SRA Files
 
 Welcome!  Are you new to PacBio and struggle to manage massive data files? Do graphical user interfaces (GUI) websites lead to additional challenges due to the sheer size of PacBio files?  Do you want more opportunities to personalize your workflow with program settings that interest you?  Do you love automated figure generation but still want to pick the colors and tailor the output to your target journal?  
 
-Hello!  In walks C3PacBio, a Nextflow pipeline developed to make massive files easier to manage and provide common analyses for Microbial Genomics in an ecosystem that hates big files.  
+Hello!  In walks BACON, a Nextflow pipeline developed to make massive files easier to manage and provide common analyses for Microbial Genomics in an ecosystem that hates big files.  
+
 
 Of note, the views expressed on this GitHub are personal and do not reflect any other viewpoints or endorsements of any organization or entity.  
 
-So, let's get to it!
-
 # Key Features
 
- - Automated Setup: A single setup.sh script installs all dependencies and downloads    
-   required databases. 
- - User-Friendly: Interactive prompts for key parameters like genome size and coverage.
- - High-Performance: Optimized for parallel execution on multi-core workstations.
- - Comprehensive Annotation: Integrates a suite of best-in-class tools for a deep  
-    biological understanding of the sample or sample. 
-- Can process 1 to 100 samples without modifications to the pipeli
- - If applicable, pangenomics and GWAS analyses are performe
-    genomic analysis.
+ - Automated Setup: A single setup.sh script installs all dependencies and downloads required databases. 
+ - User-Friendly: Interactive prompts for key parameters like genome size and coverage
+ - High-Performance: Optimized for parallel execution on multi-core scientific workstations
+ - Comprehensive Annotation: Integrates a suite of best-in-class tools for a deep biological understanding of the sample or sample. 
+ - Can process 1 to 100 samples without modifications to the pipeline
+ - If applicable, pangenomics and GWAS analyses are performed
  - Reproducibility: All software dependencies are explicitly managed by Nextflow and    
    Conda, guaranteeing a consistent environment.
 
@@ -30,22 +26,29 @@ The program titled shell.sh in the list of files at the top of this page does th
  1. Installs Nextflow
     	Why: Well, how else should it run? :)
  3. Installs and Updates Javascript
-        Why: Nextflow needs this
+     Why: Nextflow needs this
  5. Installs Conda
-        Why: Because Docker can be confusing for folks, so conda is managing everything
+     Why: Because Docker can be confusing for folks, so conda is managing everything
  7. Installs R
     	Why: C3PacBio uses R for some of the work
  9. Installs R Studio
-     	Why: Easy user interface!!  If modifications to the files are needed, R Studio is much friendlier
+     Why: Easy user interface!!  If modifications to the files are needed, R Studio is much friendlier
  11. Installs GitHub Dependencies
-     	Why: So you can get this repository and run the program!
+     Why: So you can get this repository and run the program!
  14. Installs the databases and unpacks them
-     	Why: So the programs can run, make sure the paths in the setup file and the nextflow.config file match.  
+     Why: So the programs can run, make sure the paths in the setup file and the nextflow.config file match.  
  16. Makes everything executable (aka you can run the program).
      	Why: We want the program to work. 
 
-Once the setup.sh file sets up, close the terminal and reopen it.  Navigate to your desired working directory and go.
-### A fair warning, if the computer is used for multiple programs, there should not be any redundency (aka the programs won't download multiple times).  But, the available memory available on your system to use this program may be reduced. This program works best on a fresh instance (virtual machine) or a scientific workstation dedicated to data analysis that has the full memory of the system avaialble to the Nextflow.  If multiple users have access to a computer, each user is usually given a piece of the memory pie.  So, check your free RAM and memory with the following command and adjust accordingly;
+Once the setup.sh file sets up, close the terminal and reopen it for the changes to take effect.  If you want to doublecheck, go through the preflight checklist ✈️:
+``` 
+bash preflightcheck.sh
+```
+
+If you're satisfied, navigate to your desired working directory and go 🏃‍♀️  If there is an issue, let me know on the discussion board. 
+
+### ⚠️ If the computer that is running the analysis is used for multiple programs, there should not be any redundancy (aka the programs won't download multiple times).  But, the available memory available on your system to use this program may be reduced. This program works best on a fresh instance (virtual machine) or a scientific workstation dedicated to data analysis that has the full memory of the system available to the Nextflow.  If multiple users have access to a computer, each user is usually given a piece of the memory pie.  So, check your free RAM and memory with the following command and adjust accordingly;
+
 ```
 vmstat 1 2
 ```
