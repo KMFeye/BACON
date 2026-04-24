@@ -1,9 +1,7 @@
 # BACON (Bacterial Analysis Comprehensive Nextflow) :bacon: ????
 # A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files and Downloaded SRA Files
 
-Welcome!  Are you new to PacBio and struggle to manage massive data files? Do graphical user interfaces (GUI) websites lead to additional challenges due to the sheer size of PacBio files?  Do you want more opportunities to personalize your workflow with settings you can tailor to your bacteria of interest?  Do you love automated figure generation but still want to pick the colors and tailor the output to your target journal or do the work yourself all together?  
-
-Hello!  In walks BACON, a Nextflow pipeline developed to make massive files easier to manage and provide common analyses for Microbial Genomics in an ecosystem that hates big files.  
+Hello!  Welcome to BACON, a Nextflow pipeline developed to make massive files produced by PacBio sequencers simpler to manage.  The BACON sizzles and provides detailed analyses for Microbial Genomics from heterologous sources with limited resources and outputs concatenated and cleaned CSV files, figures, and tables. 
 
 ??Of note, the views expressed on this GitHub are personal and do not reflect any other viewpoints or endorsements of any organization or entity.  
 
@@ -15,12 +13,21 @@ Hello!  In walks BACON, a Nextflow pipeline developed to make massive files easi
  - ??Comprehensive Annotation: Integrates a suite of best-in-class tools for a deep biological understanding of the sample or sample
  - ?? High-Throughput: Processes 1 to 100 samples without modifications to the pipeline provided the computer has the power to do the work 
  - ??Easy to manage: All software dependencies are explicitly managed by Nextflow and    Conda, guaranteeing a consistent environment
+ 
+ # Best Practices ?
+ ?? While not mandatory nor standard practice, run this pipeline with the sample data provided in the original files pulled from this repository.  Make sure it works for your system
+ ?? A control is always a good idea.  Either process one file first in the batch and compare it to the output of that file plus the other files, or find some sort of reference file to use.  If any modifications to the pipeline are conducted, this will help track whether or not the output improves or not. 
+ ?? If you have a question, post it in the Discussions section of this github.
+ ?? Don't try to manipulate the file names, tulpes, or any of that code.  Data inputs/outputs are super tricky and can cause the whole thing to crash.
+ ?? If it doesn't work, the first thing to check is whether or not the path is set, the terminal was closed and re-opened, and if the paths in the configuration file (nextflow.config) are accurate. 
+ ?? If the program drops off, the first thing to check is memory availability (time specifically). 
+ ?? Cite the pipeline (see the end of the readme file!)
 
 # Getting Started: Start to Finish ?????
 
 ## Program requirements are as follows:
 
- - **Operating System Requirements:** This program works best on a Linux Workstation OR a virtual machine using a Linux operating system.  If an Apple computer is being used, that is great but the directions herein will need to be modified to satisfy the requirements of an Apple ecosystem. 
+ - **Operating System Requirements:** This program works best on a Linux Workstation or a virtual machine using a Linux operating system.  If an Apple computer is being used, that is great but the directions herein will need to be modified to satisfy the requirements of an Apple ecosystem. 
     
 	 - **Memory Requirements:** 16 to 32 GB
     
@@ -31,37 +38,25 @@ Hello!  In walks BACON, a Nextflow pipeline developed to make massive files easi
 
 
 
-## Explanation of Dependencies  ??
+## Self-Installing Dependencies  ??
 
-The shell file named "setup.sh" in the list of files at the top of this page does the following tasks: 
+The shell file named "setup.sh" in the list of files in the git repository pull will scan the system it is downloaded to upon execution and ensure the following dependencies are available: 
 
- 1. Installs Nextflow ???????
-    	Why: Well, how else should it run? 
+ 1. Installs Nextflow ??????? 
  2. Installs and Updates Javascript ??
-     Why: Nextflow has needs!
  3. Installs Conda ??
-     Why: Because Docker can be confusing for folks or present other challenges, so Nextflow uses Conda to manage the programs
  4. Installs R ??
-    	Why: BACON uses R for some of the work
  5. Installs R Studio ??
-     Why: If modifications to the files are needed, R Studio is much friendlier than R
- 6. Installs GitHub Dependencies ??
-     Why: Easily pull and install BACON
+ 6. Installs GitHub Dependencies and BACON ??
  7. Installs the databases and unpacks them ???
-     Why: So the programs can run
  8. Makes everything executable (aka you can run the program) ??
-     	Why: We want the program to work. 
-  9. Pre-written conda environments ??
-       Why: Challenges must be overcome!  Some conda environments were not easily incorporated into Nextflow. 
+  
 
-
-
-# Let's Go: Downloading and Running the Setup File and Modifying Nextflow Documents for Success?? ?.? ?????.? ??
+## Let's Go: Downloading and Running the Setup File and Modifying Nextflow Documents for Success?? ?.? ?????.? ??
 
 Using a fresh virtual machine, the setup.sh program takes about 1 to 4 hours.  The program automatically accepts the user agreements, downloads and unpacks databases, pulls the GIT repository, and downloads everything needed for a successful run as described above. 
-
    
-## 1. Download: setup.sh 
+### 1. Download: setup.sh 
 
 Follow these steps precisely: 
 
@@ -97,13 +92,13 @@ bash check.sh
 
 ??????Everything should pass.  If not, let me know on the discussion board after troubleshooting your files, paths, and syntax. ??????
 
-## 2. Modify the Nextflow Program Files
+### 2. Modify the Nextflow Program Files
 The following steps set up the nextflow program once the setup.sh file completes its tasks.  There are modifications that will need to be made so they are listed below by document
 
-### 1. nextflow.config
+#### nextflow.config
 The nextflow.config file is below.  The areas that need to be adjusted have a [BRACKET].  An example of a complete NEXTFLOW.CONFIG file is the one downloaded by setup.sh. 
 
-#### ?? Determine the computational power of your system:
+##### 1. ?? Determine the computational power of your system:
 ```
 lscpu  ## This tells you how many CPUs and cores you have onboard ##
 free -h ## This tells you your available memory, used, and total ##
@@ -113,10 +108,10 @@ Use this information provided by the output in your terminal to modify the compu
 
 ??Pro Tip: Take the total memory and divide it by a comfortable number.  If there are 32 GB of RAM and there are 20 samples to process, find a comfortable number like 4 and divide the total RAM available by that number (in our case 8 GB).  That number will become your **MAX** memory useage per sample for the high demand process.  Then, taper off similar to what was done in the example file for the medium and low level processes.  For time, think about how many samples need to run and give your program time to run.  
 
-#### ?? Directories are set by the user
+##### 2. ?? Directories are set by the user
 The setup.sh file will start from your root directory and download the databases and other files there.  Ahead of executing startup.sh, ensures the working directory is where everything is downloading and fully accessible by the user.  Copy and paste the directory path for the missing directories below (don't forget the ') 
 
-#### ?? Microbial information is provided by the user
+##### 3.  ?? Microbial information is provided by the user
 ???? PantherDB: https://pantherdb.org/validateHuman.jsp
 ?? NCBI Taxonomy Browser: https://www.ncbi.nlm.nih.gov/taxonomy
 These databases will help you identify all of the information below specific to your bug of interest.  
@@ -174,15 +169,15 @@ multiqc {
 ```
 
 
-How do I know my memory?  Run this command:
 
 
-I always make sure that I have the target number of sequences that I want to process (say 3 at a time) and use that number to divide by the available memory.  The longer your program runs, the more time you will want to aliquot. 
 
-### 2. The Module File Changes
-Each module has the file extension 'nf'.  BACON is designed to be modular, which enables users to possibly modify whether or not specific modules are executed.  Because each program that the system uses is unique, changes may need to occur within the nf files.  The files listed below are the only ones that require a change.  At any time, users can modify the code within each process to satisfy their needs.  
+#### The Module File Changes
+The BACON is modularized, which makes the Nextflow program easier to manage.  All modular files have the file extension `nf` and are in the `./modules` directory.  
 
-Modify: **IndexClean.nf**
+Because each program that the system uses is unique, changes may need to occur within the nf files.  The files listed below are the only ones that require a change.  At any time, users can modify the code within each process to satisfy their needs.  
+
+**Modify:** **IndexClean.nf**
 Go to ncbi and find a reference genome for the bacterial species BACON will analyze.  Copy the .fna.gz link and replace the link in the process file.  For visualizaiton purposes, the brackets are displayed below but an example of the link is included in the real IndexClean.nf file downloaded with the repository. 
 ```
 process DOWNLOAD_BACTERIAL_REFERENCE {
@@ -197,7 +192,7 @@ process DOWNLOAD_BACTERIAL_REFERENCE {
     """
 }
 ```
-**Modify**: Circularizeassemble.nf
+**Modify**: **Circularizeassemble.nf**
 Busco has a general bacteria database called in the program.  If you want a more specific database, please feel free to update it. 
 
 ```
@@ -218,7 +213,7 @@ process BUSCO {
 }
 ```
 
-### 3. Working Directory File Structure
+#### Working Directory File Structure
 
 Make sure the directory (or folder) you want to have your files created in is your "working directory".  Make sure your project directory is in the paths identified in the files.  The big issue is that Nextflow only puts things where it puts them based on the program that is already written.  So, if the outputs (in the nextflow.config) do not match your file path, nextflow may get confused and crash. 
 
@@ -240,22 +235,24 @@ A directory is missing!  The inputs directory needs to be created.
 
 Drop the unaligned bam files and drop them into the inputs folder.  
 
-??Pro Tip: Do not change the names of the folders or mess with anything not specifically defined in the setup directions.  
+??Pro Tip: Do not change the names of the folders or mess with anything not specifically defined in the setup directions. 
 
 
-### 4. OPTIONS: Public Repository Data
+#### OPTIONS: Data from Public Repositories
 
 NCBI files will either download as raw bam files or fastq files.  BACON will not process fastq files directly.  
 
 Don't assume the files from public repositories are well executed by the depositor.  You can read more about that here: https://pubmed.ncbi.nlm.nih.gov/32398145/,  Make sure that any file you receive goes through the full QAQC protocol delineated in the script included with this repository named "CodeForPaperValidation".  This markdown details the work for one vs. multiple SRA files, validation, and conversion of said files so BACON can analyze the data.  
 
-# Running Nextflow: The Main Event ??
+## 3. Running Nextflow: The Main Event ??
 
-After you've checked your file paths, added the necessary information (and replaced the placeholders I have and deated the # symbols where I signal you to add in your information), BACON should be ready to sizzle ??.  The following command will execute the Nextflow and provide you metrics for the run:
+After you've checked your file paths, added the necessary information, made sure any syntax meant to signal a change ([Example]) is gone, BACON should be ready to sizzle ?? ??.  The following command will execute the Nextflow and output  metrics for the run:
 
 ```
 $nextflow run main.nf -with-report report.html -with-timeline timeline.html -with-trace trace.txt 
 ```
+Of course, leaving off the  `-with-report report.html -with-timeline timeline.html -with-trace trace.txt ` is fine, but then the run metrics will not print. 
+
 If successful, something like this will appear...
 ```
  N E X T F L O W   ~  version 25.10.4
@@ -286,425 +283,38 @@ executor >  local (6)
 [-        ] MULTIQC                        -
 [-        ] GENERATE_FINAL_REPORT          -
 ```
-As the process runs, the 0% will become 100%.  A "work" and a "results" folder will generate, as well as a summarize folder and a folder PER sequence you're analyzing.  At any time, you can run the following command to make sure the programs are running in a new terminal window:
+As the process runs, the 0% will become 100%.  A "work" and a "results" folder will generate, as well as a summarize folder and a folder PER sequence you're analyzing.  At any time, the following command can be executed in a separate terminal to determine whether or not the program is running.
 ```
 htop
 ```
- If you see randomness as an output, the first thing you should do is: 
+ If you see randomness as an output or lots of "0"s, the first thing you should do is: 
 
 1) Check your file paths
 2) Check your working directory
 3) Check your downloads (fna file)
 4) Make sure your inputs are unaligned bam files
 
-If anything else happens, message me. 
-
-If you see python or conda or the actual programs execute, you know the system is working.  If there are a lot of 0's, the program is hung up somewhere.  In that event, kill the process and restart it. 
-
-# ?? BACON ??Pipeline Steps & Tools Used
-<![endif]-->
-
-# BACON (Bacterial Analysis Comprehensive Nextflow) :BACON:
-
-# A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files
-
-Welcome!  Are you new to PacBio and struggle to manage massive data files? Do graphical user interfaces (GUI) websites lead to additional challenges due to the sheer size of PacBio files?  Do you want more opportunities to personalize your workflow with program settings that interest you?  Do you love automated figure generation but still want to pick the colors and tailor the output to your target journal?
-
-Hello!  In walks BACON, a Nextflow pipeline developed to make massive files easier to manage and provide common analyses for Microbial Genomics in an ecosystem that hates big files.
-
-Of note, the views expressed on this GitHub are personal and do not reflect any other viewpoints or endorsements of any organization or entity.
-
-So, let's get to it!
-
-# Key Features
-
-- Automated Setup: A single setup.sh script installs all dependencies and downloads
-
-required databases.
-
-- User-Friendly: Interactive prompts for key parameters like genome size and coverage.
-
-- High-Performance: Optimized for parallel execution on multi-core workstations.
-
-- Comprehensive Annotation: Integrates a suite of best-in-class tools for a deep
-
-biological understanding of the sample or sample.
-
-- Can process 1 to 100 samples without modifications to the pipeli
-
-- If applicable, pangenomics and GWAS analyses are performe
-
-genomic analysis.
-
-- Reproducibility: All software dependencies are explicitly managed by Nextflow and
-
-Conda, guaranteeing a consistent environment.
-
-# Downloading and Installing BACON with Dependencies
-
-The program titled shell.sh in the list of files at the top of this page does the following tasks:
-
-1. Installs Nextflow
-
-Why: Well, how else should it run? :)
-
-3. Installs and Updates Javascript
-
-Why: Nextflow needs this
-
-5. Installs Conda
-
-Why: Because Docker can be confusing for folks, so conda is managing everything
-
-7. Installs R
-
-Why: BACON uses R for some of the work
-
-9. Installs R Studio
-
-Why: Easy user interface!!  If modifications to the files are needed, R Studio is much friendlier
-
-11. Installs GitHub Dependencies
-
-Why: So you can get this repository and run the program!
-
-14. Installs the databases and unpacks them
-
-Why: So the programs can run, make sure the paths in the setup file and the nextflow.config file match.
-
-16. Makes everything executable (aka you can run the program).
-
-Why: We want the program to work.
-
-Once the setup.sh file sets up, close the terminal and reopen it.  Navigate to your desired working directory and go.
-
-### A fair warning, if the computer is used for multiple programs, there should not be any redundancy (aka the programs won't download multiple times).  But, the available memory available on your system to use this program may be reduced. This program works best on a fresh instance (virtual machine) or a scientific workstation dedicated to data analysis that has the full memory of the system available to the Nextflow.  If multiple users have access to a computer, each user is usually given a piece of the memory pie.  So, check your free RAM and memory with the following command and adjust accordingly;
-
+A healthy output looks like this: 
 ```
+    0]   3]   6]   9]  12]  15]          18]  21]  24]  27]  30]  33]
+    1]   4]   7]  10]  13]  16]          19]  22]  25]  28]  31]  34]
+    2]   5]   8]  11]  14]  17]          20]  23]  26]  29]  32]  35]
+  Mem[|||||||||||||||||||||4.52G/68.7G] Tasks: 149, 888 thr, 0 kthr; 6 running
+  Swp[                           0K/0K] Load average: 4.28 4.55 4.33 
+                                        Uptime: 2 days, 05:59:27
 
-vmstat 1 2
-
+  [Main] [I/O]
+    PID USER       PRI  NI  VIRT   RES   SHR S  CPU%\u25bdMEM%   TIME+  Command
+1471768 dnanexus    18  -2 5039M  109M  6820 R 100.2  0.2  4h14:43 bcftools mpil
+1499352 dnanexus    18  -2 5029M 99.3M  6912 R 100.2  0.1  3h45:18 bcftools mpil
+1653161 dnanexus    18  -2 5006M 77720  6924 R 100.2  0.1  4:11.57 bcftools mpil
+1331235 dnanexus    18  -2 5038M  108M  6816 R  99.5  0.2  7h35:42 bcftools mpil
+1657772 dnanexus    18  -2 10332  6128  3564 R   3.9  0.0  0:02.97 htop
 ```
+It goes on and on and on and updates all the time. 
 
-# Setup the Setup file
+If you see python or conda or the actual programs execute, you know the system is working.  In this instance, bcftools is currently running, taking up 100.2% x 3 CPUS plus 99.5% CPUS, as is htop and other prgrams below.  So, it is running! If there are a lot of 0's, the program is hung up somewhere.  In that event, kill the process and restart it. 
 
-From start to finish, on a naive (or uninstalled) system, it takes about 1 to 2 hours if there is a good internet connection.
-
-So how do you use the setup file (setup.sh) file?  First, you need to make sure your system has some very basic requirements satisfied prior to installing BACON:
-
-## Program requirements are as follows:
-
-1. You are using an Apple Desktop or a Linux Workstation OR a cloud using a Linux operating system.  This program will not work on Windows as the computing languages used to run this program are not the same. If you need to initiate the bash language in terminal (Apple) ahead of the installation program's execution (setup.sh), the command should just be:
-
-```bash```
-
-This should not be necessary for Linux.
-
-3. You have enough memory to run this program.  Most standard computing systems (Apple Desktop, Linux Workstations) have this covered as of February 2026.  But, if you use the computer for other tasks, you'll want to make sure there is enough harddrive present to analyze the massive files.  If you are using the SRA download option, the burdeon isn't as massive.  But, if you are using HiFi BAM files, you are looking at between 50 and 100 GB per file.  Your output will not come close to that (about 5 GB per file) but if you expect it to run, you need to have hard drive (at least 500 GB if you have 3 files to run (HiFi BAM)), 16 to 32 GB of memory, and 500 GB of RAM.
-
-4. The setup.sh scans your system and ensures you have the necessary programs to give you complete control of your system.  Conda was chosen as it is a lot easier to manage for people new to this kind of analysis and in ecosystems where data security is scrutinized, is easier.  The file that downloads works with Linux, it does not work with Apple.  That file download will need to change.
-
-5. Once your setup.sh is executed, Nextflow will operate in the folder where the file is initiated.  If you don't like that, set your path.
-
-So, how does this work?  What do I do?
-
-Follow these steps precisely:
-
-1. Download shell.sh or copy and paste it and save it in a text file as "shell.sh" **in the working directory you intend to work**.  If you save it as shell.txt, you will have problems. If you mess around with your working directories, you'll be unhappy.
-
-2. Make the shell program executable with the following command:
-
-```chmod -x shell.sh```
-
-3. Execute the command.
-
-```bash shell.sh ```
-
-**IMPORTANT:** The install system is fully automated and assumes that you accept the terms and conditions of every program that is downloading.  If you do not accept the terms and conditions, you cannot use the programs.  That is a you problem, not a me problem.  So, make your choices as you make them, ensure you're following company policies with data security, and relax.  You will see a lot of stuff tick across the screen as the shell program executes.  This is normal.  So, go get some coffee, have a couple of meetings, and come back in 2 to 4 hours and be ready to work.  If an error shows up, please let me know in the QA section of this GitHub page and I'll figure something out.
-
-## Setup the Nextflow Program
-
-Make sure the directory (or file) you want to have your files created in and deposited into is the file termed as your "working directory".  Make sure your project directory is in the paths identified in the files.  The big issue is that Nextflow only puts things where it puts them based on the program that is already written.  So, if the outputs (in the nextflow.config) do not match your file path, nextflow may get confused and crash.
-
-The directories (files) should be ordered as follows:
-
-Desktop (already exists, don't add this directory the rest should be part of the repository)
-
--Project
-
---main.nf
-
---nextflow.config
-
---envs (this is where your conda environments will be housed)
-
---modules (this is where your modules are located that you can adjust if need be)
-
---asset
-
-You will want to navigate to that directory and execute exactly this code (again assuming it is on the desktop)
-
-```
-
-cd ./Desktop/Project
-
-mkdir inputs
-
-```
-
-Now, take your unaligned bam files and drop them into the inputs folder.  Do not change the names of the folders.  I know inputs seems silly but here we are.
-
-## Public Repository Data Mining/Scraping
-
-Most files you get from NCBI are going to be fastq.  So, the shell file in the folder named 'getsra.sh' is geared towards doing just that.  BACON will not process straight fastq files so instead that program will convert the fastq to an unaligned bam file after downloading it.  I have noticed that occasionally if the files are large that the files time out.  Get an idea of the size of the files from NCBI prior to downloading them with the sh file and if the files are not appropriately sized, redownload them one by one or manually (see the documentation inside the shell file).
-
-Also, don't assume the files from public repositories are well executed by the depositor.  You can read more about that here: https://pubmed.ncbi.nlm.nih.gov/32398145/
-
-Now, you have other options besides your files from your sequencing run, mainly harvesting data from public repositories.  The example for the publication uses SRA from NCBI, but others exist.  First, if you want to mass download SRA files that result from PacBio Sequencing, please navigate to the directory at the top of the page titled "Code for Paper" and find the file labeled "GettingData" and follow the directions to get that done.  It is well annotated and allows you to also check the quality of your freshly harvested sequences.
-
-# Prepping for your run by modifying your Nextflow files to support your analytical goals
-
-You need to get the link to download the GFF3 file and the FNA file for the reference data you will be using.  This is a *de novo* alignment.  However, for SNP analyses, you require a reference file.  You will also need to know the following information:
-
-1. How big is your intended genome?
-
-2. What do you like for sequencing depth?
-
-3. How powerful is your computer system?
-
-4. What is your desired GO analysis?
-
-5. Does Panther use your bacterial species or should you identify a reference species?
-
-6. What is your .fna.gz reference file for the SNP analyses?
-
-7. WHat is your strain identifier (4 digit number to ID your strain)
-
-A note on sequencing depth.  More is not better in the world of sequencing depth when it comes to bacterial genomics.  At a certain point, and with PacBio that can vary, increased depth decreases assembly quality and the likelihood of recovering plasmids.  The default is 100x and we subsample with Rasusa.  This gives a pretty high quality assembly and is documented to do just that (plus plasmids need our love too!).  So, do what makes you happy, but having 700x or 900x depth is not ideal in this instance.  Also, go through the programs.  If you'd like to increase some of the program commands, do so.  But, first train yourself using the data from the publication so you know the program runs.  If you change everything around before validating that the program runs, life is harder to troubleshoot.
-
-For your computer system, run the following command:
-
-```
-
-lscpu  ## This tells you how many CPUs and cores you have onboard ##
-
-free -h ## This tells you your available memory, used, and total ##
-
-```
-
-Now, this is important.  Your number one failure point will be memory.  In your nextflow.config file, you have code that looks like this:
-
-```
-
-executor {
-
-name = 'local'
-
-cpus = 36
-
-memory = '256GB'
-
-}
-
-process {
-
-cpus = 4
-
-memory = '8GB'
-
-time = '6h'
-
-withLabel: 'process_low' {
-
-cpus = 2
-
-memory = '4GB'
-
-time = '1h'
-
-}
-
-withLabel: 'process_medium' {
-
-cpus = 8
-
-memory = '32GB'
-
-time = '8h'
-
-}
-
-withLabel: 'process_high' {
-
-cpus = 12
-
-memory = '120GB'
-
-time = '48h'
-
-}
-
-}
-
-```
-
-This file is optimized to run 3 large files with 12 CPUS each and consume 80 GB of memory on the high process.  You can always increase the memory and you can play with the CPUs to make it work better.
-
-You will also need to deposit your reference sequence in the nextflow.config file.
-
-there are other modifications that must be made prior to starting across two separate files.  I have placeholders flanked by '###' that you need to modify.  Be sure to delete the '###' prior to starting the run.
-
-```
-
-params {
-
-input_bam  = 'inputs/*.bam'
-
-bakta_db  = "/home/dnanexus/databases/bakta_db/db"
-
-platon_db  = "/home/dnanexus/databases/pdb/db"
-
-kraken2_db_path  = "/home/dnanexus/databases/kraken_db"
-
-outdir  = "${projectDir}/results"
-
-genome_size  = ## '4.2m' ##
-
-coverage  = 100
-
-target_taxid  = ## '1423' ##
-
-traits_file  = "${projectDir}/metadata.csv"
-
-tree_color_column  = 'sequence_type'
-
-panther_organism  = ##'BACILLUS_SUBTILIS' ##
-
-panther_annot_dataset = ## 'GO:0008150' ##
-
-rbioapi_organism_id  = ## 1423 ##
-
-rbioapi_annot_dataset = ## 'GO:0008150' ##
-
-}
-
-```
-
-Additionally, go to IndexClean.nf and go to this process and modify it with your fna.gz link for your organism's reference genome that you can find on NCBI.
-
-```
-
-process DOWNLOAD_BACTERIAL_REFERENCE {
-
-tag "Downloading Bacterial Reference"
-
-label 'process_low'
-
-conda 'conda-forge::wget=1.21.4'
-
-output: path("bacterial_ref.fasta"), emit: fasta
-
-script:
-
-"""
-
-wget --no-check-certificate -O bacterial_ref.fasta.gz ###"https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/009/045/GCF_000009045.1_ASM904v1/GCF_000009045.1_ASM904v1_genomic.fna.gz" ###
-
-gunzip bacterial_ref.fasta.gz
-
-"""
-
-}
-
-```
-
-# Running Nextflow ????????
-
-After you've checked your file paths, added the necessary information (and replaced the placeholders I have and deated the # symbols where I signal you to add in your information), you should be good to go. This command will execute the nextflow and let you know how your run went:
-
-```
-
-$nextflow run main.nf -with-report report.html -with-timeline timeline.html -with-trace trace.txt
-
-```
-
-You will see this...
-
-```
-
-N E X T F L O W  ~  version 25.10.4
-
-Launching `main.nf` [shrivelled_williams] DSL2 - revision: eae8d1587e
-
-executor >  local (6)
-
-[89/4d79ed] DOWNLOAD_HUMAN_GENOME  | 1 of 1
-
-[a8/63d72f] DOWNLOAD_BACTERIAL_REFERENCE  | 1 of 1
-
-[1e/ea6e0a] INDEX_BACTERIAL_GENOME  | 1 of 1
-
-[df/e7229f] BAM\u2026AM to FASTQ for SR3324231) | 1 of 1
-
-[76/d4e5ef] MIN\u2026g SR3324231 with minimap2) | 1 of 1
-
-[5b/99e0b4] SUB\u2026ing SR3324231 with Rasusa) | 0 of 1
-
-[-  ] CLEAN_QAQC  -
-
-[-  ] FLYE_ASSEMBLY  -
-
-[-  ] QUAST_REPORT  -
-
-[-  ] BAKTA_ANNOTATION  -
-
-[-  ] AMRFINDER_ANALYSIS  -
-
-[-  ] PLASMIDFINDER_ANALYSIS  -
-
-[-  ] MOB_SUITE_ANALYSIS  -
-
-[-  ] RUN_ABRICATE  -
-
-[-  ] CRISPR_TYPING  -
-
-[-  ] BOSCO  -
-
-[-  ] ALIGN_TO_REFERENCE  -
-
-[-  ] CALL_VARIANTS_BCFTOOLS  -
-
-[-  ] FILTER_VARIANTS_BCFTOOLS  -
-
-[-  ] SUMMARIZE_RESULTS  -
-
-[-  ] MULTIQC  -
-
-[-  ] GENERATE_FINAL_REPORT  -
-
-```
-
-As the process runs, the 0% will become 100%.  You should see a working directory (work) and a results folder generate, as well as a summarize folder and a folder PER sequence you're analyzing.  At any time, you can run the following command to make sure the programs are running in a new terminal window.  If you see randomness as an output, the first thing you should do is:
-
-1) Check your file paths
-
-2) Check your working directory
-
-3) Check your downloads (fna file)
-
-4) Make sure your inputs are unaligned bam files
-
-If anything else happens, message me.
-
-To verify your work is successful, run this command:
-
-```
-
-htop
-
-```
-
-If you see python or conda or the actual programs execute, you know the system is working.  If you see a lot of 0's, not a lot is happening.  You should kill the process and restart it.
 
 # Understanding the BACON Pipeline  ??????
 
@@ -1222,6 +832,10 @@ This is the grand finale! After all the complex analysis, this stage is where BA
 
 ---
 
-### ?????? Conclusion
+# ?????? Conclusion
 
 You've now walked through the entire BACON pipeline! From initial data preparation to the final reports and figures, BACON automates complex bacterial genome analysis, making it accessible and reproducible. We hope this guide helps you understand each step and confidently use the pipeline for your research. If you have any questions or need further assistance, please don't hesitate to reach out!
+
+# CITING BACON ????????
+[THIS IS WHERE THE PUBLICATION WILL GO]
+[THIS IS WHERE REPOSITORY WILL BE POSTED]
