@@ -1,5 +1,6 @@
 # BACON (Bacterial Analysis Comprehensive Nextflow) :bacon: ????
 # A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files and Downloaded SRA Files
+https://doi.org/10.5281/zenodo.19743813
 
 Hello!  Welcome to BACON, a Nextflow pipeline developed to make massive files produced by PacBio sequencers simpler to manage.  The BACON sizzles and provides detailed analyses for Microbial Genomics from heterologous sources with limited resources and outputs concatenated and cleaned CSV files, figures, and tables. 
 
