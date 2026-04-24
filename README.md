@@ -43,14 +43,14 @@ Of note, the views expressed on this GitHub are personal and do not reflect any 
 
 The shell file named "setup.sh" in the list of files in the git repository pull will scan the system it is downloaded to upon execution and ensure the following dependencies are available: 
 
- 1. Installs Nextflow ??????? 
- 2. Installs and Updates Javascript ??
- 3. Installs Conda ??
- 4. Installs R ??
- 5. Installs R Studio ??
- 6. Installs GitHub Dependencies and BACON ??
- 7. Installs the databases and unpacks them ???
- 8. Makes everything executable (aka you can run the program) ??
+ 1. Installs Nextflow 
+ 2. Installs and Updates Javascript 
+ 3. Installs Conda 
+ 4. Installs R 
+ 5. Installs R Studio 
+ 6. Installs GitHub Dependencies and BACON 
+ 7. Installs the databases and unpacks them 
+ 8. Makes everything executable (aka you can run the program) 
   
 
 ## Let's Go: Downloading and Running the Setup File and Modifying Nextflow Documents for Success
@@ -99,7 +99,7 @@ The following steps set up the nextflow program once the setup.sh file completes
 #### nextflow.config
 The nextflow.config file is below.  The areas that need to be adjusted have a [BRACKET].  An example of a complete NEXTFLOW.CONFIG file is the one downloaded by setup.sh. 
 
-##### 1. ?? Determine the computational power of your system:
+##### 1. Determine the computational power of your system:
 ```
 lscpu  ## This tells you how many CPUs and cores you have onboard ##
 free -h ## This tells you your available memory, used, and total ##
@@ -107,12 +107,12 @@ vmstat 12  ## Another way to tell how much memory a computer has
 ```
 Use this information provided by the output in your terminal to modify the computing resources
 
-??Pro Tip: Take the total memory and divide it by a comfortable number.  If there are 32 GB of RAM and there are 20 samples to process, find a comfortable number like 4 and divide the total RAM available by that number (in our case 8 GB).  That number will become your **MAX** memory useage per sample for the high demand process.  Then, taper off similar to what was done in the example file for the medium and low level processes.  For time, think about how many samples need to run and give your program time to run.  
+Pro Tip: Take the total memory and divide it by a comfortable number.  If there are 32 GB of RAM and there are 20 samples to process, find a comfortable number like 4 and divide the total RAM available by that number (in our case 8 GB).  That number will become your **MAX** memory useage per sample for the high demand process.  Then, taper off similar to what was done in the example file for the medium and low level processes.  For time, think about how many samples need to run and give your program time to run.  
 
-##### 2. ?? Directories are set by the user
+##### 2. Directories are set by the user
 The setup.sh file will start from your root directory and download the databases and other files there.  Ahead of executing startup.sh, ensures the working directory is where everything is downloading and fully accessible by the user.  Copy and paste the directory path for the missing directories below (don't forget the ') 
 
-##### 3.  ?? Microbial information is provided by the user
+##### 3.  Microbial information is provided by the user
 PantherDB: https://pantherdb.org/validateHuman.jsp
 NCBI Taxonomy Browser: https://www.ncbi.nlm.nih.gov/taxonomy
 These databases will help you identify all of the information below specific to your bug of interest.  
@@ -236,7 +236,7 @@ A directory is missing!  The inputs directory needs to be created.
 
 Drop the unaligned bam files and drop them into the inputs folder.  
 
-??Pro Tip: Do not change the names of the folders or mess with anything not specifically defined in the setup directions. 
+Pro Tip: Do not change the names of the folders or mess with anything not specifically defined in the setup directions. 
 
 
 #### OPTIONS: Data from Public Repositories
@@ -247,7 +247,7 @@ Don't assume the files from public repositories are well executed by the deposit
 
 ## 3. Running Nextflow: The Main Event 
 
-After you've checked your file paths, added the necessary information, made sure any syntax meant to signal a change ([Example]) is gone, BACON should be ready to sizzle ?? ??.  The following command will execute the Nextflow and output metrics for the run:
+After you've checked your file paths, added the necessary information, made sure any syntax meant to signal a change ([Example]) is gone, BACON should be ready to sizzle!  The following command will execute the Nextflow and output metrics for the run:
 
 ```
 $nextflow run main.nf -with-report report.html -with-timeline timeline.html -with-trace trace.txt 
@@ -351,7 +351,7 @@ These scripts also include special tips learned from experience to address commo
 
 ---
 
-### ?? The Brains of the Operation: `main.nf` and `nextflow.config`
+### The Brains of the Operation: `main.nf` and `nextflow.config`
 
 These two files are like the central control system and the settings panel for your BACON pipeline. They tell the entire factory how to run.
 
@@ -379,7 +379,7 @@ These two files are like the central control system and the settings panel for y
 
 ---
 
-###  ?? Stage 1: Setting Up Your Data Foundation (`Indexclean.nf`)
+###  Stage 1: Setting Up Your Data Foundation (`Indexclean.nf`)
 
 Before we can start the deep analysis, BACON needs to build its reference library and organize its "knowledge bases" (databases). This stage is all about preparing those essential resources.
 
@@ -399,7 +399,7 @@ Once you run the pipeline, this module jumps into action:
 
 ---
 
-### ?? Stage 2: Your First Quality Check-up (`QAQClean.nf`)
+### Stage 2: Your First Quality Check-up (`QAQClean.nf`)
 
 Even the best ingredients need a quick check before you start cooking! This stage is all about making sure your raw DNA sequencing data is of good quality right from the start.
 
