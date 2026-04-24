@@ -15,7 +15,7 @@ Of note, the views expressed on this GitHub are personal and do not reflect any 
  - High-Throughput: Processes 1 to 100 samples without modifications to the pipeline provided the computer has the power to do the work 
  - Easy to manage: All software dependencies are explicitly managed by Nextflow and    Conda, guaranteeing a consistent environment
  
- # Best Practices ?
+ # Best Practices 
  - While not mandatory nor standard practice, run this pipeline with the sample data provided in the original files pulled from this repository.  Make sure it works for your system
  -  A control is always a good idea.  Either process one file first in the batch and compare it to the output of that file plus the other files, or find some sort of reference file to use.
  -  If any modifications to the pipeline are conducted, this will help track whether or not the output improves or not. f you have a question, post it in the Discussions section of this github.
