@@ -1,30 +1,30 @@
-# BACON (Bacterial Analysis Comprehensive Nextflow) :bacon: ????
+# BACON (Bacterial Analysis Comprehensive Nextflow) 
 # A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files and Downloaded SRA Files
 https://doi.org/10.5281/zenodo.19743813
 
 Hello!  Welcome to BACON, a Nextflow pipeline developed to make massive files produced by PacBio sequencers simpler to manage.  The BACON sizzles and provides detailed analyses for Microbial Genomics from heterologous sources with limited resources and outputs concatenated and cleaned CSV files, figures, and tables. 
 
-??Of note, the views expressed on this GitHub are personal and do not reflect any other viewpoints or endorsements of any organization or entity.  
+Of note, the views expressed on this GitHub are personal and do not reflect any other viewpoints or endorsements of any organization or entity.  
 
 # Key Features
 
- - ?? Automated Setup: A single setup.sh script installs all dependencies and downloads required databases
- - ? User-Friendly: Interactive prompts for key parameters like genome size and coverage
- - ? High-Performance: Optimized for parallel execution on multi-core scientific workstations
- - ??Comprehensive Annotation: Integrates a suite of best-in-class tools for a deep biological understanding of the sample or sample
- - ?? High-Throughput: Processes 1 to 100 samples without modifications to the pipeline provided the computer has the power to do the work 
- - ??Easy to manage: All software dependencies are explicitly managed by Nextflow and    Conda, guaranteeing a consistent environment
+ - Automated Setup: A single setup.sh script installs all dependencies and downloads required databases
+ - User-Friendly: Interactive prompts for key parameters like genome size and coverage
+ - High-Performance: Optimized for parallel execution on multi-core scientific workstations
+ - Comprehensive Annotation: Integrates a suite of best-in-class tools for a deep biological understanding of the sample or sample
+ - High-Throughput: Processes 1 to 100 samples without modifications to the pipeline provided the computer has the power to do the work 
+ - Easy to manage: All software dependencies are explicitly managed by Nextflow and    Conda, guaranteeing a consistent environment
  
  # Best Practices ?
- ?? While not mandatory nor standard practice, run this pipeline with the sample data provided in the original files pulled from this repository.  Make sure it works for your system
- ?? A control is always a good idea.  Either process one file first in the batch and compare it to the output of that file plus the other files, or find some sort of reference file to use.  If any modifications to the pipeline are conducted, this will help track whether or not the output improves or not. 
- ?? If you have a question, post it in the Discussions section of this github.
- ?? Don't try to manipulate the file names, tulpes, or any of that code.  Data inputs/outputs are super tricky and can cause the whole thing to crash.
- ?? If it doesn't work, the first thing to check is whether or not the path is set, the terminal was closed and re-opened, and if the paths in the configuration file (nextflow.config) are accurate. 
- ?? If the program drops off, the first thing to check is memory availability (time specifically). 
- ?? Cite the pipeline (see the end of the readme file!)
+ - While not mandatory nor standard practice, run this pipeline with the sample data provided in the original files pulled from this repository.  Make sure it works for your system
+ -  A control is always a good idea.  Either process one file first in the batch and compare it to the output of that file plus the other files, or find some sort of reference file to use.
+ -  If any modifications to the pipeline are conducted, this will help track whether or not the output improves or not. f you have a question, post it in the Discussions section of this github.
+ -  Don't try to manipulate the file names, tulpes, or any of that code.  Data inputs/outputs are super tricky and can cause the whole thing to crash.
+ -  If BACON doesn't work, the first thing to check is whether or not the path is set, the terminal was closed and re-opened, and if the paths in the configuration file (nextflow.config) are accurate.
+ -  If the program drops off, the first thing to check is memory availability (time specifically).
+ -  Cite the pipeline (see the end of the readme file!)
 
-# Getting Started: Start to Finish ?????
+# Getting Started: Start to Finish 
 
 ## Program requirements are as follows:
 
@@ -39,7 +39,7 @@ Hello!  Welcome to BACON, a Nextflow pipeline developed to make massive files pr
 
 
 
-## Self-Installing Dependencies  ??
+## Self-Installing Dependencies 
 
 The shell file named "setup.sh" in the list of files in the git repository pull will scan the system it is downloaded to upon execution and ensure the following dependencies are available: 
 
@@ -53,7 +53,7 @@ The shell file named "setup.sh" in the list of files in the git repository pull 
  8. Makes everything executable (aka you can run the program) ??
   
 
-## Let's Go: Downloading and Running the Setup File and Modifying Nextflow Documents for Success?? ?.? ?????.? ??
+## Let's Go: Downloading and Running the Setup File and Modifying Nextflow Documents for Success
 
 Using a fresh virtual machine, the setup.sh program takes about 1 to 4 hours.  The program automatically accepts the user agreements, downloads and unpacks databases, pulls the GIT repository, and downloads everything needed for a successful run as described above. 
    
@@ -81,7 +81,7 @@ Once the setup.sh file sets up, close the terminal and reopen it for the changes
 
 Another shell file is downloaded with the git repository, called check.sh.  This program ensures that everything is set up properly.  
 
-??Pro Tip: Run this program twice!
+Pro Tip: Run this program twice!
 
  1. After the setup.sh
  2. After the modifications to Nextflow files
@@ -91,7 +91,7 @@ chmod -x check.sh
 bash check.sh
 ```
 
-??????Everything should pass.  If not, let me know on the discussion board after troubleshooting your files, paths, and syntax. ??????
+Everything should pass.  If not, let me know on the discussion board after troubleshooting your files, paths, and syntax. 
 
 ### 2. Modify the Nextflow Program Files
 The following steps set up the nextflow program once the setup.sh file completes its tasks.  There are modifications that will need to be made so they are listed below by document
@@ -113,8 +113,8 @@ Use this information provided by the output in your terminal to modify the compu
 The setup.sh file will start from your root directory and download the databases and other files there.  Ahead of executing startup.sh, ensures the working directory is where everything is downloading and fully accessible by the user.  Copy and paste the directory path for the missing directories below (don't forget the ') 
 
 ##### 3.  ?? Microbial information is provided by the user
-???? PantherDB: https://pantherdb.org/validateHuman.jsp
-?? NCBI Taxonomy Browser: https://www.ncbi.nlm.nih.gov/taxonomy
+PantherDB: https://pantherdb.org/validateHuman.jsp
+NCBI Taxonomy Browser: https://www.ncbi.nlm.nih.gov/taxonomy
 These databases will help you identify all of the information below specific to your bug of interest.  
 
 ```
@@ -245,9 +245,9 @@ NCBI files will either download as raw bam files or fastq files.  BACON will not
 
 Don't assume the files from public repositories are well executed by the depositor.  You can read more about that here: https://pubmed.ncbi.nlm.nih.gov/32398145/,  Make sure that any file you receive goes through the full QAQC protocol delineated in the script included with this repository named "CodeForPaperValidation".  This markdown details the work for one vs. multiple SRA files, validation, and conversion of said files so BACON can analyze the data.  
 
-## 3. Running Nextflow: The Main Event ??
+## 3. Running Nextflow: The Main Event 
 
-After you've checked your file paths, added the necessary information, made sure any syntax meant to signal a change ([Example]) is gone, BACON should be ready to sizzle ?? ??.  The following command will execute the Nextflow and output  metrics for the run:
+After you've checked your file paths, added the necessary information, made sure any syntax meant to signal a change ([Example]) is gone, BACON should be ready to sizzle ?? ??.  The following command will execute the Nextflow and output metrics for the run:
 
 ```
 $nextflow run main.nf -with-report report.html -with-timeline timeline.html -with-trace trace.txt 
@@ -317,7 +317,7 @@ It goes on and on and on and updates all the time.
 If you see python or conda or the actual programs execute, you know the system is working.  In this instance, bcftools is currently running, taking up 100.2% x 3 CPUS plus 99.5% CPUS, as is htop and other prgrams below.  So, it is running! If there are a lot of 0's, the program is hung up somewhere.  In that event, kill the process and restart it. 
 
 
-# Understanding the BACON Pipeline  ??????
+# Understanding the BACON Pipeline  
 
 This section is dedicated  BACON pipeline works, step-by-step. Imagine BACON as a highly organized factory for analyzing bacterial DNA. Each section below describes a "station" in this factory:
 
@@ -335,7 +335,7 @@ We highly recommend using the practice pipeline (you'll find it linked in this G
 
 ---
 
-## ?? Getting Started & Finding Your Data: `setup.sh` and other `sh` files
+## Getting Started & Finding Your Data: `setup.sh` and other `sh` files
 
 These shell files are where you start.  Each script helps you gather and prepare your bacterial DNA sequencing data.
 
@@ -435,7 +435,7 @@ This step helps you quickly spot any issues with your raw DNA data early on. You
 
 ---
 
-###  ?????????? Stage 3: Cleaning Up Your Data: Removing "Junk," Trimming, & Sampling (`modules/decontamination.nf`)
+###  Stage 3: Cleaning Up Your Data: Removing "Junk," Trimming, & Sampling (`modules/decontamination.nf`)
 
 Raw DNA data, especially from advanced long-read sequencers, often comes with extra "noise" ? things like contamination (human DNA, leftover lab chemicals) or too much data that can actually make things harder. This stage is all about cleaning up that raw data to get it perfect for the next steps.
 
@@ -507,7 +507,7 @@ Raw DNA data, especially from advanced long-read sequencers, often comes with ex
 
 ---
 
-###  ?? Stage 4: Building & Labeling Your Bacterial Blueprint (`assembly.nf`, `annotation.nf`)
+###  Stage 4: Building & Labeling Your Bacterial Blueprint (`assembly.nf`, `annotation.nf`)
 
 Now that your DNA reads are super clean, it's time for some serious construction! This stage takes all those tiny DNA pieces and puts them together like a puzzle to build the complete bacterial genome (assembly). Then, it labels all the important parts of that genome (annotation).
 
@@ -583,7 +583,7 @@ Bakta labels everything clearly so you can understand what each part of the geno
 
 ---
 
-### ????? ?? ??? Stage 5: Discovering Bacterial Defenses & Traits (`resistance.nf`)
+### Stage 5: Discovering Bacterial Defenses & Traits (`resistance.nf`)
 
 This stage is all about finding out what special abilities your bacteria might have. We screen the assembled bacterial blueprint for genes that contribute to antibiotic resistance, virulence (what makes them harmful), and important mobile genetic elements called plasmids.
 
@@ -651,7 +651,7 @@ This stage is all about finding out what special abilities your bacteria might h
 
 ---
 
-### ?? Stage 6: Pinpointing Genetic Differences (SNP Analysis)
+### Stage 6: Pinpointing Genetic Differences (SNP Analysis)
 
 This stage is all about finding tiny, single-letter changes in the bacterial DNA (called Single Nucleotide Polymorphisms, or SNPs). These SNPs are like genetic "fingerprints" that can help us understand how different bacterial strains are related or what might be causing their unique traits.
 
@@ -727,7 +727,7 @@ This stage is all about finding tiny, single-letter changes in the bacterial DNA
 
 ---
 
-### ??????????? Stage 7: Discovering Bacterial Immune Systems (CRISPR Identifications)
+### Stage 7: Discovering Bacterial Immune Systems (CRISPR Identifications)
 
 This stage focuses on identifying CRISPR (Clustered Regularly Interspaced Short Palindromic Repeats) systems within your bacterial genomes. CRISPRs are like a bacterial immune system, helping them defend against viruses and other invaders by remembering past infections.
 
@@ -761,7 +761,7 @@ The information from this stage can be very valuable. For example, if you're stu
 
 ---
 
-### ??? Stage 8: Advanced Plasmid Hunting with Machine Learning (`plasmid_discovery.nf`)
+### Stage 8: Advanced Plasmid Hunting with Machine Learning (`plasmid_discovery.nf`)
 
 While we looked for plasmids earlier with traditional methods (in Stage 5), this stage brings in the power of Machine Learning to find even more, including potentially *novel* plasmids that haven't been seen before!
 
@@ -789,7 +789,7 @@ While we looked for plasmids earlier with traditional methods (in Stage 5), this
 
 ---
 
-### ???????? Stage 9: Bringing It All Together: Reports, Figures, and Final Data (`visualization.nf`, `final_report.nf`, `multiqc.nf`)
+### Stage 9: Bringing It All Together: Reports, Figures, and Final Data (`visualization.nf`, `final_report.nf`, `multiqc.nf`)
 
 This is the grand finale! After all the complex analysis, this stage is where BACON gathers all the insights, numbers, and findings from the previous steps and presents them in easy-to-understand reports, beautiful figures, and organized data files.
 
@@ -833,10 +833,10 @@ This is the grand finale! After all the complex analysis, this stage is where BA
 
 ---
 
-# ?????? Conclusion
+# Conclusion
 
 You've now walked through the entire BACON pipeline! From initial data preparation to the final reports and figures, BACON automates complex bacterial genome analysis, making it accessible and reproducible. We hope this guide helps you understand each step and confidently use the pipeline for your research. If you have any questions or need further assistance, please don't hesitate to reach out!
 
-# CITING BACON ????????
+# CITING BACON 
 [THIS IS WHERE THE PUBLICATION WILL GO]
 [THIS IS WHERE REPOSITORY WILL BE POSTED]
