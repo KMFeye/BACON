@@ -837,6 +837,9 @@ This is the grand finale! After all the complex analysis, this stage is where BA
 
 You've now walked through the entire BACON pipeline! From initial data preparation to the final reports and figures, BACON automates complex bacterial genome analysis, making it accessible and reproducible. We hope this guide helps you understand each step and confidently use the pipeline for your research. If you have any questions or need further assistance, please don't hesitate to reach out!
 
+# Credit due where it is due
+I would like to thank Gemini for its contribution to helping me troubleshoot my code and learn along the way. While I dislike AI generally, it is an exceptional tool to use to fix code problems, learn, and grow as a scientist.  Thank you Gemini. 
+
 # CITING BACON 
 [THIS IS WHERE THE PUBLICATION WILL GO]
 [THIS IS WHERE REPOSITORY WILL BE POSTED]
