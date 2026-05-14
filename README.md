@@ -221,20 +221,23 @@ Make sure the directory (or folder) you want to have your files created in is yo
 The directories (files) should be ordered as follows: 
 
 Project/
---- main.nf
--- nextflow.config
--- envs/
--- modules/
--- asset/
--- databases/
+####--- main.nf
+####-- nextflow.config
+####-- envs/
+####-- modules/
+#####--Every `.nf` file
+####-- asset/
+####-- databases/
+####-- inputs/
 
-A directory is missing!  The inputs directory needs to be created.  
+
+If you go look at your Desktop/project directory, you'll notice a directory is missing!  The inputs directory needs to be created.  
 ```
    cd ./Desktop/Project
    mkdir inputs
   ```  
 
-Drop the unaligned bam files and drop them into the inputs folder.  
+Drop the unaligned bam files and drop them into the inputs folder.
 
 Pro Tip: Do not change the names of the folders or mess with anything not specifically defined in the setup directions. 
 
@@ -243,14 +246,16 @@ Pro Tip: Do not change the names of the folders or mess with anything not specif
 
 NCBI files will either download as raw bam files or fastq files.  BACON will not process fastq files directly.  
 
-Don't assume the files from public repositories are well executed by the depositor.  You can read more about that here: https://pubmed.ncbi.nlm.nih.gov/32398145/,  Make sure that any file you receive goes through the full QAQC protocol delineated in the script included with this repository named "CodeForPaperValidation".  This markdown details the work for one vs. multiple SRA files, validation, and conversion of said files so BACON can analyze the data.  
+Don't assume the files from public repositories are well executed by the depositor.  You can read more about that here: https://pubmed.ncbi.nlm.nih.gov/32398145/ 
+
+Make sure that any file you receive goes through the full QAQC protocol delineated in the script included with this repository named "CodeForPaperValidation".  This markdown details the work for one vs. multiple SRA files, validation, and conversion of said files so BACON can analyze the data.  
 
 ## 3. Running Nextflow: The Main Event 
 
 After you've checked your file paths, added the necessary information, made sure any syntax meant to signal a change ([Example]) is gone, BACON should be ready to sizzle!  The following command will execute the Nextflow and output metrics for the run:
 
 ```
-$nextflow run main.nf -with-report report.html -with-timeline timeline.html -with-trace trace.txt 
+nextflow run main.nf -with-report report.html -with-timeline timeline.html -with-trace trace.txt 
 ```
 Of course, leaving off the  `-with-report report.html -with-timeline timeline.html -with-trace trace.txt ` is fine, but then the run metrics will not print. 
 
@@ -398,44 +403,9 @@ Once you run the pipeline, this module jumps into action:
 2.  **Organizes Databases**: BACON uses many specialized databases (collections of biological information). This step sets them all up. Some databases are prepared here because each one has its own preferred way of being managed. Others might have been set up earlier during the `setup.sh` stage, depending on what works best for that particular database. This ensures all the "knowledge" BACON needs is in the right place and ready to be accessed efficiently.
 
 ---
+###  Stage 2: Cleaning Up Your Data: Downloading Databases, Indexing References (`IndexClean.nf`) and Removing Contamination and Trimming (`modules/bamtoclean.nf`;`modules/decontamination.nf), & Subsampling ('subsampling.nf') 
 
-### Stage 2: Your First Quality Check-up (`QAQClean.nf`)
-
-Even the best ingredients need a quick check before you start cooking! This stage is all about making sure your raw DNA sequencing data is of good quality right from the start.
-
-**What `QAQClean.nf` does**:
-
-1.  **Individual Read Quality**: Your raw sequencing files first go through **FastQC**. Imagine FastQC as a detailed health report for each batch of DNA reads, telling you if they're healthy and robust.
-
-2.  **Summary Report**: All these individual FastQC reports are then gathered and aggrigated by **MultiQC**. The MultiQC tool creates one easy-to-read, comprehensive report that shows you the overall quality of *all* your starting data at a glance prior to starting. This step helps you quickly spot any issues with your raw DNA data early on. You can also see how much difference later processing steps make to your reads.
-
-**The Tools We Use Here**:
-
-*  **FastQC**: This is like a thorough doctor's check-up for your raw DNA sequences. It gives you a detailed report on their quality, and it's chosen because it's easy to use and provides clear insights.
-
-*  **Reference**:
-
-1.  <https://github.com/s-andrews/fastqc>
-
-*  **Understanding Your Results**:
-
-1.  How to read your FastQC results: <https://bioinfo.cd-genomics.com/quality-control-how-do-you-read-your-fastqc-results.html>
-
-2.  FastQC tutorial: <https://www.youtube.com/watch?v=qPbIlO_KWN0>
-
-*  **MultiQC**: Think of MultiQC as the manager who collects all the individual FastQC reports and combines them into one clear, easy-to-understand summary.
-
-*  **References**:
-
-1.  <https://multiqc.info/>
-
-2.  Ewels, P., Magnusson, M., Lundin, S., & K�ller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. *Bioinformatics*, **32**(19), 3047?3049. [doi:10.1093/bioinformatics/btw354](https://doi.org/10.1093/bioinformatics/btw354)
-
----
-
-###  Stage 3: Cleaning Up Your Data: Removing "Junk," Trimming, & Sampling (`modules/decontamination.nf`)
-
-Raw DNA data, especially from advanced long-read sequencers, often comes with extra "noise" ? things like contamination (human DNA, leftover lab chemicals) or too much data that can actually make things harder. This stage is all about cleaning up that raw data to get it perfect for the next steps.
+Raw DNA data, especially from advanced long-read sequencers, often comes with three main issues.  First, the data is in massive unaligned BAM files.  The second issue is that all sequencing comes with data that is unintended, such as human reads or environmental contamination. The third problem is specific to microbial genomics, which is that there is too much read data that results in uneven coverage for different kinds of genetic material like chromosomes vs. plasmids. Rasusa is used to subsample the data and ensure better a better assembly as well as better recovery for plasmids. This stage of the sequencing pipeline focuses on reducing the size of the data, removing unnecessary reads, and improving the efficiency of the pipeline.  
 
 **What `modules/decontamination.nf` does**:
 
@@ -504,6 +474,42 @@ Raw DNA data, especially from advanced long-read sequencers, often comes with ex
 3.  Li, H. (2021). New strategies to improve minimap2 alignment accuracy. *Bioinformatics*, **37**:4572-4574. [doi:10.1093/bioinformatics/btab705](https://doi.org/10.1093/bioinformatics/btab705)
 
 ---
+
+
+### Stage 3: Your First Quality Check-up (`QAQClean.nf` and `multiqc.nf`)
+
+Even the best ingredients need a quick check before you start cooking! This stage is all about making sure your raw DNA sequencing data is of good quality right from the start. There are additional checks throughout the pipeline, including after decontamination and subsampling the reads.  
+
+**What `QAQClean.nf` and `multiqc.nf` accomplishes**:
+
+1.  **Individual Read Quality**: Your raw sequencing files first go through **FastQC**. Imagine FastQC as a detailed health report for each batch of DNA reads, telling you if they're healthy and robust.
+
+2.  **Summary Report**: All these individual FastQC reports are then gathered and aggrigated by **MultiQC**. The MultiQC tool creates one easy-to-read, comprehensive report that shows you the overall quality of *all* your starting data at a glance prior to starting. This step helps you quickly spot any issues with your raw DNA data early on. You can also see how much difference later processing steps make to your reads.
+
+**The Tools We Use Here**:
+
+*  **FastQC**: This is like a thorough doctor's check-up for your raw DNA sequences. It gives you a detailed report on their quality, and it's chosen because it's easy to use and provides clear insights.
+
+*  **Reference**:
+
+1.  <https://github.com/s-andrews/fastqc>
+
+*  **Understanding Your Results**:
+
+1.  How to read your FastQC results: <https://bioinfo.cd-genomics.com/quality-control-how-do-you-read-your-fastqc-results.html>
+
+2.  FastQC tutorial: <https://www.youtube.com/watch?v=qPbIlO_KWN0>
+
+*  **MultiQC**: Think of MultiQC as the manager who collects all the individual FastQC reports and combines them into one clear, easy-to-understand summary.
+
+*  **References**:
+
+1.  <https://multiqc.info/>
+
+2.  Ewels, P., Magnusson, M., Lundin, S., & K�ller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. *Bioinformatics*, **32**(19), 3047?3049. [doi:10.1093/bioinformatics/btw354](https://doi.org/10.1093/bioinformatics/btw354)
+
+---
+
 
 ###  Stage 4: Building & Labeling Your Bacterial Blueprint (`assembly.nf`, `annotation.nf`)
 
