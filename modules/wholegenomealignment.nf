@@ -6,7 +6,6 @@ process RUN_PROGRESSIVE_MAUVE {
 
     input:
     path(assemblies)
-
     output:
     path("alignment.xmfa"), emit: xmfa
 
@@ -16,7 +15,7 @@ process RUN_PROGRESSIVE_MAUVE {
     """
 }
 
-
+######################switch to html vs. pdf ###########################
 process PLOT_GENOME_SYNTENY {
     tag "Generating genome synteny plot"
     label 'process_medium'
@@ -27,7 +26,6 @@ process PLOT_GENOME_SYNTENY {
 
     input:
     path(xmfa)
-
     output:
     path("genome_synteny_plot.png"), emit: png
     path("genome_synteny_plot.pdf"), emit: pdf
@@ -39,7 +37,6 @@ process PLOT_GENOME_SYNTENY {
 
     dna_segs <- read_dna_seg_from_xmfa("${xmfa}")
 
-    # Prepare comparisons if there's more than one genome
     comparisons <- list()
     if (length(dna_segs) > 1) {
         for(i in 2:length(dna_segs)){
