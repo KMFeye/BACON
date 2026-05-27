@@ -5,7 +5,6 @@ process PLOT_PLASMID_MAPS {
 
     input:
     path(fasta) // A single .gplas_plasmids.fasta file
-
     output:
     path("*.png"), emit: plot_png
     path("*.pdf"), emit: plot_pdf
@@ -15,10 +14,9 @@ process PLOT_PLASMID_MAPS {
     def prefix = fasta.baseName.replaceAll('.gplas_plasmids', '')
 
     """
-    # 1. First, annotate the newly discovered plasmid(s) with Bakta
     bakta --db /path/to/bakta/db/ --output bakta ${fasta} --prefix ${prefix}
 
-    # 2. Now, create a circular plot using the plasmid sequence and its new annotation
+##############################################################
     plot_plasmid.R \
         --fasta ${fasta} \
         --gff bakta/${prefix}.gff3 \
