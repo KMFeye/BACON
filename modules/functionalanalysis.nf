@@ -6,7 +6,6 @@ process CREATE_SNPEFF_DB {
 
     input:
     tuple val(sample_id), path(gff), path(reference_fasta)
-
     output:
     path "snpEff.config", emit: snpeff_config
     path "data", emit: snpeff_db_dir
@@ -29,7 +28,6 @@ process CREATE_SNPEFF_DB {
     """
 }
 
-
 process FIND_FRAMESHIFTS {
     tag "Find frameshift variants in ${sample_id}"
     publishDir "${params.outdir}/rawresults/functional_analysis", mode: 'copy'
@@ -37,7 +35,6 @@ process FIND_FRAMESHIFTS {
 
     input:
     tuple val(sample_id), path(vcf)
-
     output:
     tuple val(sample_id), path("${sample_id}_frameshift_report.txt")
 
@@ -73,8 +70,6 @@ process EXTRACT_IMPACTFUL_GENES {
         > background_genes.txt
     '''
 }
-
-
 
 process RUN_PANTHER_API_DIRECT {
     tag "Querying PANTHER API for ${sample_id}"
