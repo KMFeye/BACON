@@ -250,7 +250,7 @@ Don't assume the files from public repositories are well executed by the deposit
 
 Make sure that any file you receive goes through the full QAQC protocol delineated in the script included with this repository named "CodeForPaperValidation".  This markdown details the work for one vs. multiple SRA files, validation, and conversion of said files so BACON can analyze the data.  
 
-## 3. Running Nextflow: The Main Event 
+## 3. Running Nextflow: Making the BACON Sizzle!!
 
 After you've checked your file paths, added the necessary information, made sure any syntax meant to signal a change ([Example]) is gone, BACON should be ready to sizzle!  The following command will execute the Nextflow and output metrics for the run:
 
@@ -360,7 +360,7 @@ These scripts also include special tips learned from experience to address commo
 
 These two files are like the central control system and the settings panel for your BACON pipeline. They tell the entire factory how to run.  I would not adjust the main.nf file under any circumstances if the run is expected to go.  The nextflow.config adjustments must be made to ensure your system is capable of analyzing the data optimally and to ensure the program analyzes the correct toolset. 
 
-*  **`main.nf` (The Director)**: This script is the "director" of the whole pipeline. It decides the order of all the steps, makes sure data flows correctly from one process to the next, and figures out if you're analyzing just one sample or many, adjusting the workflow automatically. It's written in a programming language called Groovy.
+*  **`main.nf` (The Director)**: This script is the "director" of the whole pipeline. It decides the order of all the steps, makes sure data flows correctly from one process to the next, and figures out if you're analyzing just one sample or many, adjusting the workflow automatically. It's written in a programming language called Groovy. 
 
 *  **Where to learn more**:
 
@@ -368,17 +368,17 @@ These two files are like the central control system and the settings panel for y
 
 2.  <https://www.nature.com/articles/nbt.3820>
 
-*  **`nextflow.config` (The Settings Panel)**: This is your personal control panel! Here, you can easily tweak things like:
+*  **`nextflow.config` (The Settings File)**: This is your personal control file! Here, you can easily tweak things like:
 
-*  How much computer memory (RAM) and processing power (CPU) BACON can use.
+*  How much computer memory (RAM) and processing power (CPU) BACON can use
 
-*  Where BACON should find your input files and save its results.
+*  Where BACON should find your input files and save its results
 
-*  Where to find the specialized "toolkits" (called Conda environments) that BACON needs.
+*  Where to find the specialized "toolkits" (called Conda environments) that BACON needs
 
-*  **Good to know**: While Conda is used because it's easier for beginners, if you're an advanced user familiar with Docker, you could potentially set up BACON to use that instead or singularity. 
+*  **Good to know**: While Conda is used because it's easier for beginners with a lower barrier to adoption than Singularity and Docker, if you're an advanced user familiar with Docker, you could modify the BACON to use that instead.
 
-*  **Conda explained**: Conda helps manage all the different software BACON uses, making sure they all work together without issues.
+*  **Conda explained**: Conda helps manage all the different software BACON uses, making sure they all work together without issues.  Nextflow manages Conda in its entirety so as long as the program is present, Nextflow will handle the rest.  Some processes (or sub-programs within Nextflow) have very specific requirements, others are more general.  
 
 1.  <https://github.com/conda/conda>
 
@@ -386,7 +386,7 @@ These two files are like the central control system and the settings panel for y
 
 ###  Stage 1: Setting Up Your Data Foundation (`Indexclean.nf`)
 
-Before we can start the deep analysis, BACON needs to build its reference library and organize its "knowledge bases" (databases). This stage is all about preparing those essential resources.
+Before we can start the deep analysis, BACON needs to build databases that it will repeatedly use and ensure that any background data (like a reference data set or control) are downloaded and ready to go. This stage is all about preparing those essential resources and making them accessible to Nextflow. 
 
 **Before running this stage, you need to**:
 
@@ -403,7 +403,7 @@ Once you run the pipeline, this module jumps into action:
 2.  **Organizes Databases**: BACON uses many specialized databases (collections of biological information). This step sets them all up. Some databases are prepared here because each one has its own preferred way of being managed. Others might have been set up earlier during the `setup.sh` stage, depending on what works best for that particular database. This ensures all the "knowledge" BACON needs is in the right place and ready to be accessed efficiently.
 
 ---
-###  Stage 2: Preparing Data for High Throughput Analyses: Downloading Databases, Indexing References (`IndexClean.nf`), Making Files Managable (`modules/bamtoclean.nf`), Decontamination of Reads (`modules/decontamination.nf), & Subsampling ('subsampling.nf') 
+###  Stage 2: Preparing Data for High Throughput Analyses: Downloading Databases, Indexing References (`IndexDb.nf`), Making Files Managable (`modules/bamtoclean.nf`), Decontamination of Reads (`modules/decontamination.nf), & Subsampling ('subsampling.nf') 
 
 Raw DNA data, especially from advanced long-read sequencers like PacBio, often comes with three main issues.  First, the data is usually pulled from the sequencer as massive unaligned BAM files.  This data is hard to work with for people who are not familiar with BAM files and can crash machines.  The second issue is that all sequencing comes with data that is unintended, such as human reads or environmental contamination that can cause problems with the creation of the genome and its subsequent annotation. The third problem is specific to microbial genomics.  There are multiple kinds of DNA sequenced by a long read sequencer.  The genome is long and usually contiguous.  While the chromoeome is seuqenced, plasmids (10kb and up) may over-sequence. Why 10KB?  While people claim that they have reconstructed smaller plasmids, the library step of PBS requires sampling all fragments greater than 10kb.  That step cannot both be efficient and at the same time be inefficient enough to recapitulate plasmids smaller than 10KB.  Also, while human genomes are quite large, bacterial chromosomal genomes are much smaller and over sequencing can cause challenges downstream for assembly and annotation.  While concatentaed sequencing helps improve the error rate, there comes a time when the data is just creating challenges for assemblers.  You can read more about this challenge in the reference section below.  Rasusa is used to subsample the data and ensure better a better assembly as well as better recovery for plasmids. This stage of the sequencing pipeline focuses on reducing the size of the data, removing unnecessary reads, and improving the efficiency of the pipeline.  
 
@@ -411,36 +411,6 @@ Raw DNA data, especially from advanced long-read sequencers like PacBio, often c
 1. **The reference file used for downstream SNP analyses is indexed**:  This file can be pulled from a public repository, which is the current setup.  However, you could also randomly select one your samples as a single sample and use it as an index file for your analyses if you are wanting to compare strains to one another. You can run this program on a single file to create that index file and adjust the program as needed.
 2. **Prepare the PlasmidFinder DB**: Because BACON can analyze multiple files at the same time, it is necessary to have this step to let Nextflow know that this database will be used, where it is located, and requires an update but don't update the database repeatedly
 3. **Initialize AMRFinderPlus**: AMRFinder Plus has to be set up similar to PlasmidFinder
-
-#### What `bamtofastqclean.nf` does:
-1.**Create smaller files**: The bam files are very large.  They contain metadata, coordinate fields and other information.  Therefore, we extract just the sequencing data and the quality metrics for downstream analyses.  In the pre-processing shell files for public repositories, we create BAM from FASTQ files.  This file will undo that work.  It was easier to run this workflow than to have it search for different kinds of files.  Every file is processed the same way and starts as an unaligned BAM file. 
-   
-#### What `modules/decontamination.nf` does:
-
-1. **Spotting and Removing Contamination**: We use a tool called **Kraken2** which uses a k-mer based approach to find and filter out any unwanted DNA (like human or viral DNA) from your bacterial DNA. Kraken2 is great at this, even with mixed samples. This step ensures only clean data moves forward.  For interest, ta visualization of your contamination file is automatically generated.  
-
-2. **Smart Sub-sampling**: After cleaning, we use **Rasusa** to intelligently "sub-sample" your DNA reads down to a very specific amount (default 100x coverage). Why? Because with bacterial long read sequencing, bacterial genomics produces a unique challenge.  First, the genome is longer than the plasmid reads.  For every genome that is read, multiple rounds of sequencing occurs with the plasmids.  This ultimately creates a problem for researchers as it can make recapitulating plasmids difficult. A 100x coverage is very very conservative and aggressive.  If time and space are an issue, 50 to 80x is also sufficient.
-
-#### What `subsampling.nf` does: 
-1. The files are subsampled at 100x.  This is VERY deep sequencing, likely you will be fine at 60 or 80X.  You can adjust your coverage in the `nextflow.config` file if you want to speed up the process.  
-
-**The Tools We Use Here**:
-
-##### **Kraken2**: This tool classifies DNA sequences, helping us identify and filter out any contaminating DNA.
-
-**References**:
-
-1.  <https://pmc.ncbi.nlm.nih.gov/articles/PMC9725748/>
-
-2.  <https://github.com/DerrickWood/kraken2/wiki/Manual>
-
- ##### **Rasusa**: This smart tool helps us create an ideal set of DNA reads by carefully choosing a representative sample, ensuring we don't have too much or too little data.
-
-**References**:
-
-1.  <https://github.com/sanger-pathogens/rasusa>
-
-2.  Hall, M. B., et al. (2020). Rasusa: Randomly subsample reads to a specified coverage. *Journal of Open Source Software*, 5(52), 2410. [doi:10.21105/joss.02410](https://doi.org/10.21105/joss.02410)
 
 ##### **wget/curl**: These are basic internet tools commonly used throughout the pipeline to download various files, including databases or reference genomes needed for different stages.
 
@@ -459,69 +429,76 @@ Raw DNA data, especially from advanced long-read sequencers like PacBio, often c
 3.  Li H. and Durbin R. (2010) Fast and accurate long-read alignment with Burrows-Wheeler transform. *Bioinformatics*, **26**, 589-595. [PMID: 20080505](http://www.ncbi.nlm.nih.gov/pubmed/20080505).
 
 4.  Li H. (2013) Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM. [arXiv:1303.3997v2](http://arxiv.org/abs/1303.3997) [q-bio.GN].
----
 
-### Stage 3: Quality Control and Assurance (`fastqaqc.nf`; `multiqc.nf`)
+#### What `bamtofastqclean.nf` does:
+1.**Create smaller files**: The bam files are very large.  They contain metadata, coordinate fields and other information.  Therefore, we extract just the sequencing data and the quality metrics for downstream analyses.  In the pre-processing shell files for public repositories, we create BAM from FASTQ files.  This file will undo that work.  It was easier to run this workflow than to have it search for different kinds of files.  Every file is processed the same way and starts as an unaligned BAM file. 
+   
+#### What `modules/decontamination.nf` does:
 
-
-*  **FastQC**: Gives a detailed quality report for the cleaned and subsampled DNA reads.
-
-*  **Reference**:
-
-1.  <https://github.com/s-andrews/fastqc>
-
-*  **MultiQC**: Gathers all the individual FastQC reports into one easy-to-read summary, confirming the quality of the data going into assembly.
-
-*  **References**:
-
-1.  <https://multiqc.info/>
-
-2.  Ewels, P., Magnusson, M., Lundin, S., & K�ller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. *Bioinformatics*, **32**(19), 3047?3049. [doi:10.1093/bioinformatics/btw354](https://doi.org/10.1093/bioinformatics/btw354)
-
-### Stage 3: Your First Quality Check-up (`QAQClean.nf` and `multiqc.nf`)
-
-Even the best ingredients need a quick check before you start cooking! This stage is all about making sure your raw DNA sequencing data is of good quality right from the start. There are additional checks throughout the pipeline, including after decontamination and subsampling the reads.  
-
-**What `QAQClean.nf` and `multiqc.nf` accomplishes**:
-
-1.  **Individual Read Quality**: Your raw sequencing files first go through **FastQC**. Imagine FastQC as a detailed health report for each batch of DNA reads, telling you if they're healthy and robust.
-
-2.  **Summary Report**: All these individual FastQC reports are then gathered and aggrigated by **MultiQC**. The MultiQC tool creates one easy-to-read, comprehensive report that shows you the overall quality of *all* your starting data at a glance prior to starting. This step helps you quickly spot any issues with your raw DNA data early on. You can also see how much difference later processing steps make to your reads.
+1. **Spotting and Removing Contamination**: We use a tool called **Kraken2** which uses a k-mer based approach to find and filter out any unwanted DNA (like human or viral DNA) from your bacterial DNA. Kraken2 is great at this, even with mixed samples. This step ensures only clean data moves forward.  For interest, ta visualization of your contamination file is automatically generated.
 
 **The Tools We Use Here**:
 
-*  **FastQC**: This is like a thorough doctor's check-up for your raw DNA sequences. It gives you a detailed report on their quality, and it's chosen because it's easy to use and provides clear insights.
+##### **Kraken2**: This tool classifies DNA sequences, helping us identify and filter out any contaminating DNA.
+
+**References**:
+
+1.  <https://pmc.ncbi.nlm.nih.gov/articles/PMC9725748/>
+
+2.  <https://github.com/DerrickWood/kraken2/wiki/Manual>
+
+
+#### What `subsampling.nf` does: 
+1. **Smart Sub-sampling**: After cleaning, we use **Rasusa** to intelligently "sub-sample" your DNA reads down to a very specific amount (default 100x coverage). Why? Because with bacterial long read sequencing, bacterial genomics produces a unique challenge.  First, the genome is longer than the plasmid reads.  For every genome that is read, multiple rounds of sequencing occurs with the plasmids.  This ultimately creates a problem for researchers as it can make recapitulating plasmids difficult. A 100x coverage is very very conservative and aggressive.  If time and space are an issue, 50 to 80x is also sufficient.
+2. The files are subsampled at 100x.  This is VERY deep sequencing, likely you will be fine at 60 or 80X.  You can adjust your coverage in the `nextflow.config` file if you want to speed up the process.  
+
+**References**:
+
+1.  <https://github.com/sanger-pathogens/rasusa>
+
+2.  Hall, M. B., et al. (2020). Rasusa: Randomly subsample reads to a specified coverage. *Journal of Open Source Software*, 5(52), 2410. [doi:10.21105/joss.02410](https://doi.org/10.21105/joss.02410)
+---
+
+### Stage 3: Quality Control and Assurance (`fastqaqc.nf`; `multiqc.nf`)
+Repeatedly throughout the Nextflow process, quality checks are used to determine if the cleaning stages are functioning.  The FASTQC program does just that and MultiQC will compile the report and produce an `.html` file that you can quickly use to assess the quality of the data.  Stage 3 is executed prior to any analyses, after decontamination, and after subsampling.  There are additional quality programs used for assemblies, and MultiQC is used to integrate those reports as well.  
+
+#### What `fastqc.nf` does: 
+*  **FastQC**: Gives a detailed quality report for the cleaned and subsampled DNA reads per sequencing file
 
 *  **Reference**:
 
-1.  <https://github.com/s-andrews/fastqc>
+1.  <https://github.com/s-andrews/fastqc> 
+2.  How to read your FastQC results: <https://bioinfo.cd-genomics.com/quality-control-how-do-you-read-your-fastqc-results.html>
+3.  FastQC tutorial: <https://www.youtube.com/watch?v=qPbIlO_KWN0>
+   
+#### What `multiqc.nf` does: 
 
-*  **Understanding Your Results**:
-
-1.  How to read your FastQC results: <https://bioinfo.cd-genomics.com/quality-control-how-do-you-read-your-fastqc-results.html>
-
-2.  FastQC tutorial: <https://www.youtube.com/watch?v=qPbIlO_KWN0>
-
-*  **MultiQC**: Think of MultiQC as the manager who collects all the individual FastQC reports and combines them into one clear, easy-to-understand summary.
+*  **MultiQC**: Gathers all the individual FastQC reports into one easy-to-read summary, confirming the quality of the data going into assembly.   All these individual FastQC reports are then gathered and aggrigated by **MultiQC**. The MultiQC tool creates one easy-to-read, comprehensive report that shows you the overall quality of *all* your starting data at a glance prior to starting. This step helps you quickly spot any issues with your raw DNA data early on. You can also see how much difference later processing steps make to your reads.
 
 *  **References**:
 
 1.  <https://multiqc.info/>
-
 2.  Ewels, P., Magnusson, M., Lundin, S., & K�ller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. *Bioinformatics*, **32**(19), 3047?3049. [doi:10.1093/bioinformatics/btw354](https://doi.org/10.1093/bioinformatics/btw354)
-
----
 
 
 ###  Stage 4: Building & Labeling Your Bacterial Blueprint (`assembly.nf`, `annotation.nf`)
-
-Now that your DNA reads are super clean, it's time for some serious construction! This stage takes all those tiny DNA pieces and puts them together like a puzzle to build the complete bacterial genome (assembly). Then, it labels all the important parts of that genome (annotation).
+The DNA was prepared in Stage 2 for the downstream analytics.  The decontaminated, subsampled reads are now ready for assembling and annotation.  Assembly will take the raw reads and create the draft genome using Flye.  Flye was chosen as it is a high fidelity long read assembler that flags circular vs. non-circular assemblies. The assembler takes raw reads that are not circularized. The draft genome (output:contig.fasta) file is the draft genome.  Then, the draft genome (or assembly) is checked for quality with QUAST and BUSCO.  Finally, the assembly is annotated using Bakta.  There is no circularization of the genome as it can lead to over-trimming of the assembly which can lead to the artificial induction of frameshift mutations and mask other potential features.  Therefore, while circularization is detected via Flye, it will not be artificially induced by BACON.  
 
 **What happens in this stage**:
 
-1.  **Genome Assembly**: We use a powerful tool called **Flye** to assemble your bacterial genome. Flye is one of many programs one could use to construct the genome.  BACON has the inate ability to determine what kind of PacBio sequence is inputted, which may or may not be disclosed on public repositories.  Therefore, it is able to **automatically recognize and adjust its building strategy based on the type of PacBio data you provide**. This means whether you have super-accurate 'HiFi' reads or longer, slightly more error-prone reads, Flye knows how to make the best possible assembly and reduces the time required for decision making and adjustments.  Understandably, the Flye process likely will take the longest because of its dynamic approach to assembly formation.  Flye assemblies by their very nature are high quality and do not require circularization ahead of assembly as circular topography is identified during the construction phase. Removing circularization ahead of assembly reduces pre-processing errors from being introduced to the assembly stage and beyond. If assemblies are not circular, other tools can be used post-assembly by the user. 
+1.  **Genome Assembly**: **Flye** is a powerful long-read assembler for bacterial genomes. Unlike Canu, which is common and more coarse, Flye BACON has the inate ability to determine what kind of PacBio sequence is inputted, which may or may not be disclosed on public repositories.  Therefore, it is able to **automatically recognize and adjust its building strategy based on the type of PacBio data you provide**. This means whether you have super-accurate 'HiFi' reads or longer, slightly more error-prone reads, Flye knows how to make the best possible assembly and reduces the time required for decision making and adjustments.  Understandably, the Flye process likely will take the longest because of its dynamic approach to assembly formation.  Flye assemblies by their very nature are high quality and do not require circularization ahead of assembly as circular topography is identified during the construction phase. Removing circularization ahead of assembly reduces pre-processing errors from being introduced to the assembly stage and beyond. If assemblies are not circular, other tools can be used post-assembly by the user. 
 
-2.  **Genome Annotation**: Once the genome is assembled, it's still just a long string of letters. We use **Bakta** to act like a genetic dictionary, going through the genome and identifying all the important features. Bakta is often better for identifying protein sequences which leads to improved downstream analytics. It is also able to detect small ORFs and pseudogenes and it works both with and without identifying the species of interest ahed of the analyses. 
+2.  **Genome Annotation**: Once the genome is assembled, it's still just a long string of letters. We use **Bakta** to act like a genetic dictionary, going through the genome and identifying all the important features. Bakta is often better for identifying protein sequences which leads to improved downstream analytics. It is also able to detect small ORFs and pseudogenes and it works both with and without identifying the species of interest ahed of the analyses.
+
+*  **References**:
+
+1.  <https://github.com/mikolmogorov/Flye>
+
+2.  Kolmogorov, M., Bickhart, D. M., Behsaz, B., Gurevich, A., Rayko, M., Shin, S. B., ... & Pevzner, P. A. (2020). metaFlye: scalable long-read metagenome assembly using repeat graphs. *Nature Methods*, **17**(12), 1188-1191. [doi:10.1038/s41592-020-00971-x](https://doi.org/10.1038/s41592-020-00971-x)
+
+3.  Kolmogorov, M., Yuan, J., Lin, Y., & Pevzner, P. (2019). Assembly of long error-prone reads using repeat graphs. *Nature Biotechnology*, **37**(5), 540-546. [doi:10.1038/s41587-019-0072-8](https://doi.org/10.1038/s41587-019-0072-8)
+
+4.  Lin, Y., Yuan, J., Kolmogorov, M., Shen, M. W., Chaisson, M., & Pevzner, P. A. (2016). Assembly of long error-prone reads using de Bruijn graphs. *Proceedings of the National Academy of Sciences*, **113**(47), E7629-E7638. [doi:10.1073/pnas.1604560113](https://www.doi.org/10.1073/pnas.1604560113)
 
 Bakta labels everything clearly so you can understand what each part of the genome does.
 
@@ -533,17 +510,6 @@ Bakta labels everything clearly so you can understand what each part of the geno
 
 **The Tools We Use Here**:
 
-*  **Flye**: Your master architect for assembling long and challenging DNA reads into a complete genome.  
-
-*  **References**:
-
-1.  <https://github.com/mikolmogorov/Flye>
-
-2.  Kolmogorov, M., Bickhart, D. M., Behsaz, B., Gurevich, A., Rayko, M., Shin, S. B., ... & Pevzner, P. A. (2020). metaFlye: scalable long-read metagenome assembly using repeat graphs. *Nature Methods*, **17**(12), 1188-1191. [doi:10.1038/s41592-020-00971-x](https://doi.org/10.1038/s41592-020-00971-x)
-
-3.  Kolmogorov, M., Yuan, J., Lin, Y., & Pevzner, P. (2019). Assembly of long error-prone reads using repeat graphs. *Nature Biotechnology*, **37**(5), 540-546. [doi:10.1038/s41587-019-0072-8](https://doi.org/10.1038/s41587-019-0072-8)
-
-4.  Lin, Y., Yuan, J., Kolmogorov, M., Shen, M. W., Chaisson, M., & Pevzner, P. A. (2016). Assembly of long error-prone reads using de Bruijn graphs. *Proceedings of the National Academy of Sciences*, **113**(47), E7629-E7638. [doi:10.1073/pnas.1604560113](https://www.doi.org/10.1073/pnas.1604560113)
 
 *  **Bakta**: Your genetic dictionary and annotator, labeling all the functional parts of the bacterial genome.
 
