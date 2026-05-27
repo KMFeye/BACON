@@ -214,6 +214,32 @@ process PLOT_PLASMID_SUMMARY {
     '''
 }
 
+process PLOT_PLASMID_MAPS {
+    tag "Plotting plasmid map for $fasta.baseName"
+    publishDir "${params.outdir}/figures/plasmid_maps", mode: 'copy'
+    memory = '8.GB'
+
+    input:
+    path(fasta) // A single .gplas_plasmids.fasta file
+    output:
+    path("*.png"), emit: plot_png
+    path("*.pdf"), emit: plot_pdf
+    path("bakta/*.gff3"), emit: annotations
+
+    script:
+    def prefix = fasta.baseName.replaceAll('.gplas_plasmids', '')
+
+    """
+    bakta --db /path/to/bakta/db/ --output bakta ${fasta} --prefix ${prefix}
+
+##############################################################
+    plot_plasmid.R \
+        --fasta ${fasta} \
+        --gff bakta/${prefix}.gff3 \
+        --prefix ${prefix}
+    """
+}
+
 process PLOT_PANTHER_DOTPLOT {
     tag "Generating PANTHER enrichment dot plot"
     label 'process_medium'
