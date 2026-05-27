@@ -22,7 +22,7 @@ include { CREATE_SNP_ALIGNMENT; BUILD_PHYLO_TREE } from './modules/SNPphylogenet
 include { CREATE_SNPEFF_DB; FIND_FRAMESHIFTS; EXTRACT_IMPACTFUL_GENES; RUN_PANTHER_API_DIRECT } from './modules/functionalanalysis.nf'
 include { RUN_PROGRESSIVE_MAUVE; PLOT_GENOME_SYNTENY } from './modules/wholegenomealignment.nf'
 include { RUN_PANAROO; RUN_PYSEER; PLOT_PYSEER_MANHATTAN } from './modules/pangenomeanalysis.nf'
-include { GENERATE_FINAL_REPORT; SUMMARIZE_AND_ORGANIZE } from './modules/final_report.nf' 
+include { GENERATE_FINAL_REPORT; SUMMARIZE_AND_ORGANIZE } from './modules/finalreport.nf' 
 include { PLOT_PLASMID_MAPS; PLOT_RESISTANCE_HEATMAP; PLOT_VIRULENCE_HEATMAP; PLOT_PLASMID_SUMMARY; PLOT_PANTHER_DOTPLOT; PLOT_ANNOTATED_TREE; PLOT_KRAKEN_REPORTS  } from './modules/visualization.nf'
 
 
