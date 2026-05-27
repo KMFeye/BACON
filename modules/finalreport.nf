@@ -113,64 +113,6 @@ process GENERATE_FINAL_REPORT {
     '''
 }
 
-process PLOT_KRAKEN_REPORTS {
-    tag "Generating Kraken2 summary plot"
-    label 'process_medium'
-
-    conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-ggplot2'
-    publishDir "${params.outdir}/figures", mode: 'copy'
-
-    input:
-    path kraken_reports
-
-    output:
-    path "kraken2_stacked_barplot.png"
-
-    script:
-    '''
-    #!/usr/bin/env Rscript
-    library(tidyverse)
-
-    files <- Sys.glob('*.txt')
-    
-    kraken_data <- files %>%
-      set_names(.) %>%
-      map_dfr(~ read_tsv(., col_names = c('percentage', 'reads_total', 'reads_level', 'rank', 'taxid', 'name'), col_types = cols(.default = "c")), .id = "filepath") %>%
-      mutate(sample_id = basename(filepath) %>% str_replace(".kraken2_report.txt", "")) %>%
-      mutate(
-        percentage = as.numeric(percentage),
-        name = str_trim(name)
-      ) %>%
-      filter(rank %in% c('G', 'S'))
-
-    top_taxa <- kraken_data %>%
-      group_by(name) %>%
-      summarise(mean_abundance = mean(percentage)) %>%
-      filter(name != 'unclassified') %>%
-      top_n(10, wt = mean_abundance) %>%
-      pull(name)
-
-    plot_data <- kraken_data %>%
-      mutate(taxon_plot = ifelse(name %in% top_taxa, name, 'Other')) %>%
-      group_by(sample_id, taxon_plot) %>%
-      summarise(total_percentage = sum(percentage))
-
-    kraken_plot <- ggplot(plot_data, aes(x = sample_id, y = total_percentage, fill = taxon_plot)) +
-        geom_bar(stat = "identity", position = "stack") +
-        scale_fill_brewer(palette = "Paired") +
-        labs(
-            title = "Taxonomic Composition of Samples (Kraken2)",
-            x = "Sample ID",
-            y = "Percentage of Reads",
-            fill = "Taxon"
-        ) +
-        theme_bw() +
-        theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-    ggsave("kraken2_stacked_barplot.png", plot = kraken_plot, width = 12, height = 8, dpi = 300)
-    '''
-}
-
 process SUMMARIZE_AND_ORGANIZE {
     tag "Consolidating all results and organizing final files"
     label 'process_low'
