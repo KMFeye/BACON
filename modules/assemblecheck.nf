@@ -19,7 +19,6 @@ process FLYE_ASSEMBLY {
 
     input:
     tuple val(sample_id), path(fastq)
-
     output:
     tuple val(sample_id), path("flye_assembly"), emit: assembly_dir
     tuple val(sample_id), path("flye_assembly/assembly.fasta"), emit: assembly_fasta, optional: true
@@ -31,7 +30,6 @@ process FLYE_ASSEMBLY {
     } else {
         command = "flye --pacbio-raw '${fastq}' --out-dir flye_assembly --threads ${task.cpus}"
     }
-    
     """
     echo "Running command: ${command}"
     ${command}
@@ -47,7 +45,6 @@ process QUAST_REPORT {
     publishDir "${params.outdir}/rawdata/${sample_id}/quast",
         mode: 'copy',
         pattern: "quast_results/*"
-   
     publishDir "${params.outdir}/tables",
     mode: 'copy',
     pattern: "quast_results/report.tsv",
@@ -55,20 +52,16 @@ process QUAST_REPORT {
     
     input:
     tuple val(sample_id), path(assembly)
-
     output:
     path("quast_results"), emit: quast_report
 
     script:
-
     """
     quast.py ${assembly} -o quast_results
     """
 }
 
-
-
-process BOSCO {
+process BUSCO {
     tag "Busco report for ${sample_id}"
     label 'process_medium'
     conda 'bioconda::busco'
@@ -78,6 +71,7 @@ process BOSCO {
     tuple val(sample_id), path(fasta)
     output:
     tuple val(sample_id), path("busco_output"), emit: busco_report
+
     script:
     """
     busco -i "${fasta}" -m genome -o busco_output -l bacteria_odb12
