@@ -6,7 +6,6 @@ process RUN_PLATON {
 
     input:
     tuple val(sample_id), path(assembly_fasta)
-
     output:
     tuple val(sample_id), path("${sample_id}.platon_plasmids.fasta"), emit: plasmid_fasta
     tuple val(sample_id), path("${sample_id}.platon.tsv"), emit: report
