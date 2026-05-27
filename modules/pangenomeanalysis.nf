@@ -5,7 +5,6 @@ process RUN_PANAROO {
 
     input:
     path(gff_files)
-
     output:
     path("panaroo_output"), emit: panaroo_dir
 
@@ -31,7 +30,6 @@ process RUN_PYSEER {
     input:
     path(panaroo_dir)
     path(traits_file)
-
     output:
     path("pyseer_output"), emit: pyseer_dir
 
@@ -65,7 +63,6 @@ process PLOT_PYSEER_MANHATTAN {
 
     input:
     path(pyseer_results) // The gene_gwas_results.txt file
-
     output:
     path("*.png")
     path("*.pdf")
