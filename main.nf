@@ -72,6 +72,7 @@ workflow {
 // --- 3. Annotation and Characterization ---
     BAKTA_ANNOTATION(successful_assemblies_fasta)
     bakta_gff_ch = BAKTA_ANNOTATION.out.gff
+    bakta_fasta_ch = BAKTA_ANNOTATION.out.fasta
 
     AMRFINDER_ANALYSIS(successful_assemblies_fasta, amrfinder_db_ch)
     PLASMIDFINDER_ANALYSIS(successful_assemblies_fasta.combine(plasmidfinder_db_ch))
@@ -83,6 +84,18 @@ workflow {
     PLOT_PLASMID_MAPS(RUN_PLATON.out.plasmid_fasta.map { id, fasta -> fasta })
 
 // --- 4. SNP AND FUNCTIONAL ANALYSIS OF SNP IMPACTS ON BACTERIA ---
+    ch_samplesheet_for_snpeff
+    if (params.samplesheet && file(params.samplesheet).exists()) {
+        println "[Workflow] Using provided samplesheet: ${params.samplesheet}"
+        ch_samplesheet_for_snpeff = channel.fromPath(params.samplesheet)
+    } else {
+        println "[Workflow] No valid samplesheet provided. Generating one from BAKTA results."
+        CREATE_SAMPLESHEET(
+            BAKTA_ANNOTATION.out.gff.collect(), // A signal that all GFFs are ready
+            file("${params.outdir}/rawresults/bakta/") // The path to the published results
+        )
+        ch_samplesheet_for_snpeff = CREATE_SAMPLESHEET.out.samplesheet
+    }
     ALIGN_TO_REFERENCE(rasusa_fastq_ch, bacterial_ref_fasta_ch)
     CALL_VARIANTS_BCFTOOLS(ALIGN_TO_REFERENCE.out.aligned_bam, bacterial_ref_fasta_ch)
     FILTER_VARIANTS_BCFTOOLS(CALL_VARIANTS_BCFTOOLS.out.raw_vcf)
@@ -90,7 +103,7 @@ workflow {
     vcfs_after_fix = FIX_VCF_HEADER.out.vcf
 
     db_build_input = bakta_gff_ch.join(successful_assemblies_fasta).first()
-    CREATE_SNPEFF_DB(db_build_input)
+    CREATE_SNPEFF_DB(ch_samplesheet_for_snpeff)
     SNPEFF_ANNOTATE(vcfs_after_fix.combine(CREATE_SNPEFF_DB.out.snpeff_config).combine(CREATE_SNPEFF_DB.out.snpeff_db_dir))
     annotated_vcfs = SNPEFF_ANNOTATE.out.annotated_vcf
 
