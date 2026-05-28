@@ -227,6 +227,27 @@ else
     echo "Git is already installed system-wide."
 fi
 
+# --- 6.5. PULL NEXTFLOW REPOSITORY ---
+echo "--> Cloning the BACON Nextflow repository..."
+
+export REPO_DIR="$LOCAL_DIR/BACON_pipeline"
+
+if [ -d "$REPO_DIR" ]; then
+    echo "--> Repository already exists. Pulling latest changes..."
+    cd "$REPO_DIR"
+    git pull
+    cd "$LOCAL_DIR"
+else
+    echo "--> Cloning repository from GitHub..."
+    echo "NOTE: Because the repository is private, you will be prompted for your GitHub credentials."
+    echo "Please use a Personal Access Token (PAT) as your password."
+    
+    git clone https://github.com/KMFeye/BACON.git "$REPO_DIR"
+    
+    echo "--> Repository cloned successfully into $REPO_DIR"
+fi
+
+
 # --- RStudio Desktop Installation ---
 if command -v rstudio &> /dev/null; then
     echo "RStudio Desktop is already installed."
