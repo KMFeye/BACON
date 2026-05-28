@@ -1,7 +1,8 @@
 process RUN_PANAROO {
     tag "Panaroo pangenome analysis"
-    publishDir "${params.outdir}/rawresults/aggregate/pangenome", mode: 'copy'
     conda 'bioconda::panaroo'
+
+    publishDir: {"${params.outdir}/rawresults/aggregate/pangenome", mode: 'copy'}
 
     input:
     path(gff_files)
@@ -24,8 +25,9 @@ process RUN_PANAROO {
 
 process RUN_PYSEER {
     tag "Pyseer LMM-GWAS"
-    publishDir "${params.outdir}/figures/pangenome/pyseer", mode: 'copy'
     conda 'bioconda::pyseer'
+
+    publishDir: {"${params.outdir}/figures/pangenome/pyseer", mode: 'copy'}
 
     input:
     path(panaroo_dir)
@@ -47,9 +49,7 @@ process RUN_PYSEER {
 
     echo "Core gene alignment found. Running Pyseer."
     mkdir pyseer_output
-
     pyseer-make-kinship --alignment "\${CORE_GENE_ALIGNMENT}" --output pyseer_output/kinship.matrix
-
     pyseer --phenotypes ${traits_file} --pres ${panaroo_dir}/gene_presence_absence.Rtab --similarity pyseer_output/kinship.matrix --output-patterns pyseer_output/gene_gwas_results.txt --cpu ${task.cpus}
     """
 }
@@ -58,8 +58,8 @@ process RUN_PYSEER {
 
 process PLOT_PYSEER_MANHATTAN {
     tag "Plotting Pyseer Manhattan plot"
-    publishDir "${params.outdir}/figures/pangenome/pyseer/plots", mode: 'copy'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-qqman'
+    publishDir: {"${params.outdir}/figures/pangenome/pyseer/plots", mode: 'copy'}
 
     input:
     path(pyseer_results) // The gene_gwas_results.txt file
