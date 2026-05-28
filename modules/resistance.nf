@@ -3,12 +3,11 @@ process AMRFINDER_ANALYSIS {
     label 'process_medium'
     conda 'bioconda::ncbi-amrfinderplus'
 
-    publishDir "${params.outdir}/tables/amrfinder", mode: 'copy'
+    publishDir: {"${params.outdir}/tables/amrfinder", mode: 'copy'}
 
     input:
     tuple val(sample_id), path(fasta)
     path amrfinder_ready_signal // This now takes the signal file
-
     output:
     tuple val(sample_id), path("${sample_id}_amrfinder.txt"), emit: amrfinder_report
 
@@ -24,11 +23,10 @@ process PLASMIDFINDER_ANALYSIS {
     label 'process_medium'
     conda 'bioconda::plasmidfinder'
     
-    publishDir "${params.outdir}/tables/plasmidfinder", mode: 'copy'
+    publishDir: {"${params.outdir}/tables/plasmidfinder", mode: 'copy'}
 
     input:
     tuple val(sample_id), path(fasta), path(plasmidfinder_db)
-
     output:
     tuple val(sample_id), path("plasmidfinder_output"), emit: plasmidfinder_report
 
@@ -45,10 +43,9 @@ process MOB_SUITE_ANALYSIS {
     label 'process_medium'
     conda "${System.getenv('HOME')}/miniconda3/envs/mobsuite_env" 
     
-    publishDir "${params.outdir}/tables/mobsuite", mode: 'copy'
+    publishDir: {"${params.outdir}/tables/mobsuite", mode: 'copy'}
 
     input: tuple val(sample_id), path(fasta)
-    
     output: tuple val(sample_id), path("mobsuite_output"), emit: mobsuite_report
     
     script: 
@@ -65,11 +62,10 @@ process RUN_ABRICATE {
     maxRetries 2
     errorStrategy 'retry'
 
-    publishDir "${params.outdir}/tables/abricate", mode: 'copy'
+    publishDir: {"${params.outdir}/tables/abricate", mode: 'copy'}
 
     input:
     tuple val(sample_id), path(fasta)
-
     output:
     tuple val(sample_id), path("${sample_id}_abricate_report.tsv"), emit: report
 
@@ -80,9 +76,7 @@ process RUN_ABRICATE {
 
     echo "Running ABRicate with databases: card, vfdb"
 
-    abricate --summary \
-        <(abricate --db card --threads ${task.cpus} --nocolour --noheader "${fasta}") \
-        <(abricate --db vfdb --threads ${task.cpus} --nocolour --noheader "${fasta}") \
+    abricate --summary < (abricate --db card --threads ${task.cpus} --nocolour --noheader "${fasta}") <(abricate --db vfdb --threads ${task.cpus} --nocolour --noheader "${fasta}") 
         > "${sample_id}_abricate_report.tsv"
     """
 }
