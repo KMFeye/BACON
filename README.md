@@ -172,7 +172,7 @@ multiqc {
 #### The metadata.csv file
 The metadata file allows you to add one continuous variable of interest at this current time to run GWAS.  The general csv format is below and is will download with the BACON program: 
 
-		<img width="364" height="163" alt="image" src="https://github.com/user-attachments/assets/2d429921-f71f-4126-b709-4806cdfd1186" />
+<img width="364" height="163" alt="image" src="https://github.com/user-attachments/assets/2d429921-f71f-4126-b709-4806cdfd1186" />
 
 *Column A*=Don't change the column name, this is your sample_ID.  Add each sample you are sequencing by row. So if you sequenced 100 strains, the total length of the column should be 101.  Don't format it any different than what you'd format the sequence ID linked to the sequencer.  Use the following format:
 EG LESDdkldf_Sample1.bam
@@ -216,7 +216,7 @@ The BACON is modularized, which makes the Nextflow program easier to manage.  Al
 
 Because each program that the system uses is unique, changes may need to occur within the nf files.  The files listed below are the only ones that require a change.  At any time, users can modify the code within each process to satisfy their needs.  
 
-**Modify:** **IndexClean.nf**
+**Modify:** **IndexDB.nf**
 Go to ncbi and find a reference genome for the bacterial species BACON will analyze.  Copy the .fna.gz link and replace the link in the process file.  For visualizaiton purposes, the brackets are displayed below but an example of the link is included in the real IndexClean.nf file downloaded with the repository. 
 ```
 process DOWNLOAD_BACTERIAL_REFERENCE {
@@ -231,7 +231,7 @@ process DOWNLOAD_BACTERIAL_REFERENCE {
     """
 }
 ```
-**Modify**: **Circularizeassemble.nf**
+**Modify**: **assemblecheck.nf**
 Busco has a general bacteria database called in the program.  If you want a more specific database, please feel free to update it. 
 
 ```
