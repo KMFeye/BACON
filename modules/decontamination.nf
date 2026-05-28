@@ -5,23 +5,14 @@ process EXTRACT_TARGET_READS {
 
     input:
     tuple val(sample_id), path(reads), path(db_path)
-
     output:
     tuple val(sample_id), path("${sample_id}.target_reads.fastq.gz"), emit: target_reads
 
     script:
     """
-    kraken2 \\
-        --db "${db_path}" \\
-        --threads ${task.cpus} \\
-        --gzip-compressed \\
-        --classified-out /dev/stdout \\
-        --report /dev/null \\
-        --output /dev/null \\
-        --include-children \\
-        --taxa ${params.target_taxid} \\
-        "${reads}" \\
-    | gzip -c > "${sample_id}.target_reads.fastq.gz"
+    kraken2 
+  --db "${db_path}" --threads ${task.cpus} --gzip-compressed --classified-out /dev/stdout --report /dev/null --output /dev/null --include-children --taxa ${params.target_taxid} 
+   "${reads}"  | gzip -c > "${sample_id}.target_reads.fastq.gz"
     """
 }
 
@@ -31,7 +22,7 @@ process GENERATE_CONTAMINATION_REPORT {
     label 'process_medium'
     conda 'bioconda::kraken2'
 
-    publishDir "${params.outdir}/rawresults/${sample_id}/kraken2", mode: 'copy'
+    publishDir: {"${params.outdir}/rawresults/${sample_id}/kraken2", mode: 'copy'}
 
     input:
     tuple val(sample_id), path(reads), path(db_path)
@@ -41,11 +32,7 @@ process GENERATE_CONTAMINATION_REPORT {
 
     script:
     """
-    kraken2 \\
-        --db "${db_path}" \\
-        --threads ${task.cpus} \\
-        --gzip-compressed \\
-        --report "${sample_id}.kraken2_report.txt" \\
-        "${reads}" > /dev/null
+    kraken2 
+    --db "${db_path}" --threads ${task.cpus} --gzip-compressed  --report "${sample_id}.kraken2_report.txt" "${reads}" > /dev/null
     """
 }
