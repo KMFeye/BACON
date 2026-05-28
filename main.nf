@@ -13,6 +13,7 @@ include { CLEAN_QAQC as INITIAL_READ_QC; CLEAN_QAQC as POSTFILTER_READ_QC } from
 include { MULTIQC as MULTIQC_GENERAL; MULTIQC as MULTIQC_ASSEMBLY } from './modules/multiqc.nf'
 include { FLYE_ASSEMBLY; QUAST_REPORT; BOSCO } from './modules/assemblecheck.nf'
 include { BAKTA_ANNOTATION } from './modules/annotation.nf'
+include { CREATE_SAMPLESHEET } from './modules/create_samplesheet.nf'
 include { AMRFINDER_ANALYSIS; PLASMIDFINDER_ANALYSIS; MOB_SUITE_ANALYSIS; RUN_ABRICATE } from './modules/resistance.nf'
 include { RUN_PLATON } from './modules/platon_module.nf'
 include { CRISPR_TYPING; VISUALIZE_CRISPR_RESULTS } from './modules/crispr.nf'
@@ -96,6 +97,7 @@ workflow {
         )
         ch_samplesheet_for_snpeff = CREATE_SAMPLESHEET.out.samplesheet
     }
+
     ALIGN_TO_REFERENCE(rasusa_fastq_ch, bacterial_ref_fasta_ch)
     CALL_VARIANTS_BCFTOOLS(ALIGN_TO_REFERENCE.out.aligned_bam, bacterial_ref_fasta_ch)
     FILTER_VARIANTS_BCFTOOLS(CALL_VARIANTS_BCFTOOLS.out.raw_vcf)
