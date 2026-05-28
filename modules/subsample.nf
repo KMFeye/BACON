@@ -3,7 +3,7 @@ process SUBSAMPLE_RASUSA {
     label 'process_low'
     conda 'bioconda::rasusa=0.7.0'
 
-    publishDir "${params.outdir}/rawresults/rasusa/${sample_id}/subsampling", mode: 'copy'
+    publishDir: {"${params.outdir}/rawresults/rasusa/${sample_id}/subsampling", mode: 'copy'}
 
     input:
     tuple val(sample_id), path(fastq_in), val(genome_size), val(coverage)
