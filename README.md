@@ -137,8 +137,8 @@ params {
     genome_size           = [DETERMINE AND WRITE IT LIKE THIS...'SIZE m']
     coverage              = 100 
     target_taxid          = [LOOK UP AT THIS SITE: https://www.ncbi.nlm.nih.gov/taxonomy]
-    traits_file           = "${projectDir}/metadata.csv"
-    tree_color_column     = 'sequence_type'
+    traits_file           = ["${projectDir}/metadata.csv"]
+    tree_color_column     = '[sequence_type']
     panther_organism      = [NAME OF ORGANISM, VALIDATE ON PANTHER THAT IT IS THERE]
     panther_annot_dataset = 'GO:0008150' [YOU CAN CHANGE THIS IF YOU WANT]
     rbioapi_organism_id   = [LOOK THIS UP]
