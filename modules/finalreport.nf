@@ -3,14 +3,13 @@ process GENERATE_FINAL_REPORT {
     label 'process_high'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-ape conda-forge::r-pheatmap conda-forge::r-rio conda-forge::r-kableextra'
 
-    publishDir "${params.outdir}/figures", mode: 'copy'
+    publishDir: {"${params.outdir}/figures", mode: 'copy'}
 
     input:
     path summary_tables_dir
     path panaroo_dir
     path phylo_tree
     path merged_vcf
-
     output:
     path "publication_figures"
     path "publication_tables"
@@ -19,8 +18,6 @@ process GENERATE_FINAL_REPORT {
     script:
     '''
     #!/usr/bin/env Rscript
-    
-    # --- Installation of Bioconductor Packages ---
     if (!requireNamespace("BiocManager", quietly = TRUE)) {
         install.packages("BiocManager", repos = "http://cran.us.r-project.org")
     }
@@ -30,8 +27,6 @@ process GENERATE_FINAL_REPORT {
             BiocManager::install(pkg)
         }
     }
-
-    # --- Load all libraries ---
     suppressPackageStartupMessages({
         library(tidyverse)
         library(kableExtra)
@@ -43,11 +38,9 @@ process GENERATE_FINAL_REPORT {
         library(rio)
     })
 
-    # --- Setup ---
     dir.create("publication_figures", showWarnings = FALSE)
     dir.create("publication_tables", showWarnings = FALSE)
 
-    # --- 1. Master Quality Control Table ---
     tryCatch({
         print("Creating Master QC Table...")
         multiqc_file <- file.path("${summary_tables_dir}", "multiqc_data", "multiqc_general_stats.txt")
@@ -61,7 +54,6 @@ process GENERATE_FINAL_REPORT {
         }
     }, error = function(e) { print(paste("Error in QC section:", e)) })
 
-    # --- 2. Resistance & Plasmid Outputs ---
     all_summary_files <- list.files(path = "${summary_tables_dir}", pattern = "*.csv", full.names = TRUE)
     for (f in all_summary_files) {
         tryCatch({
@@ -76,7 +68,6 @@ process GENERATE_FINAL_REPORT {
         }, error = function(e) { print(paste("Could not format table", f, ":", e)) })
     }
 
-    # --- 3. ABRicate Clustered Heatmap ---
     tryCatch({
         print("Attempting to generate ABRicate heatmap...")
         abricate_file <- file.path("${summary_tables_dir}", "all_abricate_data.csv")
@@ -92,7 +83,6 @@ process GENERATE_FINAL_REPORT {
         }
     }, error = function(e) { print(paste("Error in ABRicate heatmap section:", e)) })
     
-    # --- 4. Annotated Phylogenetic Tree ---
     tryCatch({
         print("Generating annotated phylogenetic tree...")
         if (file.exists("${phylo_tree}") && file.info("${phylo_tree}")$size > 0) {
@@ -100,7 +90,6 @@ process GENERATE_FINAL_REPORT {
         }
     }, error = function(e) { print(paste("Error generating annotated tree:", e)) })
 
-    # --- 5. SNP PCA Analysis ---
     tryCatch({
         print("Attempting to run SNP PCA...")
          if (file.exists("${merged_vcf}") && file.info("${merged_vcf}")$size > 0) {
@@ -117,7 +106,7 @@ process SUMMARIZE_AND_ORGANIZE {
     tag "Consolidating all results and organizing final files"
     label 'process_low'
     
-    publishDir "${params.outdir}/files", mode: 'copy'
+    publishDir: {"${params.outdir}/files", mode: 'copy'}
 
     input:
     val(done_signal)
@@ -141,7 +130,6 @@ process SUMMARIZE_AND_ORGANIZE {
     os.makedirs('final_files/summary_csvs', exist_ok=True)
     os.makedirs('final_files/assemblies', exist_ok=True)
 
-    # 1. Organize Final Assembly Files
     print("Organizing final assembly files...")
     for f in glob.glob("*.fasta"):
         if os.path.isfile(f):
@@ -150,7 +138,6 @@ process SUMMARIZE_AND_ORGANIZE {
             except Exception as e:
                 print(f"Could not copy assembly {f}: {e}")
     
-    # 2. Consolidate Summary Tables into CSVs
     def safe_read_and_concat(search_dir, glob_pattern, out_name, id_level, sep='\\t', comment=None, header=0):
         files = glob.glob(f"{search_dir}/**/{glob_pattern}", recursive=True)
         if not files:
@@ -173,7 +160,6 @@ process SUMMARIZE_AND_ORGANIZE {
             pd.concat(dfs, ignore_index=True).to_csv(out_path, index=False)
             print(f"Successfully created {out_path}")
 
-    # --- Call the function for all reports ---
     print("Consolidating analysis reports into summary CSVs...")
     safe_read_and_concat(str(tables_dir), 'abricate/*.tsv', 'all_abricate_data.csv', 2)
     safe_read_and_concat(str(tables_dir), 'amrfinder/*.txt', 'all_amrfinder_data.csv', 2)
