@@ -3,18 +3,17 @@ process CRISPR_TYPING {
     label 'process_medium'
     conda 'bioconda::minced'
 
-    publishDir "${params.outdir}/rawresults/${sample_id}/crispr_typing",
+    publishDir: {"${params.outdir}/rawresults/${sample_id}/crispr_typing",
         mode: 'copy',
-        pattern: "${sample_id}.minced.*"
+        pattern: "${sample_id}.minced.*"}
 
-    publishDir "${params.outdir}/tables",
+    publishDir: {"${params.outdir}/tables",
         mode: 'copy',
         pattern: "*.gff",
-        saveAs: { "${sample_id}.crispr.gff" }
+        saveAs: { "${sample_id}.crispr.gff" }}
 
     input:
     tuple val(sample_id), path(assembly)
-
     output:
     path("*.gff"), emit: crispr_gff
 
@@ -25,11 +24,8 @@ process CRISPR_TYPING {
         ${sample_id}.minced
 
     if [ -f "${sample_id}.minced.gff" ]; then
-        # If the file exists, move it to our standard name
         mv ${sample_id}.minced.gff ${sample_id}.crispr.gff
     else
-        # If no CRISPRs were found and the file doesn't exist,
-        # create an empty file so the output channel isn't broken.
         touch ${sample_id}.crispr.gff
     fi
     """
@@ -40,11 +36,10 @@ process VISUALIZE_CRISPR_RESULTS {
     label 'process_low'
     conda 'conda-forge::matplotlib-base'
 
-    publishDir "${params.outdir}/figures", mode: 'copy'
+    publishDir: {"${params.outdir}/figures", mode: 'copy'}
 
     input:
     path(gff_files)
-
     output:
     path("crispr_summary_plot.png"), emit: plot
 
