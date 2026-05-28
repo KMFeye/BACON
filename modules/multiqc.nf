@@ -14,6 +14,6 @@ process MULTIQC {
     
     script:
     """
-    multiqc .
+    multiqc . --ignore work --ignore .nextflow --ignore nextflow.config
     """
 }
