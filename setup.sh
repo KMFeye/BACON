@@ -71,86 +71,74 @@ else
     echo "Nextflow is already installed."
 fi 
 
-# --- 4. CREATE CONDA YML ENVIRONMENT FILES ---
-echo "--> Creating final, individual Conda environment definition files in current directory..."
+# --- 4. Google, Git, and R/R-Studio Setup ---
+echo "--> Scanning the system for Google Chrome, Git, and R/R-Studio"
 
-cat << EOF > "$LOCAL_DIR/envs/qaqcClean.yml"
-name: qaqcClean
-channels: [bioconda]
-dependencies: [fastqc=0.11.9]
-EOF
+# --- Google Chrome Installation ---
+if ! command -v google-chrome &> /dev/null; then
+    echo "Google Chrome not found. Installing..."
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    sudo apt install -y ./google-chrome-stable_current_amd64.deb
+    rm google-chrome-stable_current_amd64.deb
+else
+    echo "Google Chrome is already installed."
+fi
 
-cat << EOF > "$LOCAL_DIR/envs/flyeAssembly.yml"
-name: flyeAssembly
-channels: [bioconda, conda-forge]
-dependencies:
-  - flye=2.9.1
-  - python=3.9
-EOF
+# --- System-wide Git Installation ---
+if ! command -v git &> /dev/null; then
+    echo "Git not found system-wide. Installing via apt..."
+    sudo apt-get update
+    sudo apt-get install -y git
+else
+    echo "Git is already installed system-wide."
+fi
 
-cat << EOF > "$LOCAL_DIR/envs/quastReport.yml"
-name: quastReport
-channels: [bioconda]
-dependencies: [quast=5.0.2]
-EOF
+# --- RStudio Desktop Installation ---
+if command -v rstudio &> /dev/null; then
+    echo "RStudio Desktop is already installed."
+else
+    echo "--> Installing system R and prerequisites for RStudio..."
+    sudo apt-get update
+    sudo apt-get install -y r-base gdebi-core 
+    RSTUDIO_DEB_URL="https://download1.rstudio.org/electron/jammy/amd64/rstudio-2023.12.1-402-amd64.deb" 
+    RSTUDIO_DEB_FILE="rstudio-desktop.deb"
+    echo "--> Downloading RStudio Desktop..."
+    wget -q "$RSTUDIO_DEB_URL" -O "$RSTUDIO_DEB_FILE"
+    echo "--> Installing RStudio Desktop. This step will require your sudo password."
+    sudo gdebi -n "$RSTUDIO_DEB_FILE"
+    rm -f "$RSTUDIO_DEB_FILE"
+fi
 
-cat << EOF > "$LOCAL_DIR/envs/multiqc.yml"
-name: multiqc
-channels: [bioconda, conda-forge]
-dependencies:
-  - multiqc=1.14
-  - python=3.9
-EOF
+# --- 5. PULL BACON REPOSITORY ---
+echo "--> Cloning the BACON Nextflow repository..."
+export LOCAL_DIR=$(pwd)
+export REPO_DIR="$LOCAL_DIR/BACON_pipeline"
 
-cat << EOF > "$LOCAL_DIR/envs/snpAnalysis.yml"
-name: snpAnalysis
-channels: [bioconda, conda-forge]
-dependencies: [minimap2=2.24, samtools=1.15, bcftools=1.15]
-EOF
+if [ -d "$REPO_DIR" ]; then
+    echo "--> Repository already exists. Pulling latest changes..."
+    cd "$REPO_DIR"
+    git pull
+    cd "$LOCAL_DIR"
+else
+    echo "--> Cloning repository from GitHub..."
+    echo "NOTE: Because the repository is private, you will be prompted for your GitHub credentials."
+    echo "Please use a Personal Access Token (PAT) as your password."
+    
+    git clone https://github.com/KMFeye/BACON.git "$REPO_DIR"
+    
+    echo "--> Repository cloned successfully into $REPO_DIR"
+fi
+export DB_BASE_PATH="$REPO_DIR/databases" 
+export BAKTA_DB_PATH="$DB_BASE_PATH/bakta_db"
+export PLATON_DB_PATH="$DB_BASE_PATH/platon_db"
+export KRAKEN_DB_PATH="$DB_BASE_PATH/kraken_db"
 
-cat << EOF > "$LOCAL_DIR/envs/bakta.yml"
-name: bakta_env
-channels: [bioconda, conda-forge]
-dependencies:
-  - bakta
-  - python=3.9
-EOF
+# Create the new folders inside the repo
+mkdir -p "$BAKTA_DB_PATH" "$PLATON_DB_PATH" "$KRAKEN_DB_PATH"
 
-cat << EOF > "$LOCAL_DIR/envs/amrfinder.yml"
-name: amrfinder_env
-channels: [bioconda, conda-forge]
-dependencies:
-  - ncbi-amrfinderplus
-EOF
-
-cat << EOF > "$LOCAL_DIR/envs/plasmidfinder.yml"
-name: plasmidfinder_env
-channels: [bioconda, conda-forge]
-dependencies:
-  - plasmidfinder
-  - git
-  - kma
-EOF
-
-cat << EOF > "$LOCAL_DIR/envs/abricate.yml"
-name: abricate_env
-channels: [bioconda, conda-forge]
-dependencies:
-  - abricate>=1.0.1
-EOF
-
-cat << EOF > "$LOCAL_DIR/envs/cctyper.yml"
-name: cctyper_env
-channels: [bioconda, conda-forge]
-dependencies:
-  - cctyper
-  - python=3.9
-EOF
-
-echo "--> .yml file creation complete."
-
-# --- 5. DATABASE INSTALLATION ---
+# --- 6. DATABASE INSTALLATION ---
 echo "--> Downloading necessary databases"
+# ... (the rest of your database installation
 
 # --- BAKTA DATABASE ---
 if [ -d "$BAKTA_DB_PATH/db" ]; then
@@ -205,66 +193,9 @@ else
     echo "--> KRAKEN database installation complete."
 fi
 
-# --- 6. Google, Git, and R/R-Studio Setup ---
-echo "--> Scanning the system for Google Chrome, Git, and R/R-Studio"
-
-# --- Google Chrome Installation ---
-if ! command -v google-chrome &> /dev/null; then
-    echo "Google Chrome not found. Installing..."
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    sudo apt install -y ./google-chrome-stable_current_amd64.deb
-    rm google-chrome-stable_current_amd64.deb
-else
-    echo "Google Chrome is already installed."
-fi
-
-# --- System-wide Git Installation ---
-if ! command -v git &> /dev/null; then
-    echo "Git not found system-wide. Installing via apt..."
-    sudo apt-get update
-    sudo apt-get install -y git
-else
-    echo "Git is already installed system-wide."
-fi
-
-# --- 6.5. PULL NEXTFLOW REPOSITORY ---
-echo "--> Cloning the BACON Nextflow repository..."
-
-export REPO_DIR="$LOCAL_DIR/BACON_pipeline"
-
-if [ -d "$REPO_DIR" ]; then
-    echo "--> Repository already exists. Pulling latest changes..."
-    cd "$REPO_DIR"
-    git pull
-    cd "$LOCAL_DIR"
-else
-    echo "--> Cloning repository from GitHub..."
-    echo "NOTE: Because the repository is private, you will be prompted for your GitHub credentials."
-    echo "Please use a Personal Access Token (PAT) as your password."
-    
-    git clone https://github.com/KMFeye/BACON.git "$REPO_DIR"
-    
-    echo "--> Repository cloned successfully into $REPO_DIR"
-fi
-
-
-# --- RStudio Desktop Installation ---
-if command -v rstudio &> /dev/null; then
-    echo "RStudio Desktop is already installed."
-else
-    echo "--> Installing system R and prerequisites for RStudio..."
-    sudo apt-get update
-    sudo apt-get install -y r-base gdebi-core 
-    RSTUDIO_DEB_URL="https://download1.rstudio.org/electron/jammy/amd64/rstudio-2023.12.1-402-amd64.deb" 
-    RSTUDIO_DEB_FILE="rstudio-desktop.deb"
-    echo "--> Downloading RStudio Desktop..."
-    wget -q "$RSTUDIO_DEB_URL" -O "$RSTUDIO_DEB_FILE"
-    echo "--> Installing RStudio Desktop. This step will require your sudo password."
-    sudo gdebi -n "$RSTUDIO_DEB_FILE"
-    rm -f "$RSTUDIO_DEB_FILE"
-fi
 
 echo "All done setting up the other dependencies."
+
 
 # --- 7. Final Directions ---
 echo ""
