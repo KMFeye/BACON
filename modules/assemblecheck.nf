@@ -15,7 +15,7 @@ process FLYE_ASSEMBLY {
         }
     }
     
-    publishDir "${params.outdir}/rawresults/flye/${sample_id}", mode: 'copy'
+    publishDir: {"${params.outdir}/rawresults/flye/${sample_id}", mode: 'copy'}
 
     input:
     tuple val(sample_id), path(fastq)
@@ -42,13 +42,13 @@ process QUAST_REPORT {
     label 'process_medium'
     conda 'bioconda::quast'
    
-    publishDir "${params.outdir}/rawdata/${sample_id}/quast",
+    publishDir: {"${params.outdir}/rawdata/${sample_id}/quast",
         mode: 'copy',
-        pattern: "quast_results/*"
-    publishDir "${params.outdir}/tables",
+        pattern: "quast_results/*"}
+    publishDir: {"${params.outdir}/tables",
     mode: 'copy',
     pattern: "quast_results/report.tsv",
-    saveAs: { "${sample_id}.quast_report.tsv" } 
+    saveAs: { "${sample_id}.quast_report.tsv" } }
     
     input:
     tuple val(sample_id), path(assembly)
@@ -65,7 +65,8 @@ process BUSCO {
     tag "Busco report for ${sample_id}"
     label 'process_medium'
     conda 'bioconda::busco'
-    publishDir "${params.outdir}/tables/bosco", mode: 'copy'
+
+    publishDir: {"${params.outdir}/tables/bosco", mode: 'copy'}
 
     input:
     tuple val(sample_id), path(fasta)
