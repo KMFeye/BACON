@@ -2,6 +2,7 @@ process DOWNLOAD_BACTERIAL_REFERENCE {
     tag "Downloading Bacterial Reference"
     label 'process_low'
     conda 'conda-forge::wget=1.21.4'
+
     output: path("bacterial_ref.fasta"), emit: fasta
     script:
     """
@@ -14,16 +15,23 @@ process INDEX_GENOME {
     tag "Indexing ${fasta_in.baseName}"
     label 'process_medium'
     conda 'bioconda::bwa=0.7.17'
+
     input: path(fasta_in)
     output: path("${fasta_in.baseName}.*"), emit: index
-    script: "bwa index ${fasta_in}"
+
+    script: 
+    """
+    bwa index ${fasta_in}
+    """
 }
 
 process PREPARE_PLASMIDFINDER_DB {
     tag "Preparing PlasmidFinder database"
     label 'process_low'
     conda 'conda-forge::git conda-forge::python=3.9 bioconda::kma'
+
     output: path "plasmidfinder_db"
+
     script:
     """
     git clone https://bitbucket.org/genomicepidemiology/plasmidfinder_db.git
@@ -35,7 +43,6 @@ process PREPARE_PLASMIDFINDER_DB {
 process INITIALIZE_AMRFINDER_DB {
     tag "Initializing AMRFinderPlus database"
     label 'process_low'
-    
     conda 'bioconda::ncbi-amrfinderplus'
 
     output:
