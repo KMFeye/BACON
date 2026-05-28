@@ -169,9 +169,46 @@ multiqc {
 }
 ```
 
+#### The metadata.csv file
+The metadata file allows you to add one continuous variable of interest at this current time to run GWAS.  The general csv format is below: 
 
+<img width="364" height="163" alt="image" src="https://github.com/user-attachments/assets/2d429921-f71f-4126-b709-4806cdfd1186" />
 
+*Column A*=Don't change the column name, this is your sample_ID.  Add each sample you are sequencing by row. So if you sequenced 100 strains, the total length of the column should be 101.  Don't format it any different than what you'd format the sequence ID linked to the sequencer.  Use the following format:
+EG LESDdkldf_Sample1.bam
+The program reads this as Sample1 and your sample_ID column will contain Sample1.  
 
+*Column B*=strain
+This name or string is used by the heatmap applications and it refers to the strain of bacteria you are working on.
+
+*Column C*= Isolation_Source or Seq_Type
+This column is used by the phylogenetics analysis to color the branches of the phylogenetic tree based on similarity.  So, if you change out the name, you will also need to make the following change in `nextflow.config`.  You can also instead have the sequence_type if you'd want to use epidemiological terms. The 'seq_type' term is that is derived from the Multi-Locust Sequencing Tag and denotes the bacteria's lineage.  This information is used to track outbreaks for instance.    The `nextflow.config` will need to be altered
+
+```
+params {
+    // ...
+    tree_color_column = 'Column B' (Make sure you don't type Column B, type what you want Column B to be'
+}
+```
+
+*Column D*= Wildcard continuous variable
+
+Column D is a continuous variable column that can be used for GWAS.  Example data could be:
+Invasion Frequency
+Zone of Inhibition (actual measurement or if you're using a microwell method the OD600)
+Conjugation Efficiency
+Biofilm Size
+Colony Forming Units
+Phagocytosis Assay Data
+
+If you can measure it in a laboratory, you can put the data in that column.  Currently, GWAS is simple and only executed one time which is why we have one column. The column will need to be renamed and the `pangenomicanalysis.nf` file in the module directory will need to be changed:
+
+```
+    pyseer --phenotypes ${traits_file} ##--phenotype-column "Column D"  <--- Add the name you choose here and this line of code ## --pres
+    ${panaroo_dir}/gene_presence_absence.Rtab \
+        # ... rest of the command ...
+```
+Everything about how you type out the name in each column needs to be represented in the code.  Keep it under 8 characters in lenght as well and do not add random symbols.  Keep it simple. 
 
 #### The Module File Changes
 The BACON is modularized, which makes the Nextflow program easier to manage.  All modular files have the file extension `nf` and are in the `./modules` directory.  
