@@ -1,8 +1,9 @@
 process RUN_PROGRESSIVE_MAUVE {
     tag "Running ProgressiveMauve on ${assemblies.size()} genomes"
     label 'process_high'
-    publishDir "${params.outdir}/rawoutputs/whole_genome_alignment/mauve", mode: 'copy'
     conda 'bioconda::progressivemauve'
+
+    publishDir: {"${params.outdir}/rawoutputs/whole_genome_alignment/mauve", mode: 'copy'}
 
     input:
     path(assemblies)
@@ -19,10 +20,9 @@ process RUN_PROGRESSIVE_MAUVE {
 process PLOT_GENOME_SYNTENY {
     tag "Generating genome synteny plot"
     label 'process_medium'
-
-    publishDir "${params.outdir}/figures", mode: 'copy'
-
     conda 'bioconda::bioconductor-genoplotr'
+
+    publishDir: {"${params.outdir}/figures", mode: 'copy'}
 
     input:
     path(xmfa)
