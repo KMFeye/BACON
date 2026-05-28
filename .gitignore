@@ -1,0 +1,123 @@
+# Nextflow-specific files and directories
+work/
+.nextflow/
+.nextflow.log*
+.nextflow.log
+trace.txt
+timeline.html
+report.html
+dag.html
+.nextflow.history
+
+# Results and outputs
+results/
+outputs/
+reports/
+figures/
+tables/
+
+# Databases and reference genomes (created by setup.sh)
+databases/
+*.fasta
+*.fasta.gz
+*.fna.gz
+*.fai
+
+# Input data (BAM, FASTQ files)
+inputs/*.bam
+inputs/*.bai
+inputs/*.fastq
+inputs/*.fastq.gz
+inputs/*.fq
+inputs/*.fq.gz
+
+# Conda environments
+conda/
+.conda/
+envs/
+
+# System and editor files
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+
+# Logs
+*.log
+logs/
+
+# Large data files that might be created during testing
+*.sam
+*.bam
+*.vcf
+*.bcf
+*.cram
+
+# Local configuration overrides
+nextflow.config.local
+local_config.txt
+
+# macOS
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+.Trash-*
+.~*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Project-specific directories (user-created)
+project/
+test_project/
+debug/
+temp/
+tmp/
+
+# IDE and environment files
+.env
+.env.local
+*.swp
+*.swo
+*~.nib
