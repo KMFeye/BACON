@@ -3,7 +3,7 @@ process MULTIQC {
     label 'process_low'
     conda 'bioconda::multiqc=1.14 conda-forge::python=3.9'
 
-    publishDir "${params.outdir}/multiqc", mode: 'copy'
+    publishDir: {"${params.outdir}/multiqc", mode: 'copy'}
 
     input:
     path multiqc_files
