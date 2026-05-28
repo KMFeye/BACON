@@ -170,9 +170,9 @@ multiqc {
 ```
 
 #### The metadata.csv file
-The metadata file allows you to add one continuous variable of interest at this current time to run GWAS.  The general csv format is below: 
+The metadata file allows you to add one continuous variable of interest at this current time to run GWAS.  The general csv format is below and is will download with the BACON program: 
 
-<img width="364" height="163" alt="image" src="https://github.com/user-attachments/assets/2d429921-f71f-4126-b709-4806cdfd1186" />
+		<img width="364" height="163" alt="image" src="https://github.com/user-attachments/assets/2d429921-f71f-4126-b709-4806cdfd1186" />
 
 *Column A*=Don't change the column name, this is your sample_ID.  Add each sample you are sequencing by row. So if you sequenced 100 strains, the total length of the column should be 101.  Don't format it any different than what you'd format the sequence ID linked to the sequencer.  Use the following format:
 EG LESDdkldf_Sample1.bam
