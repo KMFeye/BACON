@@ -3,7 +3,7 @@ process RUN_PLATON {
     memory '16.GB'
     conda 'bioconda::platon'
 
-    publishDir "${params.outdir}/rawresults/plasmid_discovery/platon/${sample_id}", mode: 'copy'
+    publishDir: {"${params.outdir}/rawresults/plasmid_discovery/platon/${sample_id}", mode: 'copy'}
 
     input:
     tuple val(sample_id), path(assembly_fasta)
