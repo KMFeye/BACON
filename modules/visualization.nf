@@ -1,8 +1,9 @@
 process PLOT_GENE_HEATMAP {
     tag "Create heatmap for ${matrix.baseName}"
-    publishDir "${params.outdir}/figures/heatmaps", mode: 'copy' 
     memory '8.GB'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap'
+
+    publishDir: {"${params.outdir}/figures/heatmaps", mode: 'copy'}
     
     input:
     path(matrix)
@@ -31,9 +32,10 @@ process PLOT_GENE_HEATMAP {
 
 process PLOT_PLASMID_MAPS {
     tag "Plotting plasmid map for ${fasta.baseName}"
-    publishDir "${params.outdir}/figures/plasmid_maps", mode: 'copy'
     memory '8.GB'
     conda 'conda-forge::r-base conda-forge::r-tidyverse bioconda::bakta' 
+
+    publishDir: {"${params.outdir}/figures/plasmid_maps", mode: 'copy'}
     
     input:
     path(fasta)
@@ -61,8 +63,9 @@ process PLOT_PLASMID_MAPS {
 process PLOT_RESISTANCE_HEATMAP {
     tag "Generating resistance gene summary heatmap"
     label 'process_medium'
-    publishDir "${params.outdir}/figures", mode: 'copy'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis'
+    
+    publishDir: {"${params.outdir}/figures", mode: 'copy'}
 
     input:
     path(summary_csvs)
@@ -128,8 +131,9 @@ process PLOT_RESISTANCE_HEATMAP {
 process PLOT_VIRULENCE_HEATMAP {
     tag "Generating ABRicate VFDB virulence heatmap"
     label 'process_medium'
-    publishDir "${params.outdir}/figures", mode: 'copy'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis'
+
+    publishDir: {"${params.outdir}/figures", mode: 'copy'}
 
     input:
     path(summary_csvs)
@@ -172,8 +176,9 @@ process PLOT_VIRULENCE_HEATMAP {
 process PLOT_PLASMID_SUMMARY {
     tag "Generating plasmid distribution plots"
     label 'process_medium'
-    publishDir "${params.outdir}/figures", mode: 'copy'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis'
+
+    publishDir: {"${params.outdir}/figures", mode: 'copy'}
 
     input:
     path(summary_csvs)
@@ -214,37 +219,12 @@ process PLOT_PLASMID_SUMMARY {
     '''
 }
 
-process PLOT_PLASMID_MAPS {
-    tag "Plotting plasmid map for $fasta.baseName"
-    publishDir "${params.outdir}/figures/plasmid_maps", mode: 'copy'
-    memory = '8.GB'
-
-    input:
-    path(fasta) // A single .gplas_plasmids.fasta file
-    output:
-    path("*.png"), emit: plot_png
-    path("*.pdf"), emit: plot_pdf
-    path("bakta/*.gff3"), emit: annotations
-
-    script:
-    def prefix = fasta.baseName.replaceAll('.gplas_plasmids', '')
-
-    """
-    bakta --db /path/to/bakta/db/ --output bakta ${fasta} --prefix ${prefix}
-
-##############################################################
-    plot_plasmid.R \
-        --fasta ${fasta} \
-        --gff bakta/${prefix}.gff3 \
-        --prefix ${prefix}
-    """
-}
-
 process PLOT_PANTHER_DOTPLOT {
     tag "Generating PANTHER enrichment dot plot"
     label 'process_medium'
-    publishDir "${params.outdir}/figures", mode: 'copy'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-viridis'
+
+    publishDir: {"${params.outdir}/figures", mode: 'copy'}
 
     input:
     path(summary_csvs)
@@ -282,9 +262,10 @@ process PLOT_PANTHER_DOTPLOT {
 process PLOT_ANNOTATED_TREE {
     tag "Generating annotated phylogenetic tree"
     label 'process_high'
-    publishDir "${params.outdir}/figures", mode: 'copy'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis bioconductor-ggtree bioconductor-ggtreeextra'
-
+    
+    publishDir: {"${params.outdir}/figures", mode: 'copy'}
+    
     input:
     path(treefile)
     path(summary_csvs)
@@ -338,13 +319,12 @@ process PLOT_ANNOTATED_TREE {
 process PLOT_KRAKEN_REPORTS {
     tag "Generating Kraken2 summary plot"
     label 'process_medium'
-
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-ggplot2'
-    publishDir "${params.outdir}/figures", mode: 'copy'
+   
+    publishDir: {"${params.outdir}/figures", mode: 'copy'}
 
     input:
     path kraken_reports
-
     output:
     path "kraken2_stacked_barplot.png"
 
