@@ -1,10 +1,9 @@
 process CREATE_SNP_ALIGNMENT {
     tag "Create Core SNP Alignment"
     errorStrategy 'retry'
-
-    publishDir "${params.outdir}/rawresults/phylogenetics", mode: 'copy'
-
     conda 'bioconda::samtools bioconda::htslib bioconda::bcftools'
+
+    publishDir: {"${params.outdir}/rawresults/phylogenetics", mode: 'copy'}
 
     input:
     path vcfs
@@ -26,12 +25,12 @@ process CREATE_SNP_ALIGNMENT {
 
 process BUILD_PHYLO_TREE {
     tag "Build Phylogenetic Tree"
-    publishDir "${params.outdir}/rawresults/aggregate/phylogenetics", mode: 'copy'
     conda 'bioconda::iqtree'
+
+    publishDir: {"${params.outdir}/rawresults/aggregate/phylogenetics", mode: 'copy'}
 
     input:
     path(alignment)
-
     output:
     path("*.treefile"), emit: treefile
 
