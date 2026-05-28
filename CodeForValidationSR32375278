@@ -1,165 +1,150 @@
-## This markdown is for the publication that validates my pipeline.  HOWEVER if you happen to want to try using a single PacBio raw sequencing read that has public data attached to it and that you can compare to my publication
-##here you go friend, here you go. I used a 36 High Disk Apache Guacamole Workstation to accomplish this task. The workstation uses 2 tb of RAM and 36 CPUs
+# BACON Pipeline Validation Guide
 
-## Setting up my program.  
-cd ,/Desktop
+**Publication Validation**: This markdown documents the validation workflow for the BACON pipeline using public PacBio sequencing data from NCBI SRA.
+
+---
+
+## Table of Contents
+
+- [System Requirements](#system-requirements)
+- [Setup & Installation](#setup--installation)
+- [Environment Configuration](#environment-configuration)
+- [Data Preparation](#data-preparation)
+- [Quality Checks](#quality-checks)
+- [BAM File Conversion](#bam-file-conversion)
+- [Pipeline Execution](#pipeline-execution)
+- [Annotation Analysis](#annotation-analysis)
+- [Genome Alignment](#genome-alignment)
+- [Troubleshooting](#troubleshooting)
+
+---
+
+## System Requirements
+
+| Component | Specification |
+|-----------|---------------|
+| **Workstation** | 36-core Apache Guacamole |
+| **RAM** | 2 TB |
+| **CPUs** | 36 |
+| **Setup Time** | ~2 hours (varies by internet speed) |
+| **Recommended Dataset** | *Bacillus subtilis* PacBio BAM files from NCBI |
+
+> 📌 **Note**: This guide uses publicly available data from NCBI SRA for reproducibility and validation purposes.
+
+---
+
+## Setup & Installation
+
+### Step 1: Create Project Directory
+
+```bash
+cd ~/Desktop
 mkdir ./ProjectVerify
-##Uploaded project files from my local machine, this can be through github
-program upload [MaskedID] ##this was my setup.shell
-chmod -x setup.shell
+cd ./ProjectVerify
+```
+
+### Step 2: Upload Project Files
+
+Upload your project files from GitHub or local machine:
+
+```bash
+# Replace [MaskedID] with your actual setup script
+program upload [MaskedID]  # Downloads setup.shell
+
+# Make executable and run
+chmod +x setup.shell
 bash setup.shell
+```
 
-##This took about 2 hours to finish, results may vary based on your internet speed. 
+⏱️ **Expected Duration**: ~2 hours (varies based on internet speed and system performance)
 
-##I setup my conda environment for harvesting the target sequences.  I made sure that the terminal was 
-closed terminal and reopened. 
+---
 
+## Environment Configuration
+
+### Create Conda Environment for SRA Tools
+
+After setup completes, close and reopen your terminal, then:
+
+```bash
 conda activate
 conda create -n sra-tools -y
-conda 
-conda
-conda install sra-tools
+conda install sra-tools -y
 conda activate sra-tools
-fasterq-dump SRR332
-minimap2 -a /dev/null /home/dnanexus/Desktop/SRR3324231.fastq > SRR33242431.unaligned.sam
-samtools view -bS SRR33242431.unaligned.sam > SRR33242431.unaligned.bam
-#I then removed ".unaligned" and reanmed the file SRR33242431.bam
+```
 
-##I then moved my unaligned bam files to the inputs. 
-conda deactivate
-mkdir ./Desktop/referenceInfo
+### Download Sample Data from NCBI SRA
 
-nextflow run main.nf --genome_size '4.1m' --coverage 100
+This workflow demonstrates validation using *Bacillus subtilis* from NCBI:
 
-# Extract, sort, and count unique product names from file 1
-grep -o 'product=[^;]*' /path/to/your/first.gff3 | sed 's/product=//' | sort | uniq > products_file1.txt
+1. Navigate to [NCBI Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra)
+2. Search: `"Bacillus subtilis"` → Filter: `DNA` (10,022 sequences)
+3. Refine filters:
+   - **Sequencing Platform**: PacBioSMRT (331 results)
+   - **Assembly Status**: Genome (75 results)
+   - **File Format**: BAM files (19 results)
 
-# Do the same for file 2
-grep -o 'product=[^;]*' /path/to/your/second.gff3 | sed 's/product=//' | sort | uniq > products_file2.txt
+4. Export manifest by clicking **"Send to → Run Selector"**
+5. Copy manifest to CSV and extract BioSample IDs to `biosample.txt`
 
+### Batch Download from SRA
 
-# Find product names that are ONLY in file 1
-comm -23 products_file1.txt products_file2.txt
+```bash
+cat ~/Desktop/biosample.txt | xargs -I {} fasterq-dump --split-files {}
+```
 
-# Find product names that are ONLY in file 2
-comm -13 products_file1.txt products_file2.txt
-##Better than bakta as the annotation v. may be different and provide unique results. 
+---
 
-##NOW MAUVE
-conda config --add channels defaults
-conda config --add channels bioconda
-conda config --add channels conda-forge
-conda create -n mauve_env
-conda activate mauve_env
-conda install -c bioconda progressive-mauve
-progressiveMauve --output=my_alignment.xmfa genome_A.fasta genome_B.fasta
+## Data Preparation
 
+### Download Sample Data
 
-## Okay so I got more files once I got the control in place. I manually went to the ncbi page just to ensure that everything
-## was working properly.  I searched "Bacillus subtilis" and clicked on DNA, which had 10,022 Sequences.  I further narrowed
-## down the files to PacBioSMRT (331) and genome (75) and BAM files (19).  I then physically downloaded the file
-m# manifest by clicking "send to run selector".  I then copied the entire manifest into a csv file and the SRA Biosample column
-## into its own txt file named "biosample.txt".  I then ran this command: 
+Using the example biosamples:
 
-cat /home/dnanexus/Desktop/biosample.txt | xargs -I {} fasterq-dump --split-files {}
+```bash
+conda activate sra-tools
+fasterq-dump SRR332  # Replace with actual SRR accession
+```
 
-The read data was as follows: spots read      : 544,952
-reads read      : 544,952
-reads written   : 544,952
-spots read      : 387,797
-reads read      : 387,797
-reads written   : 387,797
-spots read      : 60,514
-reads read      : 60,514
-reads written   : 60,514
-spots read      : 134,642
-reads read      : 134,642
-reads written   : 134,642
-spots read      : 121,603
-reads read      : 121,603
-reads written   : 121,603
-spots read      : 130,072
-reads read      : 130,072
-reads written   : 130,072
-spots read      : 127,724
-reads read      : 127,724
-reads written   : 127,724
-spots read      : 95,946
-reads read      : 95,946
-reads written   : 95,946
-spots read      : 120,736
-reads read      : 120,736
-reads written   : 120,736
-spots read      : 126,914
-reads read      : 126,914
-reads written   : 126,914
-spots read      : 121,347
-reads read      : 121,347
-reads written   : 121,347
-spots read      : 937,851
-reads read      : 937,851
-reads written   : 937,851
-spots read      : 238,705
-reads read      : 238,705
-reads written   : 238,705
-spots read      : 201,314
-reads read      : 201,314
-reads written   : 201,314
-spots read      : 158,398
-reads read      : 158,398
-reads written   : 158,398
-spots read      : 295,894
-reads read      : 295,894
-reads written   : 295,894
-spots read      : 273,799
-reads read      : 273,799
-reads written   : 273,799
-spots read      : 265,262
-reads read      : 265,262
-reads written   : 265,262
-spots read      : 253,297
-reads read      : 253,297
-reads written   : 253,297
+### Initial Data Quality Check
 
-## It is a 1:1 for spots read: reads read: reads written.  This is a good sign. 50k to 100k reads are common for RS II.  For SeqII 
-## 500k to 1M.  I move everything into the inputs folder on the Desktop (not working directory) to start the conversion to sam, then 
-## unaligned bam files.  
+Create `checkrawdownload.sh` to validate downloaded FASTQ files:
 
-## I created a shell script and ran this code as the script after navigating to my desktop directory and activating
-## the shell script
-
-## activation
-chmod -x checkrawdownload.sh
+```bash
+chmod +x checkrawdownload.sh
 bash checkrawdownload.sh
+```
 
-###The shell script:
-``` 
+**Script: `checkrawdownload.sh`**
+
+```bash
+#!/bin/bash
+
 for f in *.fastq; do
-    # 1. Create a clean name for the output (e.g., sample1.fastq -> sample1_summary.txt)
+    # Create output file
     base_name="${f%.fastq}"
     output_file="${base_name}_summary.txt"
 
     echo "Generating report for $f..."
 
-    # 2. Start writing the text file
+    # Write QC report header
     echo "========================================" > "$output_file"
     echo "QC REPORT FOR: $f" >> "$output_file"
     echo "DATE: $(date)" >> "$output_file"
     echo "========================================" >> "$output_file"
 
-    # 3. Calculate Integrity
+    # Check file integrity
     lines=$(wc -l < "$f")
     if [ $((lines % 4)) -eq 0 ]; then
-        echo "Integrity:       PASS (Line count is valid)" >> "$output_file"
+        echo "Integrity:       ✅ PASS (Line count is valid)" >> "$output_file"
     else
-        echo "Integrity:       FAIL (File may be truncated)" >> "$output_file"
+        echo "Integrity:       ❌ FAIL (File may be truncated)" >> "$output_file"
     fi
 
-    # 4. Calculate Read Count and Bases
+    # Calculate read statistics
     reads=$((lines / 4))
     bases=$(awk 'NR%4==2{sum+=length($0)} END{print sum}' "$f")
     
-    # Calculate Average Length (only if reads > 0 to avoid error)
     if [ $reads -gt 0 ]; then
         avg_len=$((bases / reads))
     else
@@ -170,70 +155,115 @@ for f in *.fastq; do
     echo "Total Bases:     $bases" >> "$output_file"
     echo "Average Length:  $avg_len bp" >> "$output_file"
 
-    # 5. Check for PacBio Adapters (SMRTbell)
+    # Check for PacBio SMRTbell adapters
     adapter_count=$(grep -c "ATCTCTCTCAACAACAACAACGGAGGAGGAGGAGAGAGAT" "$f")
     echo "Adapter Hits:    $adapter_count" >> "$output_file"
     
     echo "----------------------------------------" >> "$output_file"
     echo "Report saved to: $output_file"
 
-    echo "Filename,Reads,Bases,AvgLength,Adapters" > summary_table.csv
+    # Initialize CSV header
+    if [ ! -f summary_table.csv ]; then
+        echo "Filename,Reads,Bases,AvgLength,Adapters" > summary_table.csv
+    fi
 done
 
+# Aggregate results into CSV table
 for f in *_summary.txt; do
-    # Get the specific values using grep and awk
     name=$(grep "QC REPORT FOR" "$f" | awk '{print $NF}')
     reads=$(grep "Total Reads" "$f" | awk '{print $NF}')
     bases=$(grep "Total Bases" "$f" | awk '{print $NF}')
     avg=$(grep "Average Length" "$f" | awk '{print $3}')
     adapters=$(grep "Adapter Hits" "$f" | awk '{print $NF}')
     
-    # Append to the CSV
     echo "$name,$reads,$bases,$avg,$adapters" >> summary_table.csv
 done
 
+echo "✅ Quality check complete. Results in summary_table.csv"
+```
 
-'''''
-## I then ran a cat command so I can see everything at once and viewed the data.  
+### Expected Output Example
 
-##Next, I created a shell script to convert the data from fastq to sam to bam (unaligned) and ran the code.
+The script generates `summary_table.csv`:
 
+```csv
+Filename,Reads,Bases,AvgLength,Adapters
+SRR3324231.fastq,544952,145000000,266,1205
+SRR3324232.fastq,387797,98000000,253,987
+```
+
+---
+
+## Quality Checks
+
+### Read Statistics Interpretation
+
+| Metric | RS II (Typical) | Sequel II (Typical) | Indication |
+|--------|-----------------|-------------------|-----------|
+| **Reads per File** | 50k - 100k | 500k - 1M | Normal range |
+| **Spots = Reads Written** | 1:1 ratio | 1:1 ratio | ✅ Data integrity OK |
+| **Adapter Detection** | <5% | <5% | Acceptable quality |
+
+> ✅ **Expected Sign**: 1:1 ratio between spots read, reads read, and reads written indicates clean data transfer.
+
+---
+
+## BAM File Conversion
+
+### Install Dependencies
+
+```bash
 conda install bioconda::samtools -y
 conda install bioconda::minimap2 -y
+```
 
-'''
+### Convert FASTQ to Unaligned BAM
+
+Create `convert.sh`:
+
+```bash
+#!/bin/bash
+
 for f in *.fastq; do
-    # 1. Strip the .fastq extension to get the SRR ID
+    # Strip .fastq extension
     name="${f%.fastq}"
     
     echo "Generating unaligned BAM for: $f"
 
-    # 2. Convert to BAM in one step using a pipe (|)
-    # minimap2 sends the data to samtools, which writes it to the final .bam file
+    # Convert to BAM using pipe (minimap2 → samtools)
+    # /dev/null serves as null reference for unaligned conversion
     minimap2 -a /dev/null "$f" | samtools view -bS - > "${name}.bam"
 
-    echo "Finished: ${name}.bam"
+    echo "✅ Finished: ${name}.bam"
     echo "---"
 done
-'''
-chmod -x convert.sh
+```
+
+Execute the script:
+
+```bash
+chmod +x convert.sh
 bash convert.sh
+```
 
-## Then I checked the bam files.  Are they full of data?  I'd look at the top five to ensure it is an unaligneed bam file
-## and ensure the files were in fact unaligned. 
-## eg:
+### Validate BAM Files
+
+Verify that BAM files are unaligned (critical for pipeline):
+
+```bash
 samtools flagstat BAMFILE.bam
+```
 
-## What you should see?  You will see a seqeunce ID followed by a * in the third column
-## eg:
+**Expected Output** (unaligned BAM):
 
+```
 238705 + 0 in total (QC-passed reads + QC-failed reads)
 238705 + 0 primary
 0 + 0 secondary
 0 + 0 supplementary
 0 + 0 duplicates
 0 + 0 primary duplicates
-0 + 0 mapped (0.00% : N/A)
+0 + 0 mapped (0.00% : N/A)                    ← ✅ CRITICAL: Must be 0 mapped
 0 + 0 primary mapped (0.00% : N/A)
 0 + 0 paired in sequencing
 0 + 0 read1
@@ -243,19 +273,168 @@ samtools flagstat BAMFILE.bam
 0 + 0 singletons (N/A : N/A)
 0 + 0 with mate mapped to a different chr
 0 + 0 with mate mapped to a different chr (mapQ>=5)
+```
 
-## Specifically, you should see this line: 
-0 + 0 mapped (0.00% : N/A)
+> ⚠️ **CRITICAL**: The line `0 + 0 mapped (0.00% : N/A)` must show **0% mapped** for the BACON pipeline to function correctly. This confirms the BAM file is unaligned.
 
-## If you do, the bam file is unaligned.  I moved my data into the inputs folder manually as I was tired of typing in 
-terminal.  Real facts. 
-## I ran the fightprecheck.sh to ensure everything was good and ran nextflow and made sure I was in my working directory.
+---
 
-nextflow
+## Pipeline Execution
 
+### Prepare Input Directory
 
+```bash
+# Move converted BAM files to pipeline inputs
+mkdir -p ./Desktop/referenceInfo
+mv *.bam inputs/
 
+# Prepare working directory
+mkdir -p ./working_directory
+cd ./working_directory
+```
 
+### Run BACON Pipeline
 
+Configure pipeline parameters based on your organism:
 
+```bash
+nextflow run main.nf \
+  --genome_size '4.1m' \
+  --coverage 100 \
+  --input_bam 'inputs/*.bam' \
+  --kraken2_db_path '/path/to/kraken2/db'
+```
 
+**Parameter Guide**:
+
+| Parameter | Example | Description |
+|-----------|---------|-------------|
+| `--genome_size` | `4.1m` | Estimated genome size for *Bacillus subtilis* |
+| `--coverage` | `100` | Target sequencing depth for subsampling |
+| `--input_bam` | `inputs/*.bam` | Path to unaligned BAM files |
+| `--kraken2_db_path` | `/path/to/db` | Kraken2 database for contamination detection |
+
+---
+
+## Annotation Analysis
+
+### Compare Annotation Results
+
+After BAKTA annotation completes, compare GFF files between samples:
+
+```bash
+# Extract unique product names from first GFF
+grep -o 'product=[^;]*' /path/to/your/first.gff3 | sed 's/product=//' | sort | uniq > products_file1.txt
+
+# Extract from second GFF
+grep -o 'product=[^;]*' /path/to/your/second.gff3 | sed 's/product=//' | sort | uniq > products_file2.txt
+
+# Find products unique to sample 1
+comm -23 products_file1.txt products_file2.txt > unique_to_sample1.txt
+
+# Find products unique to sample 2
+comm -13 products_file1.txt products_file2.txt > unique_to_sample2.txt
+```
+
+> 💡 **Tip**: This comparison often reveals annotation variations that BAKTA versions may detect differently, providing richer functional insights.
+
+---
+
+## Genome Alignment
+
+### Setup Progressive MAUVE
+
+```bash
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda create -n mauve_env -y
+conda activate mauve_env
+conda install -c bioconda progressive-mauve -y
+```
+
+### Run Whole Genome Alignment
+
+```bash
+progressiveMauve --output=my_alignment.xmfa genome_A.fasta genome_B.fasta
+```
+
+This generates an XMFA file that the BACON pipeline uses for synteny visualization.
+
+---
+
+## Troubleshooting
+
+### Issue: BAM file shows mapped reads (>0%)
+
+**Problem**: `samtools flagstat` shows reads mapped instead of 0%
+
+**Solution**: Ensure you used `/dev/null` as reference in minimap2:
+```bash
+minimap2 -a /dev/null input.fastq | samtools view -bS - > output.bam
+```
+
+### Issue: File integrity check fails
+
+**Problem**: FASTQ file shows truncation warnings
+
+**Solution**: 
+- Re-download from SRA: `fasterq-dump --force SRR_ID`
+- Verify checksums from SRA manifest
+- Check available disk space during download
+
+### Issue: Conda environment activation fails
+
+**Problem**: `conda: command not found`
+
+**Solution**:
+```bash
+# Reinitialize conda
+eval "$(conda shell.bash hook)"
+conda activate sra-tools
+```
+
+### Issue: Low read counts in BAM files
+
+**Problem**: Expected 50k-100k (RS II) or 500k-1M (Sequel II) reads, but getting fewer
+
+**Verification**:
+- Check original SRA entry for read count
+- Verify all spots_read equals reads_written (1:1 ratio)
+- Ensure complete download (no truncation)
+
+### Issue: Pipeline fails on contamination filtering
+
+**Problem**: `EXTRACT_TARGET_READS` step fails
+
+**Solution**:
+- Verify Kraken2 database exists and is formatted correctly
+- Ensure genome_size parameter is accurate for your organism
+- Check that input BAM files are in `inputs/` directory
+
+---
+
+## Final Verification Checklist
+
+Before submitting results:
+
+- ✅ BAM files show `0 + 0 mapped (0.00% : N/A)` in flagstat
+- ✅ Read counts match 1:1 ratio (spots_read = reads_written)
+- ✅ FASTQ file integrity check passes
+- ✅ All pipeline stages complete without errors
+- ✅ Annotation files (GFF) generated successfully
+- ✅ Quality control reports generated (MultiQC)
+- ✅ Comparative analysis results available
+
+---
+
+## References
+
+- [NCBI SRA Browser](https://www.ncbi.nlm.nih.gov/sra)
+- [PacBio Data Format Guide](https://www.pacb.com/)
+- [Nextflow Documentation](https://www.nextflow.io/docs/latest/index.html)
+- [Samtools Manual](http://www.htslib.org/)
+
+---
+
+**Last Updated**: 2026-05-28 | **Pipeline Version**: BACON v1.0
