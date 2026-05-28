@@ -193,15 +193,16 @@ params {
 
 *Column D*= Wildcard continuous variable
 
-Column D is a continuous variable column that can be used for GWAS.  Example data could be:
-Invasion Frequency
-Zone of Inhibition (actual measurement or if you're using a microwell method the OD600)
-Conjugation Efficiency
-Biofilm Size
-Colony Forming Units
-Phagocytosis Assay Data
+Column D is a continuous variable column that can be used for GWAS.  Example data could be one of the following (or more!  Again if you can measure it in the lab and it is a trait of interest, it can be added in this column):
 
-If you can measure it in a laboratory, you can put the data in that column.  Currently, GWAS is simple and only executed one time which is why we have one column. The column will need to be renamed and the `pangenomicanalysis.nf` file in the module directory will need to be changed:
+- Invasion Frequency
+- Zone of Inhibition (actual measurement or if you're using a microwell method the OD600)
+- Conjugation Efficiency
+- Biofilm Size
+- Colony Forming Units
+- Phagocytosis Assay Data
+
+Only one continuous phenotypic analysis should be added, so do not combine data into a single row.  If two scientific questions exist, simple let the program run to completion, remove the result folder associated with the output that you want to keep from GWAS, and then update the metadata and other documents to reflect a new focus.  Then, use the `-resume` flag.  Currently, GWAS is simple and only executed one time which is why we have one column. The column will need to be renamed and the `pangenomicanalysis.nf` file in the module directory will need to be changed:
 
 ```
     pyseer --phenotypes ${traits_file} ##--phenotype-column "Column D"  <--- Add the name you choose here and this line of code ## --pres
