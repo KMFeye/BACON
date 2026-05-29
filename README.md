@@ -1,7 +1,5 @@
 # BACON (Bacterial Analysis Comprehensive Nextflow) 
 # A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files and Downloaded SRA Files
-https://doi.org/10.5281/zenodo.19743813
-
 Hello!  Welcome to BACON, a Nextflow pipeline developed to make massive files produced by PacBio sequencers simpler to manage.  The time to data acquisition, intermediate decisions that take time (like identifying which sequences are what variety of PacBio sequences), and the comprehensive output enables researchers to streamline and standardize their analyses. The BACON provides detailed analyses for Microbial Genomics from heterologous sources with limited resources and outputs concatenated and cleaned CSV files, figures, and tables. 
 
 Of note, the views expressed on this GitHub are personal and do not reflect any other viewpoints or endorsements of any organization or entity.  
@@ -517,18 +515,16 @@ Repeatedly throughout the Nextflow process, quality checks are used to determine
 
 1.  <https://multiqc.info/>
 2.  Ewels, P., Magnusson, M., Lundin, S., & K�ller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. *Bioinformatics*, **32**(19), 3047?3049. [doi:10.1093/bioinformatics/btw354](https://doi.org/10.1093/bioinformatics/btw354)
-
+---
 
 ###  Stage 4: Building & Labeling Your Bacterial Blueprint (`assembly.nf`, `annotation.nf`)
 The DNA was prepared in Stage 2 for the downstream analytics.  The decontaminated, subsampled reads are now ready for assembling and annotation.  Assembly will take the raw reads and create the draft genome using Flye.  Flye was chosen as it is a high fidelity long read assembler that flags circular vs. non-circular assemblies. The assembler takes raw reads that are not circularized. The draft genome (output:contig.fasta) file is the draft genome.  Then, the draft genome (or assembly) is checked for quality with QUAST and BUSCO.  Finally, the assembly is annotated using Bakta.  There is no circularization of the genome as it can lead to over-trimming of the assembly which can lead to the artificial induction of frameshift mutations and mask other potential features.  Therefore, while circularization is detected via Flye, it will not be artificially induced by BACON.  
 
-**What happens in this stage**:
+#### **What `assemblecheck.nf` does:**
+This is a three stage process that creates your assembly. First **Flye** is a powerful long-read assembler for bacterial genomes. BACON has the inate ability to determine what kind of PacBio sequence is inputted, which may or may not be disclosed on public repositories or by collaborators.  Therefore, BACON was written to automatically recognize and adjust its assembly strategy based on the type of PacBio data it senses. This means whether you have super-accurate 'HiFi' reads or slightly more error-prone reads, Flye knows how to make the best possible assembly and reduces the time required for decision making and adjustments.  Understandably, the Flye process likely will take the longest because of its dynamic approach to assembly formation.  Flye assemblies by their very nature are high quality and do not require circularization ahead of assembly as circular topography is identified during the construction phase. Removing circularization ahead of assembly reduces pre-processing errors from being introduced to the assembly stage and beyond. If assemblies are not circular, other tools can be used post-assembly by the user.  Next, **Quast** determines the quality of your assembly and provides important metrics like the N50, number of contigs, and other important metrics.  Finally, **Busco** determines how complete the assembly is based its comparison to a evolutionary conserved genes that are expected to be present in the bacterial genome. If there is missing genes, duplicated, or fragmented, that could signal a challenge with the assembly. The **Busco** lineage chosen is the general bacterial lineage (12), this can be personalized for your individual analysis.  The list of BUSCO lineages is found here: https://busco.ezlab.org/list_of_lineages.html
 
-1.  **Genome Assembly**: **Flye** is a powerful long-read assembler for bacterial genomes. Unlike Canu, which is common and more coarse, Flye BACON has the inate ability to determine what kind of PacBio sequence is inputted, which may or may not be disclosed on public repositories.  Therefore, it is able to **automatically recognize and adjust its building strategy based on the type of PacBio data you provide**. This means whether you have super-accurate 'HiFi' reads or longer, slightly more error-prone reads, Flye knows how to make the best possible assembly and reduces the time required for decision making and adjustments.  Understandably, the Flye process likely will take the longest because of its dynamic approach to assembly formation.  Flye assemblies by their very nature are high quality and do not require circularization ahead of assembly as circular topography is identified during the construction phase. Removing circularization ahead of assembly reduces pre-processing errors from being introduced to the assembly stage and beyond. If assemblies are not circular, other tools can be used post-assembly by the user. 
-
-2.  **Genome Annotation**: Once the genome is assembled, it's still just a long string of letters. We use **Bakta** to act like a genetic dictionary, going through the genome and identifying all the important features. Bakta is often better for identifying protein sequences which leads to improved downstream analytics. It is also able to detect small ORFs and pseudogenes and it works both with and without identifying the species of interest ahed of the analyses.
-
-*  **References**:
+**References**:
+*Flye*
 
 1.  <https://github.com/mikolmogorov/Flye>
 
@@ -538,30 +534,14 @@ The DNA was prepared in Stage 2 for the downstream analytics.  The decontaminate
 
 4.  Lin, Y., Yuan, J., Kolmogorov, M., Shen, M. W., Chaisson, M., & Pevzner, P. A. (2016). Assembly of long error-prone reads using de Bruijn graphs. *Proceedings of the National Academy of Sciences*, **113**(47), E7629-E7638. [doi:10.1073/pnas.1604560113](https://www.doi.org/10.1073/pnas.1604560113)
 
-Bakta labels everything clearly so you can understand what each part of the genome does.
+   
 
 3.  **Quality Control of the Blueprint**: Just like a builder needs to check their work, we rigorously assess the quality of the assembled genome using two tools:
 
 *  **QUAST**: This tool gives us a report card on the overall quality of the assembly (e.g., N50, contig counts, GC).
 
-*  **BUSCO**: This tool checks how complete the assembly is by looking at the essential genes that *every* bacterium should have. If many are missing, it might mean the assembly isn't as complete as it could be. Contamination can also be observed via duplication percentages.
 
-**The Tools We Use Here**:
-
-
-*  **Bakta**: Your genetic dictionary and annotator, labeling all the functional parts of the bacterial genome.
-
-*  **References**:
-
-1.  <https://github.com/oschwengers/bakta>
-
-2.  Schwengers O., Jelonek L., Dieckmann MA, Beyvers S., Blom J., Goesmann A. (2021). Bakta: rapid and standardized annotation of bacterial genomes via alignment-free sequence identification. *Microbial Genomics*, **7**(11). [doi:10.1099/mgen.0.000685](https://doi.org/10.1099/mgen.0.000685)
-
-3.  <https://bakta.readthedocs.io/>
-
-*  **QUAST**: The quality control specialist for your genome assembly, providing a detailed report on its overall quality.
-
-*  **References**:
+*Quast*
 
 1.  <https://github.com/ablab/quast>
 
@@ -569,55 +549,53 @@ Bakta labels everything clearly so you can understand what each part of the geno
 
 3.  Gurevich, A., Saveliev, V., Slesarev, N., & Tesler, G. (2013). QUAST: quality assessment tool for genome assemblies. *Bioinformatics*, **29**(8), 1072-1075. [PMID: 23422033](https://pmc.ncbi.nlm.nih.gov/articles/PMC3624806/)
 
-*  **Understanding Your Results**:
+*Understanding your QUAST report*
+5.  QUAST Genome Assembly Quality Assessment: <https://www.biobam.com/quast-genome-assembly-quality-assessment/>
 
-1.  QUAST Genome Assembly Quality Assessment: <https://www.biobam.com/quast-genome-assembly-quality-assessment/>
-
-*  **BUSCO (Benchmarking Universal Single-Copy Orthologs)**: The completeness checker, making sure your assembled genome has all the essential genes it should.
-
+*Busco*
 *  **References**:
 
 1.  <https://academic.oup.com/bioinformatics/article/31/19/3210/211866>
 
 2.  <https://busco.ezlab.org/busco_userguide.html>
 
-*  **Understanding Your Results**:
+*Understanding Your Busco results*:
 
 1.  Genome Completeness Assessment with BUSCO: <https://www.biobam.com/genome-completeness-assessment-with-busco/>
 
+#### What `annotation.nf` does:
+The annotation of the assembly is carried out via Bakta.  Bakta is able to use its own database to bypase its own alignments, which can save a signfiicant amount of time for the annotation stage. It pulls from very high quality, curated databases (e.g. UniProt and RefSeq) to deliver a high quality annotation.  The small and large proteins and structural components are also delineated alongside the sORFs and other important components of bacterial genomics. Of note, the outputs can be collected and visualized using the Bakta Genome Browser: https://bakta.computational.bio/ 
+
+The genome browser can be an excellent tool to use in addition to the data outputs presented herein. 
+
+**References**
+1. Sebastian Beyvers, Lukas Jelonek, Alexander Goesmann, Oliver Schwengers, Bakta Web – rapid and standardized genome annotation on scalable infrastructures, Nucleic Acids Research, Volume 53, Issue W1, 7 July 2025, Pages W51–W56, https://doi.org/10.1093/nar/gkaf335
+2. Schwengers O, Jelonek L, Dieckmann MA, Beyvers S, Blom J, Goesmann A. Bakta: rapid and standardized annotation of bacterial genomes via alignment-free sequence identification. Microb Genom. 2021 Nov;7(11):000685. doi: 10.1099/mgen.0.000685. PMID: 34739369; PMCID: PMC8743544.
+3. https://github.com/oschwengers/bakta
+   
+
+**All reports (QUAST and BUSCO) are also concatenated in MultiQC for ease of understanding, with the original data maintained.  Additionally, the final CSV file will pull important metrics per sequence for figure/table generation if needed**
 ---
 
-### Stage 5: Discovering Bacterial Defenses & Traits (`resistance.nf`)
+### Stage 5: Discovering Bacterial Defenses & Traits Using with Reference Guided Programs (`resistance.nf`)
 
-This stage is all about finding out what special abilities your bacteria might have. We screen the assembled bacterial blueprint for genes that contribute to antibiotic resistance, virulence (what makes them harmful), and important mobile genetic elements called plasmids.
+This stage is all about finding out what special abilities your bacteria might have. We screen the assembled bacterial blueprint for genes that contribute to antibiotic resistance, virulence (what makes them harmful), and important mobile genetic elements called plasmids. This section is organized a bit differently as it is important to go through what each program does within the `resistance.nf` module.  
 
 **What `resistance.nf` does**:
 
-1.  **Antibiotic Resistance (AMR) Genes**: We look for specific genes that can make bacteria resistant to antibiotics. We use highly curated databases with tools like **AMRFinderPlus** (from NCBI) and **Abricate** (using VFDB and CARD databases). These tools are trusted by many researchers to identify these critical elements.
+####**AMRFinderPlus** (from NCBI).  The program AMRFinderPlus looks for antibiotic resistance genes and SNPS that confer antibiotic resistance in a microorganism.  This program uses a database of curated resistance elements and returns the resistance gene, likely resistance phenotype, and other important factors.  The `--plus` command is provided to also provide stress-response genes, virulence factors, some antigens, porins, and more.  If you would like to add the `--organism` command to the code within the process and specify your organism, that would tune BACON in further to your particular analysis.  The list of curated species epithets is found here: https://github.com/ncbi/amr/wiki/Running-AMRFinderPlus#--organism-option
 
-2.  **Plasmid Identification**: Plasmids are small, circular pieces of DNA that can carry important genes (like resistance genes!) and can move between bacteria. We look for them in three ways, with two primary methods used here:
-
-*  **PlasmidFinder**: Scans for plasmids using a curated plasmid database.
-
-*  **MOB_Recon**: Identifies potential new plasmids by looking for specific genetic markers (like replicons and relaxases) and can even reconstruct their sequences and provide data on plasmid incompatability. MOB_Recon potentially enables researchers to discover novel plasmids, which can be taken into downstream analyses and characrerized (Note: Another tool, Platon, will also identify plasmids in a later stage.)
-
-*  **What you can do next**: If MOB_Recon finds potential new plasmids, you could take those sequences and use other tools (like Bakta, which we used in Stage 4) to annotate them and differentiate between plasmid associated resistance genes vs. chromosomal genes.  Plasmids can also be verified using benchtop techniques thanks to the putative plasmid sequence provided at the end of the analyses. 
-
-3.  **Virulence Factors**: We also look for genes that help bacteria cause disease, giving insights into how harmful a particular strain might be.
-
-**The Tools We Use Here**:
-
-*  **AMRFinderPlus**: A tool from the NCBI specifically designed to identify known antibiotic resistance genes. It's widely used in research and public health for its reliability as it is curated. 
-
-*  **References**:
+**References**:
 
 1.  <https://github.com/ncbi/amr/wiki/Running-AMRFinderPlus>
 
 2.  Feldgarden, M., et al. (2019). AMRFinderPlus: a protein homology- and k-mer-based tool for identification of antimicrobial resistance genes in protein or nucleotide sequence data. *Microbial Genomics*, **5**(11). [doi:10.1099/mgen.0.000271](https://www.microbiologyresearch.org/content/journal/mgen/10.1099/mgen.0.000271)
 
 3.  Feldgarden, M., et al. (2021). AMRFinderPlus: An Updated Toolkit for Antimicrobial Resistance Gene Identification and Characterization. *Nature Scientific Reports*, **11**(1), 11823. [doi:10.1038/s41592-021-91456-0](https://www.nature.com/articles/s41592-021-91456-0)
+   
+3.  **Abricate** (using VFDB and CARD databases). These tools are trusted by many researchers to identify these critical elements.
 
-*  **PlasmidFinder**: Helps identify known plasmids in your genome by comparing them against a database of previously found plasmids.
+####**PlasmidFinder** Plasmids are small, circular pieces of DNA that can carry important genes (like resistance genes!) and can move between bacteria. PlasmidFinder uses a curated database to BLAST or kma approach to the assembly and find known plasmids
 
 *  **References**:
 
@@ -628,8 +606,8 @@ This stage is all about finding out what special abilities your bacteria might h
 3.  Camacho, C., et al. (2009). BLAST+: architecture and applications. *BMC Bioinformatics*, **10**(1), 421.
 
 4.  Clausen, P. T. L. C., et al. (2018). Rapid and precise alignment of raw reads against redundant databases with KMA. *BMC Bioinformatics*, **19**(1), 307.
-
-*  **MOB-suite**: A comprehensive toolset for identifying, reconstructing, and typing plasmids. It's particularly good at finding new plasmids based on key genetic signatures and provides details like 'incompatibility type.'
+   
+####**MOB_Recon**: Identifies potential new plasmids by looking for specific genetic markers (like replicons and relaxases) and can even reconstruct their sequences and provide data on plasmid incompatability. MOB_Recon potentially enables researchers to discover novel plasmids, which can be taken into downstream analyses and characrerized (Note: Another tool, Platon, will also identify plasmids in a later stage.).  MOB_Recon specifically was used as it will get information from the potentially novel plasmids if available, like INC groups, as well as the putative plasmid sequence. Downstream analyses from BACON could include parsing out where the AMR genes are located (plasmid v. chromosome) and further analytics into the plasmid biology by annotation or through various comparitive programs.  The putative plasmid sequences could also be used to aide in benchtop validation or deeper sequencing methods. 
 
 *  **References**:
 
@@ -643,7 +621,11 @@ This stage is all about finding out what special abilities your bacteria might h
 
 5.  Robertson, J., & Nash, J. H. E. (2018). MOB-suite: Software Tools for Clustering, Reconstruction and Typing of Plasmids From Draft Assemblies. *Microbial Genomics*, **4**(8), e000206. [doi:10.1099/mgen.0.000206](https://doi.org/10.1099/mgen.0.000206)
 
-*  **ABricate**: A tool used for quickly screening your assembled genome for a wide range of antibiotic resistance or virulence genes, leveraging comprehensive databases like VFDB (Virulence Factor Database) and CARD (Comprehensive Antibiotic Resistance Database).
+
+#### Abricate
+Abircate was chosen as it is able toquery two large databases (Virulence Factor Database (VFDB)) quickly using the BLAST technique.  This analysis has the opportunity to expand on AMRFinderPlus results.  The VFDB database focuses on host-pathogen interactinos and virulence factors that can aide in elucidating the potential mechanisms of pathogenesis. 
+
+*  **ABricate**: A tool used for quickly screening your assembled genome for a wide range of antibiotic resistance or virulence genes, leveraging comprehensive databases like VFDB (Virulence Factor Database) and CARD (Comprehensive Antibiotic Resistance Database).  The thresholds are set relatively high to reduce the likelihood of false discovery and can be adjusted. 
 
 *  **References**:
 
@@ -655,135 +637,19 @@ This stage is all about finding out what special abilities your bacteria might h
 
 ---
 
-### Stage 6: Pinpointing Genetic Differences (SNP Analysis)
+### Stage 6: Advanced Plasmid Hunting with Machine Learning (`plasmid_discovery.nf`)
 
-This stage is all about finding single base changes in the bacterial DNA (called Single Nucleotide Polymorphisms, or SNPs). These SNPs are like genetic "fingerprints" that can help us understand how different bacterial strains are related or what might be causing their unique traits.  While most SNPs are silent, some can result in antibiotic resistance.  Of note SNP outputs can be analyzed using GWAS by the researcher post-BACON analysis to determine exactly how imortant that SNP is for a specific phenotype.  
+While we looked for plasmids earlier with traditional methods (in Stage 5), this stage brings in the power of Machine Learning to find even more, including potentially *novel* plasmids that haven't been seen before.  While MOB_Suite can do quite a lot, this specific program uses a curated training set to look at the reads and determine which are or are not chromosomal sequences.  Data produced includes what those sequences specifically are and like the other plasmid data annotating this dataset can help determine what virulence factors are plasmid vs. chromosomal.  Novel plasmids can then be characterized on the benchtop as well.  Mob results and Platon are able to truly expand on plasmid discovery which may be essential for understanding for mechanistic discovery.
 
-**What happens in this stage**:
+####**What `plasmid_discovery.nf` does**:
 
-**SNP Discovery and Annotation**:
-
-1.  **Aligning Reads**: We take your cleaned DNA reads and precisely line them up (align them) against a reference genome using **Minimap2**. This is like overlaying your bacterial "text" onto a known "textbook" to spot differences.
-
-2.  **Finding Differences (Variant Calling)**: Once aligned, **Samtools** and **BCFtools** work together to pinpoint exactly where your bacterial DNA differs from the reference, identifying all the SNPs.
-
-3.  **Understanding the Impact (Annotation)**: We use **SnpEff** to figure out what these SNPs *mean*. Does a SNP change a gene? Does it affect a protein? SnpEff tells us the potential consequences of each genetic change.
-
-4.  **Functional Enrichment**: If a SNP affects a gene, we pull out that gene and use the **PANTHER DB** (accessed via `curl` & `jq`) to see if certain types of genes or biological pathways are unusually common among the affected genes. This helps us understand what biological processes might be impacted by the genetic changes. Each sample is then graphed and compared to other samples
-
-**Phylogenetic Analysis (Tracing Relationships)**:
-
-1.  **Building a Family Tree**: For analyses with multiple bacterial samples, **BCFtools** helps create a "core SNP alignment." This alignment is then used by **FastTree/IQ-TREE** to build a phylogenetic tree. With samples from the same species, genetic drift can be assessed and the ability to understand the relationships between strains is also possible.  Phylogenetics is an excellent tool for this kind of analysis. 
-
-2.  **Revealing Evolutionary History**: Data indicates how closely related species are to one another over time (evolution) 
-
-**The Tools We Use Here**:
-
-*  **Minimap2**: An extremely fast and flexible tool for aligning your DNA reads (especially long ones) to a reference genome, even if there are complex differences.
-
-*  **Reference**: (See Stage 3 for full references)
-
-*  **Samtools**: A essential suite of tools for managing and processing large DNA sequencing data files. Here, it helps convert, sort, and index the aligned reads so we can easily find SNPs.
-
-*  **References**:
-
-1.  <https://pmc.ncbi.nlm.nih.gov/articles/PMC2723002/>
-
-2.  <https://github.com/samtools/samtools>
-
-3.  Danecek, P., et al. (2021). Twelve years of SAMtools and BCFtools. *GigaScience*, **10**(2), giab008. [doi:10.1093/gigascience/giab008](https://doi.org/10.1093/gigascience/giab008)
-
-*  **BCFtools**: Part of the Samtools suite, this tool is specifically designed to work with SNP data, helping us filter, analyze, and combine SNP information.
-
-*  **References**:
-
-1.  <https://github.com/samtools/bcftools>
-
-2.  <http://samtools.github.io/bcftools/howtos/publications.html>
-
-3.  Danecek, P., et al. (2021). Twelve years of SAMtools and BCFtools. *GigaScience*, **10**(2), giab008. [doi:10.1093/gigascience/giab008](https://doi.org/10.1093/gigascience/giab008)
-
-*  **SnpEff**: This tool "annotates" SNPs, predicting what biological effect each genetic change might have (e.g., if it changes a protein's function).
-
-*  **References**:
-
-1.  <https://pcingola.github.io/SnpEff/>
-
-2.  Cingolani, P., et al. (2012). SnpEff: Variant effects and annotation. *F1000Research*, **1**, 60. [PMID: 23678076](https://pmc.ncbi.nlm.nih.gov/articles/PMC3679285/)
-
-*  **curl & jq**: These are command-line tools that let BACON talk directly to online databases (like PANTHER) to get extra information about the genes impacted by SNPs.
-
-*  **References**:
-
-1.  Curl: <https://curl.se/docs/manpage.html>
-
-2.  Jq: <https://docs.pantherdb.org/search/data-explorer>
-
-*  **FastTree/IQ-TREE**: These programs are specialized for building phylogenetic "family trees" from genetic data, helping visualize the evolutionary relationships between your bacterial samples.
-
-*  **References**:
-
-1.  <https://iqtree.github.io/doc/Command-Reference>
-
-2.  Price, M. N., Dehal, P. S., & Arkin, A. P. (2010). FastTree 2 ? Approximately Maximum-Likelihood Trees for Large Alignments. *PLoS ONE*, **5**(3), e9490. [PMID: 20224823](https://pmc.ncbi.nlm.nih.gov/articles/PMC4271533/)
-
-3.  Minh, B. Q., et al. (2020). IQ-TREE 2: New Models and Efficient Strategies to Govern Phylogenetic Information Flow. *Molecular Biology and Evolution*, **37**(5), 1530?1534. [doi:10.1093/molbev/msaa077](https://academic.oup.com/mbe/article/35/2/486/4644721)
-
----
-
-### Stage 7: Discovering Bacterial Immune Systems (CRISPR Identifications)
-
-This stage focuses on identifying CRISPR (Clustered Regularly Interspaced Short Palindromic Repeats) systems within your bacterial genomes. CRISPRs are like a bacterial immune system, helping them defend against viruses and other invaders by remembering past infections.  Some species, like Salmonella, have very stable SNPs and have had their serotypes accurately identified using CRISPR.  While this analysis does not perform that kind of work, it will be infomrative as CRISPR patterns across species may be informative for other biological questions like how a specific CRISPR may reduce resistance or alter plasmid biology. 
-
-**What `modules/crispr_identification.nf` does**:
-
-1.  **CRISPR Detection**: We use a tool called **MinCED** to scan the bacterial DNA for these unique CRISPR regions.
-
-2.  **Visual Summary**: Once identified, BACON generates a summary figure using **Matplotlib**. This figure graphically displays the CRISPR regions found in your genome.
-
-**What you can do next**:
-
-The information from this stage can be very valuable. For example, if you're studying bacteria like *Salmonella*, CRISPR patterns can help distinguish different types (serovars). It can also help researchers discover entirely new CRISPR-Cas systems, which are of great interest for biomedical research and gene editing technologies.
-
-**The Tools We Use Here**:
-
-*  **MinCED**: A specialized program designed to find CRISPR arrays (Clustered Regularly Interspaced Short Palindromic Repeats) within DNA sequences.
-
-*  **References**:
-
-1.  <https://github.com/ctSkennerton/minced>
-
-2.  Bland, C., & Novick, R. P. (2014). MinCED: a fast and accurate tool for CRISPR identification. *F1000Research*, **3**, 145. [PMID: 25436154](https://pmc.ncbi.nlm.nih.gov/articles/PMC10457644/)
-
-*  **matplotlib (Python)**: A popular and powerful library in Python used for creating static, interactive, and animated visualizations. Here, it's used to generate the summary figures for CRISPR identifications.
-
-*  **References**:
-
-1.  <https://matplotlib.org/>
-
-2.  Hunter, J. D. (2007). Matplotlib: A 2D Graphics Environment. *Computing in Science & Engineering*, **9**(3), 90?95. [doi:10.1109/MCSE.2007.55](https://github.com/matplotlib/matplotlib)
-
----
-
-### Stage 8: Advanced Plasmid Hunting with Machine Learning (`plasmid_discovery.nf`)
-
-While we looked for plasmids earlier with traditional methods (in Stage 5), this stage brings in the power of Machine Learning to find even more, including potentially *novel* plasmids that haven't been seen before.  While MOB_Suite can do quite a lot, this specific program uses a curated training set to look at the reads and determine which are or are not chromosomal sequences.  Data produced includes what those sequences specifically are and like the other plasmid data annotating this dataset can help determine what virulence factors are plasmid vs. chromosomal.  Novel plasmids can then be characterized on the benchtop. 
-
-**What `plasmid_discovery.nf` does**:
-
-1.  **Machine Learning for Plasmids**: We use a sophisticated tool called **Platon**. Even though Platon is typically used for shorter DNA reads, it's very capable of identifying plasmids from the long reads we're using.
-
-2.  **Novel Plasmid Discovery**: Platon analyzes your assembled genome, looking for specific protein patterns and other clues that suggest the presence of a plasmid. It can even tell you if an antibiotic resistance gene or virulence gene (which we looked for in Stage 5) is located on a plasmid or on the main bacterial chromosome.
+Even though Platon is typically used for shorter DNA reads, it's very capable of identifying plasmids from the long reads produced by long read sequencers. Platon analyzes your assembled genome, looking for specific protein patterns and other clues that suggest the presence of a plasmid. It can even tell you if an antibiotic resistance gene or virulence gene is located on a plasmid or on the main bacterial chromosome.
 
 **Important Note & What you can do next**:
 
 *  **Plasmid Size Matters**: Be aware that during the initial DNA preparation in the lab, very small plasmids (less than 10,000 base pairs) might get lost. So, Platon won't be able to find those.
 
 *  **Validation**: If Platon identifies a brand new plasmid, it's exciting! However, the next step would be to confirm its existence and characteristics in a real lab experiment (on the "bench").
-
-**The Tool We Use Here**:
-
-*  **Platon**: A cutting-edge tool that uses machine learning to quickly find and describe plasmids in bacterial genomes. It's especially useful for identifying new plasmids and determining where important genes (like resistance genes) are located.
 
 *  **References**:
 
@@ -793,53 +659,127 @@ While we looked for plasmids earlier with traditional methods (in Stage 5), this
 
 ---
 
-### Stage 9: GWAS and Pangenomic Analysis:
-When evaluating bacterial genomes, specifically multiple genomes, comparing the data or potentially linking phenotype (what we see) with genotype (what is coded in the genome) becomes essential.  This stage runs multiple tools for Pangenomic Analysis.
 
-**What happens at this stage**:
+### Stage 6: Pinpointing Genetic Differences (SNP Analysis)
 
-1) **Genomic Alignment**: ProgressiveMauve performs a whole genome alignment and it is visuzlized via Genoplot-R.  This will work for 2 to 100 biological sequences and the goal is for it to align and provide important data like if genes are conserved, if any rearrangements are present between the genomes, and other important genetic changes.  The Genoplot-R program takes that alignment and visualizes it.
-   
-2) **Pangenomic Analysis/GWAS**: Pangenomics is accomplished via Panaroo and Pyseer. First, if more than one genome is present, Panaroo runs.  Panaroo is a grpahically based clustering tool that accounts for errors during assembly and works well with potentially fragmented assemblies.  Outputs of Panaroo were analyzed with Pyseer, which can enable the discovery of novel links between genotypes and phenotypes GWAS (Genomic Wide Association Study).  This combination of analyses allows users to link genotypes with benchtop phenotypes for virulence and antibiotic resistance.
-   
-3) **Visualizations**: The program produce a Manhattan Plot, which allows the user to immediately determine what genomic loci is statistically associated with a given phenoytpe.
+The SNP (single nucleotide polymophism) is important in tracking lineages and can have profound impacts on antibiotic resistance and bacterial pathogenesis if the SNP is functional.  The SNP analyses were conducted as they are one of the primary ways different strains or lineages are identified alongside biochemical properties. First, the unaligned sequences are compared to a reference seqeunce provided in the `IndexDB.nf` module to identify the variants.  Next, the sequences are analyzed for SNP induced frameshifts and the loci, curated into a list, and annotated. The SNP patterns are used to construct phylogenetic a phylogenetic tree to understand relationships between the sequences.  The location of the SNPs and other features are annotated and potential phenotypic consequences are annotated and characterized.  Therefore, how the SNP impacts the bacterial species from a genotypic perspecitve is used to determine what the phenotypic results may entail.  
+####**What happens in `snpanalysis.nf`**:
 
-This process can be modified to include sturctural variations like SNPs. 
+1.  **Aligning Reads**: Decontaminated DNA reads are aligned against a reference genome using **Minimap2**. This is like overlaying your bacterial "text" onto a known "textbook" to identify the differences.
 
-**Tools We Use Here**
+**References**
+*Minimap2*
+1. https://github.com/lh3/minimap2
+2. Li, H. (2018). Minimap2: pairwise alignment for nucleotide sequences. Bioinformatics, 34:3094-3100. doi:10.1093/bioinformatics/bty191
+3. Li, H. (2021). New strategies to improve minimap2 alignment accuracy. Bioinformatics, 37:4572-4574. doi:10.1093/bioinformatics/btab705
 
-1) ProgressiveMauve
+  *Samtools*
 
-* **References** 
-  1) Citation: Darling AE, Mau B, Perna NT (2010) progressiveMauve: Multiple Genome Alignment with Gene Gain, Loss and Rearrangement. PLoS ONE 5(6): e11147.
+1.  <https://pmc.ncbi.nlm.nih.gov/articles/PMC2723002/>
+2.  <https://github.com/samtools/samtools>
+3.  Danecek, P., et al. (2021). Twelve years of SAMtools and BCFtools. *GigaScience*, **10**(2), giab008. [doi:10.1093/gigascience/giab008](https://doi.org/10.1093/gigascience/giab008)
+
+2.  **Finding Differences (Variant Calling)**: Once aligned, **Samtools** and **BCFtools** work together to pinpoint exactly where your bacterial DNA differs from the reference, identifying all the SNPs.
+
+**References*
+*BCFtools*
+
+1.  <https://github.com/samtools/bcftools>
+2.  <http://samtools.github.io/bcftools/howtos/publications.html>
+3.  Danecek, P., et al. (2021). Twelve years of SAMtools and BCFtools. *GigaScience*, **10**(2), giab008. [doi:10.1093/gigascience/giab008](https://doi.org/10.1093/gigascience/giab008)
+
+4.  **Annotation)**: We use **SnpEff** to figure out what these SNPs *mean*. Does a SNP change a gene? Does it affect a protein? SnpEff tells us the potential consequences of each genetic change.
+
+*References*
+
+*SnpEff*
+1.  <https://pcingola.github.io/SnpEff/>
+2.  Cingolani, P., et al. (2012). SnpEff: Variant effects and annotation. *F1000Research*, **1**, 60. [PMID: 23678076](https://pmc.ncbi.nlm.nih.gov/articles/PMC3679285/)
+
+*curl & jq*
+1.  Curl: <https://curl.se/docs/manpage.html>
+2.  Jq: <https://docs.pantherdb.org/search/data-explorer>
+
+*Panther*
+1. https://cran.r-project.org/web/packages/rbioapi/vignettes/rbioapi_panther.html
+2. https://pantherdb.org
+3. https://pantherpy.github.io/
+4. Mi H, Muruganujan A, Casagrande JT, Thomas PD. Large-scale gene function analysis with the PANTHER classification system. Nat Protoc. 2013 Aug;8(8):1551-66. doi: 10.1038/nprot.2013.092. Epub 2013 Jul 18. PMID: 23868073; PMCID: PMC6519453.
+5. 5.  **Panther**: <https://pmc.ncbi.nlm.nih.gov/articles/PMC6519457/> (A large biological database that classifies proteins and genes to analyze and interpret genomic data.
+
+####**What happens in `phylogenetics.nf`**
+
+1.  **Building a Family Tree**: For analyses with multiple bacterial samples, **BCFtools** helps create a "core SNP alignment." This alignment is then used by **FastTree/IQ-TREE** to build a phylogenetic tree. With samples from the same species, genetic drift can be assessed and the ability to understand the relationships between strains is also possible.  Phylogenetics is an excellent tool for this kind of analysis. Data indicates how closely related species are to one another over time (evolution) 
+
+**References**
+1.  <https://iqtree.github.io/doc/Command-Reference>
+
+2.  Price, M. N., Dehal, P. S., & Arkin, A. P. (2010). FastTree 2 ? Approximately Maximum-Likelihood Trees for Large Alignments. *PLoS ONE*, **5**(3), e9490. [PMID: 20224823](https://pmc.ncbi.nlm.nih.gov/articles/PMC4271533/)
+
+3.  Minh, B. Q., et al. (2020). IQ-TREE 2: New Models and Efficient Strategies to Govern Phylogenetic Information Flow. *Molecular Biology and Evolution*, **37**(5), 1530?1534. [doi:10.1093/molbev/msaa077](https://academic.oup.com/mbe/article/35/2/486/4644721)
+---
+
+### Stage 7: Discovering Bacterial Immune Systems (CRISPR Identifications)
+
+This stage focuses on identifying CRISPR (Clustered Regularly Interspaced Short Palindromic Repeats) systems within your bacterial genomes. CRISPRs are a very primative version of a bacterial immune system that help protect against phages. Some species, like *Salmonella*, have very stable CRISPRs which aide in the accurate identification of serotypes.  While this analysis does not perform that kind of work, it will be infomrative as CRISPR patterns across species may be informative for other biological questions like how a specific CRISPR may reduce resistance plasmid biology. Visualization of the CRISPRs occurs via matplotlib in Python, which will allow the user to identify the pattern of SNPS and then later compare them across samples. 
+
+####**What `modules/crispr.nf` does**:
+
+1.  **CRISPR Detection**: We use a tool called **MinCED** to scan the bacterial DNA for these unique CRISPR regions.
+**Refernce**
+*MinCED*
+1.  <https://github.com/ctSkennerton/minced>
+
+2.  Bland, C., & Novick, R. P. (2014). MinCED: a fast and accurate tool for CRISPR identification. *F1000Research*, **3**, 145. [PMID: 25436154](https://pmc.ncbi.nlm.nih.gov/articles/PMC10457644/)
+
+*matplotlib (Python)*
+
+1.  <https://matplotlib.org/>
+
+2.  Hunter, J. D. (2007). Matplotlib: A 2D Graphics Environment. *Computing in Science & Engineering*, **9**(3), 90?95. [doi:10.1109/MCSE.2007.55](https://github.com/matplotlib/matplotlib)
+
+---
+
+
+### Stage 8: GWAS and Pangenomic Analysis:
+When evaluating bacterial genomes, specifically multiple genomes, comparing the data or potentially linking phenotype (what we see) with genotype (what is coded in the genome) becomes essential.  This stage runs multiple tools for Pangenomic Analysis.  This is fist conducted by taking the whole genomes and aligning them, which will visualize conserved regions between samples as well as their inversions and novel regions.  Next, we evaluate the sample set using pangenomics, and in this case we run GWAS.  The GWAS is assisted by your `metadata.csv` file. 
+
+####**What happens in wholegenomealignment.nf**:
+A program called progressiveMAUVE is used to align the ge assembled genomes.  A genome synteny plot is created which visualizes the conservedorder of genes in a genome and compares genomic coordinates across the samples via Genoplot-R.  This will work for 2 to 100 biological sequences and the goal is for it to align and provide important data like if genes are conserved, if any rearrangements are present between the genomes, and other important genetic changes.  The Genoplot-R program takes that alignment and visualizes it.
+
+*progressiveMauve*
+1) Citation: Darling AE, Mau B, Perna NT (2010) progressiveMauve: Multiple Genome Alignment with Gene Gain, Loss and Rearrangement. PLoS ONE 5(6): e11147.
    doi:10.1371/journal.pone.0011147
 2) https://github.com/gerbenvoshol/Mauve
 3) https://darlinglab.org/mauve/user-guide/progressivemauve.html
 
-2) Genoplot-R
-   * **Reference** * 
+*Genoplot-R*
   1) Guy L, Roat Kultima J, Andersson S (2010). “genoPlotR: comparative gene and genome visualization in R.” Bioinformatics, 26(18), 2334-2335.
    doi:10.1093/bioinformatics/btq413. https://academic.oup.com/bioinformatics/article-pdf/26/18/2334/546156/btq413.pdf,
    https://academic.oup.com/bioinformatics/article/26/18/2334/208255.
+   
+   
+####**What happens in pangenomics.nf** 
+Pangenomics is accomplished via Panaroo and Pyseer. First, if more than one genome is present, Panaroo runs.  So if one sample is processed, there will not be an output.  Panaroo is a grpahically based clustering tool that accounts for errors during assembly and works well with potentially fragmented assemblies.  Outputs of Panaroo were analyzed with Pyseer, which can enable the discovery of novel links between genotypes and phenotypes GWAS (Genomic Wide Association Study).  This combination of analyses allows users to link genotypes with benchtop phenotypes for virulence and antibiotic resistance.  I chose to run the variant files through this program, which is standard practice and it will analyze all of the samples. The final end product is Manhattan Plot, which allows the user to immediately determine what genomic loci is statistically associated with a given phenoytpe.
 
-3) Panaroo
-   * **Refereces** * 
+**References**
+*Panaroo*
    1) https://github.com/gtonkinhill/panaroo
    2) https://gthlab.au/panaroo/#/gettingstarted/quickstart
    Tonkin-Hill G, MacAlasdair N, Ruis C, Weimann A, Horesh G, Lees JA, Gladstone RA, Lo S, Beaudoin C, Floto RA, Frost SDW, Corander J, Bentley SD, Parkhill J.
    2020. Producing polished prokaryotic pangenomes with the Panaroo pipeline. Genome Biol 21:180.
          
-4) Pyseer
+*Pyseer*
  * **Refereces** * 
   1) https://github.com/mgalardini/pyseer
   2)  Unitigs and elastic net preprint: Lees, John A., Tien Mai, T., et al. Improved inference and prediction of bacterial genotype-phenotype associations using
    pangenome-spanning regressions. bioRxiv 852426 (2019) doi: 10.1101/852426
-3) pyseer and LMM implementation paper: Lees, John A., Galardini, M., et al. pyseer: a comprehensive tool for microbial pangenome-wide association studies.
+  3) pyseer and LMM implementation paper: Lees, John A., Galardini, M., et al. pyseer: a comprehensive tool for microbial pangenome-wide association studies.
 	Bioinformatics 34:4310–4312 (2018). doi: 10.1093/bioinformatics/bty539
 	Original SEER implementation paper: Lees, John A., et al. Sequence element enrichment analysis to determine the genetic basis of bacterial phenotypes. Nature 	communications 7:12797 (2016). doi: 10.1038/ncomms12797
 
 
-### Stage 10: Bringing It All Together: Reports, Figures, and Final Data (`visualization.nf`, `final_report.nf`, `multiqc.nf`)
+### Stage 10: Bringing It All Together: Reports, Figures, and Final Data (`visualization.nf`, `final_report.nf`, `)
 
 This is the grand finale! After all the complex analysis, this stage is where BACON gathers all the insights, numbers, and findings from the previous steps and presents them in easy-to-understand reports, beautiful figures, and organized data files.
 
@@ -855,20 +795,8 @@ This is the grand finale! After all the complex analysis, this stage is where BA
 
 4.  **Clean Output Directories**: All your final results are neatly organized into easy-to-navigate folders like `figures/`, `tables/`, and `files/`. There's also a comprehensive `raw_outputs/` directory. This is important for "traceability" (you can see exactly where every piece of data came from) and for any custom analyses you might want to perform later that are beyond BACON's direct scope.
 
-**The Tools We Use Here**:
-
-*  **MultiQC**: The ultimate summarizer! It collects all the reports from different tools and creates a single, interactive, easy-to-read web report for a quick overview.
-
-*  **References**:
-
-1.  <https://multiqc.info/>
-
-2.  Ewels, P., Magnusson, M., Lundin, S., & K�ller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. *Bioinformatics*, **32**(19), 3047?3049. [doi:10.1093/bioinformatics/btw354](https://doi.org/10.1093/bioinformatics/btw354)
-
-*  **R / ggplot2 / Python**: These are powerful programming languages and libraries that BACON uses behind the scenes to create those custom plots, figures, and process data.
-
-*  **References**:
-
+**References**:
+*R / ggplot2 / Python*T
 1.  **R**: <https://www.R-project.org/> (A free software environment for statistical computing and graphics.)
 
 2.  **ggplot2**: Wickham H (2016). *ggplot2: Elegant Graphics for Data Analysis*. Springer-Verlag New York. ISBN 978-3-319-24277-4, <https://ggplot2.tidyverse.org/> (A system for declaratively creating graphics, based on The Grammar of Graphics.)
@@ -877,10 +805,6 @@ This is the grand finale! After all the complex analysis, this stage is where BA
 
 4.  **Python**: <https://docs.python.org/3/reference/index.html> (A popular programming language, often used for data analysis and scripting.)
 
-5.  **Panther**: <https://pmc.ncbi.nlm.nih.gov/articles/PMC6519457/> (A large biological database that classifies proteins and genes to analyze and interpret genomic data.)
-
-6.  **PantherAPI**: <https://cran.r-project.org/web/packages/rbioapi/vignettes/rbioapi_panther.html> (An R package that provides an interface to various bioinformatics web services, including PANTHER.)
-
 ---
 
 # Conclusion
@@ -888,8 +812,13 @@ This is the grand finale! After all the complex analysis, this stage is where BA
 You've now walked through the entire BACON pipeline! From initial data preparation to the final reports and figures, BACON automates complex bacterial genome analysis, making it accessible and reproducible. We hope this guide helps you understand each step and confidently use the pipeline for your research. If you have any questions or need further assistance, please don't hesitate to reach out!
 
 # Credit due where it is due
-I would like to thank Gemini for its contribution to helping me troubleshoot my code and learn along the way. While I dislike AI generally, it is an exceptional tool to use to fix code problems, learn, and grow as a scientist.  Thank you Gemini. 
+I would like to thank Gemini for its contribution to helping me troubleshoot my code and learn along the way. While I dislike AI generally, it is an exceptional tool to use to fix code problems, learn, and grow as a scientist.  Thank you Gemini. I also used GitHub to standardize my readme file and correct the markdown for inconsistencies and formatting challenges and produce the .gitignore file. 
 
-# CITING BACON 
-[THIS IS WHERE THE PUBLICATION WILL GO]
-[THIS IS WHERE REPOSITORY WILL BE POSTED]
+# CITING BACON
+
+If you use the BACON pipeline in your research, please cite it using the Zenodo DOI. 
+
+**Cite the pipeline software:**
+Feye, Kristina M., et al. (2026). BACON (Bacterial Analysis Comprehensive Nextflow): A Comprehensive and Reproducible Nextflow Pipeline for Bacterial Genome Analysis using PacBio Unaligned BAM Files Zenodo. [https://doi.org/10.5281/zenodo.[YOUR_DOI_NUMBER]](https://zenodo.org/records/19743813)
+
+*Note: Please also ensure you cite the underlying tools utilized by this pipeline, such as Flye, Bakta, Kraken2, Pyseer, etc., as described in their respective documentation. The authors are not responsible for the result of this programs use.I provide absolutely no warranty, and I am not liable if it breaks your computer or ruins your analysis. The contents of this program, the results, nor this personal github page do not reflect the thoughts, opinions or standards of any organization or affiliate organization*
