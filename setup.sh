@@ -136,12 +136,12 @@ export KRAKEN_DB_PATH="$DB_BASE_PATH/kraken_db"
 # Create the new folders inside the repo
 mkdir -p "$BAKTA_DB_PATH" "$PLATON_DB_PATH" "$KRAKEN_DB_PATH"
 
+
 # --- 6. DATABASE INSTALLATION ---
 echo "--> Downloading necessary databases"
-# ... (the rest of your database installation
 
 # --- BAKTA DATABASE ---
-if [ -d "$BAKTA_DB_PATH/db" ]; then
+if [ -d "$BAKTA_DB_PATH/db" ] && [ -f "$BAKTA_DB_PATH/db/manifest.txt" ]; then
     echo "--> Bakta database found. Skipping download."
 else
     echo "--> Bakta database not found. Installing..."
@@ -167,7 +167,8 @@ fi
 
 # --- PLATON DATABASE ---
 echo "--> Searching for PLATON Database"
-if [ -d "$PLATON_DB_PATH/db" ] || [ -f "$PLATON_DB_PATH/db.fasta" ]; then
+# FIX: Platon db extracts into a folder called "db/", and the main file is "plasmids_db.fasta"
+if [ -f "$PLATON_DB_PATH/db/plasmids_db.fasta" ]; then
     echo "--> Platon database found. Skipping download."
 else
     echo "--> Platon database not found. Installing..."
@@ -181,18 +182,26 @@ fi
 
 # --- KRAKEN DATABASE ---
 echo "--> Searching for KRAKEN database"
-if [ -d "$KRAKEN_DB_PATH/hash.k2d" ] || [ -f "$KRAKEN_DB_PATH/hash.k2d" ]; then
+
+# Check if the main database file exists
+if [ -f "$KRAKEN_DB_PATH/hash.k2d" ]; then
     echo "--> KRAKEN database found. Skipping download."
 else
     echo "--> KRAKEN database not found. Installing..."
     cd "$KRAKEN_DB_PATH" || exit 1
+    
+    # UPDATED to use the correct URL and filename
     wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08_GB_20260226.tar.gz
+    
+    echo "--> Unpacking KRAKEN database (this may take a while)..."
     tar -xzf k2_standard_08_GB_20260226.tar.gz
+    
+    echo "--> Cleaning up..."
     rm k2_standard_08_GB_20260226.tar.gz
+    
     cd "$LOCAL_DIR"
     echo "--> KRAKEN database installation complete."
 fi
-
 
 echo "All done setting up the other dependencies."
 

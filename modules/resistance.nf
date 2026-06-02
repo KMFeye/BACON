@@ -3,7 +3,7 @@ process AMRFINDER_ANALYSIS {
     label 'process_medium'
     conda 'bioconda::ncbi-amrfinderplus'
 
-    publishDir: {"${params.outdir}/tables/amrfinder", mode: 'copy'}
+    publishDir "${params.outdir}/tables/amrfinder", mode: 'copy'
 
     input:
     tuple val(sample_id), path(fasta)
@@ -23,7 +23,7 @@ process PLASMIDFINDER_ANALYSIS {
     label 'process_medium'
     conda 'bioconda::plasmidfinder'
     
-    publishDir: {"${params.outdir}/tables/plasmidfinder", mode: 'copy'}
+    publishDir "${params.outdir}/tables/plasmidfinder", mode: 'copy'
 
     input:
     tuple val(sample_id), path(fasta), path(plasmidfinder_db)
@@ -43,7 +43,7 @@ process MOB_SUITE_ANALYSIS {
     label 'process_medium'
     conda "${System.getenv('HOME')}/miniconda3/envs/mobsuite_env" 
     
-    publishDir: {"${params.outdir}/tables/mobsuite", mode: 'copy'}
+    publishDir "${params.outdir}/tables/mobsuite", mode: 'copy'
 
     input: tuple val(sample_id), path(fasta)
     output: tuple val(sample_id), path("mobsuite_output"), emit: mobsuite_report
@@ -62,7 +62,7 @@ process RUN_ABRICATE {
     maxRetries 2
     errorStrategy 'retry'
 
-    publishDir: {"${params.outdir}/tables/abricate", mode: 'copy'}
+    publishDir "${params.outdir}/tables/abricate", mode: 'copy'
 
     input:
     tuple val(sample_id), path(fasta)

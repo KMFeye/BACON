@@ -3,7 +3,7 @@ process GENERATE_FINAL_REPORT {
     label 'process_high'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-ape conda-forge::r-pheatmap conda-forge::r-rio conda-forge::r-kableextra'
 
-    publishDir: {"${params.outdir}/figures", mode: 'copy'}
+    publishDir "${params.outdir}/figures", mode: 'copy'
 
     input:
     path summary_tables_dir
@@ -106,7 +106,7 @@ process SUMMARIZE_AND_ORGANIZE {
     tag "Consolidating all results and organizing final files"
     label 'process_low'
     
-    publishDir: {"${params.outdir}/files", mode: 'copy'}
+    publishDir "${params.outdir}/files", mode: 'copy'
 
     input:
     val(done_signal)

@@ -3,7 +3,7 @@ process CLEAN_QAQC {
     label 'process_high'
     conda 'bioconda::fastqc=0.11.9'
 
-    publishDir: {"${params.outdir}/rawresults/${publish_dir_name}/${sample_id}", mode: 'copy'}
+    publishDir "${params.outdir}/rawresults", mode: 'copy', saveAs: { filename -> "${publish_dir_name}/${sample_id}/${filename}" }
 
     input:
     tuple val(sample_id), path(fastq), val(publish_dir_name)

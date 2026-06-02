@@ -3,7 +3,7 @@ process PLOT_GENE_HEATMAP {
     memory '8.GB'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap'
 
-    publishDir: {"${params.outdir}/figures/heatmaps", mode: 'copy'}
+    publishDir "${params.outdir}/figures/heatmaps", mode: 'copy'
     
     input:
     path(matrix)
@@ -35,7 +35,7 @@ process PLOT_PLASMID_MAPS {
     memory '8.GB'
     conda 'conda-forge::r-base conda-forge::r-tidyverse bioconda::bakta' 
 
-    publishDir: {"${params.outdir}/figures/plasmid_maps", mode: 'copy'}
+    publishDir "${params.outdir}/figures/plasmid_maps", mode: 'copy'
     
     input:
     path(fasta)
@@ -65,7 +65,7 @@ process PLOT_RESISTANCE_HEATMAP {
     label 'process_medium'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis'
     
-    publishDir: {"${params.outdir}/figures", mode: 'copy'}
+    publishDir "${params.outdir}/figures", mode: 'copy'
 
     input:
     path(summary_csvs)
@@ -133,7 +133,7 @@ process PLOT_VIRULENCE_HEATMAP {
     label 'process_medium'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis'
 
-    publishDir: {"${params.outdir}/figures", mode: 'copy'}
+    publishDir "${params.outdir}/figures", mode: 'copy'
 
     input:
     path(summary_csvs)
@@ -178,7 +178,7 @@ process PLOT_PLASMID_SUMMARY {
     label 'process_medium'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis'
 
-    publishDir: {"${params.outdir}/figures", mode: 'copy'}
+    publishDir "${params.outdir}/figures", mode: 'copy'
 
     input:
     path(summary_csvs)
@@ -224,7 +224,7 @@ process PLOT_PANTHER_DOTPLOT {
     label 'process_medium'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-viridis'
 
-    publishDir: {"${params.outdir}/figures", mode: 'copy'}
+    publishDir "${params.outdir}/figures", mode: 'copy'
 
     input:
     path(summary_csvs)
@@ -264,7 +264,7 @@ process PLOT_ANNOTATED_TREE {
     label 'process_high'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis bioconductor-ggtree bioconductor-ggtreeextra'
     
-    publishDir: {"${params.outdir}/figures", mode: 'copy'}
+    publishDir "${params.outdir}/figures", mode: 'copy'
     
     input:
     path(treefile)
@@ -321,7 +321,7 @@ process PLOT_KRAKEN_REPORTS {
     label 'process_medium'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-ggplot2'
    
-    publishDir: {"${params.outdir}/figures", mode: 'copy'}
+    publishDir "${params.outdir}/figures", mode: 'copy'
 
     input:
     path kraken_reports

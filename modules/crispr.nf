@@ -3,31 +3,20 @@ process CRISPR_TYPING {
     label 'process_medium'
     conda 'bioconda::minced'
 
-    publishDir: {"${params.outdir}/rawresults/${sample_id}/crispr_typing",
-        mode: 'copy',
-        pattern: "${sample_id}.minced.*"}
-
-    publishDir: {"${params.outdir}/tables",
-        mode: 'copy',
-        pattern: "*.gff",
-        saveAs: { "${sample_id}.crispr.gff" }}
+    publishDir "${params.outdir}/rawresults/crispr", mode: 'copy', saveAs: { filename -> "${sample_id}/${filename}" }
 
     input:
     tuple val(sample_id), path(assembly)
+
     output:
-    path("*.gff"), emit: crispr_gff
+    tuple val(sample_id), path("${sample_id}.minced.*"), emit: minced_files
+    tuple val(sample_id), path("${sample_id}.minced.gff"), emit: crispr_gff, optional: true
 
     script:
     """
-    minced -minNR 3 -minRL 18 -maxRL 50 \\
-        ${assembly} \\
+    minced -minNR 3 -minRL 18 -maxRL 50 \
+        ${assembly} \
         ${sample_id}.minced
-
-    if [ -f "${sample_id}.minced.gff" ]; then
-        mv ${sample_id}.minced.gff ${sample_id}.crispr.gff
-    else
-        touch ${sample_id}.crispr.gff
-    fi
     """
 }
 
@@ -36,10 +25,11 @@ process VISUALIZE_CRISPR_RESULTS {
     label 'process_low'
     conda 'conda-forge::matplotlib-base'
 
-    publishDir: {"${params.outdir}/figures", mode: 'copy'}
+    publishDir "${params.outdir}/figures", mode: 'copy'
 
     input:
     path(gff_files)
+
     output:
     path("crispr_summary_plot.png"), emit: plot
 
@@ -54,7 +44,8 @@ process VISUALIZE_CRISPR_RESULTS {
     
     data_points = []
     for gff_file in all_gffs:
-        sample_id = gff_file.split('.')[0]
+        # Assuming format 'sample_id.minced.gff'
+        sample_id = gff_file.replace('.minced.gff', '')
         with open(gff_file, 'r') as f:
             num_crisprs = sum(1 for line in f if not line.startswith('#'))
         data_points.append((sample_id, num_crisprs))

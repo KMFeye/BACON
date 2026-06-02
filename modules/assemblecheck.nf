@@ -1,8 +1,7 @@
 process FLYE_ASSEMBLY {
-    tag "Flye assembly for ${sample_id} (Attempt ${task.attempt})"
+    tag "Flye assembly for ${sample_id}"
     label 'process_high'
     conda 'bioconda::flye=2.9.1'
-
     maxRetries 1
     errorStrategy {
         if (task.attempt == 1 && task.exitStatus != 0) {
@@ -14,11 +13,12 @@ process FLYE_ASSEMBLY {
             return 'ignore'
         }
     }
-    
-    publishDir: {"${params.outdir}/rawresults/flye/${sample_id}", mode: 'copy'}
+
+    publishDir "${params.outdir}/rawresults", mode: 'copy', saveAs: { filename -> "flye/${sample_id}/${filename}" }
 
     input:
     tuple val(sample_id), path(fastq)
+
     output:
     tuple val(sample_id), path("flye_assembly"), emit: assembly_dir
     tuple val(sample_id), path("flye_assembly/assembly.fasta"), emit: assembly_fasta, optional: true
@@ -36,22 +36,16 @@ process FLYE_ASSEMBLY {
     """
 }
 
-
 process QUAST_REPORT {
     tag "Running QUAST for ${sample_id}"
     label 'process_medium'
     conda 'bioconda::quast'
-   
-    publishDir: {"${params.outdir}/rawdata/${sample_id}/quast",
-        mode: 'copy',
-        pattern: "quast_results/*"}
-    publishDir: {"${params.outdir}/tables",
-    mode: 'copy',
-    pattern: "quast_results/report.tsv",
-    saveAs: { "${sample_id}.quast_report.tsv" } }
-    
+
+    publishDir "${params.outdir}/rawdata", mode: 'copy', saveAs: { filename -> "${sample_id}/quast/${filename}" }
+
     input:
     tuple val(sample_id), path(assembly)
+
     output:
     path("quast_results"), emit: quast_report
 
@@ -66,10 +60,11 @@ process BUSCO {
     label 'process_medium'
     conda 'bioconda::busco'
 
-    publishDir: {"${params.outdir}/tables/bosco", mode: 'copy'}
+    publishDir "${params.outdir}/tables", mode: 'copy', saveAs: { filename -> "busco/${sample_id}/${filename}" }
 
     input:
     tuple val(sample_id), path(fasta)
+
     output:
     tuple val(sample_id), path("busco_output"), emit: busco_report
 

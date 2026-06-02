@@ -3,7 +3,7 @@ process SNPEFF_ANNOTATE {
     label 'process_medium'
     conda 'bioconda::snpeff=5.1d bioconda::htslib'
     
-    publishDir: {"${params.outdir}/rawresults/variant_annotation/annotated_vcfs", mode: 'copy'}
+    publishDir "${params.outdir}/rawresults/variant_annotation/annotated_vcfs", mode: 'copy'
 
     input:
     tuple val(sample_id), path(vcf), path(snpeff_config), path(snpeff_db_dir)
@@ -15,7 +15,7 @@ process SNPEFF_ANNOTATE {
     script:
     def genome_id = sample_id
     """
-    snpEff ann -v -stats snpEff_summary.html -config ${snpeff_config} -dataDir ${snpeff_db_dir} ${genome_id) ${vcf} | bgzip -c > "${sample_id}.ann.vcf.gz"
+    snpEff ann -v -stats snpEff_summary.html -config ${snpeff_config} -dataDir ${snpeff_db_dir} ${genome_id} ${vcf} | bgzip -c > "${sample_id}.ann.vcf.gz"
     """
 }
 

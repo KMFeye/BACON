@@ -2,7 +2,7 @@ process RUN_PANAROO {
     tag "Panaroo pangenome analysis"
     conda 'bioconda::panaroo'
 
-    publishDir: {"${params.outdir}/rawresults/aggregate/pangenome", mode: 'copy'}
+    publishDir "${params.outdir}/rawresults/aggregate/pangenome", mode: 'copy'
 
     input:
     path(gff_files)
@@ -27,7 +27,7 @@ process RUN_PYSEER {
     tag "Pyseer LMM-GWAS"
     conda 'bioconda::pyseer'
 
-    publishDir: {"${params.outdir}/figures/pangenome/pyseer", mode: 'copy'}
+    publishDir "${params.outdir}/figures/pangenome/pyseer", mode: 'copy'
 
     input:
     path(panaroo_dir)
@@ -59,7 +59,8 @@ process RUN_PYSEER {
 process PLOT_PYSEER_MANHATTAN {
     tag "Plotting Pyseer Manhattan plot"
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-qqman'
-    publishDir: {"${params.outdir}/figures/pangenome/pyseer/plots", mode: 'copy'}
+
+    publishDir "${params.outdir}/figures/pangenome/pyseer/plots", mode: 'copy'
 
     input:
     path(pyseer_results) // The gene_gwas_results.txt file

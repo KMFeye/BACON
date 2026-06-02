@@ -3,8 +3,8 @@
 # --- Color Codes for Output ---
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+ORANGE='\033[38;5;202m'
+NC='\033[0m'
 
 echo -e "${GREEN}======================================================${NC}"
 echo -e "${GREEN}   Pipeline Pre-Flight Validation Check               ${NC}"

@@ -2,7 +2,7 @@ process CREATE_SAMPLESHEET {
     tag "Creating SnpEff samplesheet"
     label 'process_low'
     
-    publishDir: {"${params.outdir}/snpEff_db", mode: 'copy'}
+    publishDir "${params.outdir}/snpEff_db", mode: 'copy'
 
     input:
     val(bakta_signal)
