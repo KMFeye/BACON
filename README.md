@@ -56,40 +56,36 @@ The shell file named "setup.sh" in the list of files in the git repository pull 
 Using a fresh virtual machine, the setup.sh program takes about 1 to 4 hours.  The program automatically accepts the user agreements, downloads and unpacks databases, pulls the GIT repository, and downloads everything needed for a successful run as described above. 
    
 ### 1. Download: setup.sh 
+This is all you have to do!
+```
+# Step 1: Clone the repository (This automatically creates the 'BACON' folder!)
+git clone https://github.com/KMFeye/BACON.git BACON
 
-Follow these steps precisely: 
+# Step 2: Move inside the newly created folder
+cd BACON_pipeline
 
- 1. Download shell.sh or copy and paste it and save it in a text file as "startup.sh" **in the working directory you intend to work**.   I like to see my files, so I typically navigate to my working directory as follows:
- ```
- cd Desktop
- mkdir project
- cd project 
- ```
- 
- 3. Make the shell program executable with the following command:
-    ```chmod -x shell.sh```
- 4. Execute the command. 
-     ```bash shell.sh ```
+# Step 3: Run the setup script to download databases and install Nextflow
+chmod -x setup.sh
+bash setup.sh
+```
 
 **IMPORTANT:** The install system is fully automated and assumes that you accept the terms and conditions of every program that is downloading.  You will see a lot of stuff tick across the screen as the shell program executes.  This is normal.  So, go get some coffee or tea, have a couple of meetings, and come back in 1 to 4 hours and be ready to work.  If an error shows up, please let me know in the QA section of this GitHub page and I'll figure something out.  
 
-The shell will automatically download BACON.
-
 Once the setup.sh file sets up, close the terminal and reopen it for the changes to take effect.  
 
-Another shell file is downloaded with the git repository, called check.sh.  This program ensures that everything is set up properly.  
+Then, test out the system before you run it:
+```
+chmod -x test.sh
+bash test.sh
+```
+
+This program will ensure there are no typeos or logic issues.  If it is good to go, so are you!  If an issue arises, reach out. 
 
 Pro Tip: Run this program twice!
 
  1. After the setup.sh
  2. After the modifications to Nextflow files
- 
- ```
-chmod -x check.sh 
-bash check.sh
-```
 
-Everything should pass.  If not, let me know on the discussion board after troubleshooting your files, paths, and syntax. 
 
 ### 2. Modify the Nextflow Program Files
 The following steps set up the nextflow program once the setup.sh file completes its tasks.  There are modifications that will need to be made so they are listed below by document
