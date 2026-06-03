@@ -145,12 +145,13 @@ if [ -d "$BAKTA_DB_PATH/db" ] && [ -f "$BAKTA_DB_PATH/db/manifest.txt" ]; then
     echo "--> Bakta database found. Skipping download."
 else
     echo "--> Bakta database not found. Installing..."
-    conda create -n setup_baktadb -y -c conda-forge -c bioconda bakta
-    conda activate setup_baktadb
-    bakta_db download --output "$BAKTA_DB_PATH" --type full
-    conda deactivate
-    conda env remove -n setup_baktadb -y
+    echo "--> Searching for Bakta Database"
+    cd "$BAKTA_DB_PATH" || exit 1
+    wget https://zenodo.org/records/14916843/files/db.tar.xz?download=1 db.tar.xz
+    tar -xJf db.tar.xz
+    cd "$LOCAL_DIR"
     echo "--> Bakta database installation complete."
+fi
 fi
 
 # --- MANUALLY PRE-BUILD MOB-SUITE ENVIRONMENT ---
@@ -173,9 +174,9 @@ if [ -f "$PLATON_DB_PATH/db/plasmids_db.fasta" ]; then
 else
     echo "--> Platon database not found. Installing..."
     cd "$PLATON_DB_PATH" || exit 1
-    wget https://zenodo.org/record/3349652/files/db.tar.gz
+    wget https://zenodo.org/records/4066768/files/db.tar.gz?download=1 db.tar.gz
     tar -xzf db.tar.gz
-    rm db.tar.gz
+    rm db.tar.gz?download=1
     cd "$LOCAL_DIR"
     echo "--> Platon database installation complete."
 fi
@@ -214,3 +215,5 @@ echo "Please ensure it matches: params { bakta_db = '$BAKTA_DB_PATH/db' }"
 echo ""
 echo "--- SETUP COMPLETE ---"
 echo "Remember to always run Nextflow from your 'base' conda environment."
+ 
+   

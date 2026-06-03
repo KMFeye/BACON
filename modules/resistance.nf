@@ -71,12 +71,10 @@ process RUN_ABRICATE {
 
     script:
     """
-    abricate-get_db --db card
     abricate-get_db --db vfdb
 
-    echo "Running ABRicate with databases: card, vfdb"
+    echo "Running ABRicate with databases: vfdb"
 
-    abricate --summary < (abricate --db card --threads ${task.cpus} --nocolour --noheader "${fasta}") <(abricate --db vfdb --threads ${task.cpus} --nocolour --noheader "${fasta}") 
-        > "${sample_id}_abricate_report.tsv"
+    abricate --db vfdb --threads ${task.cpus} "${fasta}") > "${sample_id}_abricate_report.tsv"
     """
 }
