@@ -117,9 +117,9 @@ else
     echo "--> Searching for Bakta Database"
     cd "$BAKTA_DB_PATH" || exit 1
     # Use -O to save a clean filename, then -xJf for .xz extraction
-    wget -O db.tar.xz "https://zenodo.org/records/14916843/files/db.tar.xz?download=1"
-    tar -xJf db.tar.xz
-    rm db.tar.xz
+    wget -O db.tar.gz https://zenodo.org/records/7669534/files/db.tar.gz?download=1
+    tar -xzf db.tar.gz
+    rm db.tar.gz
     cd "$REPO_DIR"
     echo "--> Bakta database installation complete."
 fi
