@@ -11,18 +11,20 @@ echo "--- STARTING BACON SETUP ---"
 # Tools like Conda go to $HOME
 export TOOL_BASE="$HOME"
 
-# Databases and environment files go to the CURRENT DIRECTORY
-export LOCAL_DIR=$(pwd)
-export DB_BASE_PATH="$LOCAL_DIR/databases"
-
+# Everything else goes inside this cloned repository!
+export REPO_DIR=$(pwd)
+export DB_BASE_PATH="$REPO_DIR/databases"
 export BAKTA_DB_PATH="$DB_BASE_PATH/bakta_db"
 export PLATON_DB_PATH="$DB_BASE_PATH/platon_db"
 export KRAKEN_DB_PATH="$DB_BASE_PATH/kraken_db"
+export LOCAL_BIN="$REPO_DIR/bin"
 
-mkdir -p "$BAKTA_DB_PATH" "$PLATON_DB_PATH" "$KRAKEN_DB_PATH" "$LOCAL_DIR/bin" "$LOCAL_DIR/envs"
+# Create necessary folders inside the repo
+mkdir -p "$BAKTA_DB_PATH" "$PLATON_DB_PATH" "$KRAKEN_DB_PATH" "$LOCAL_BIN" "$REPO_DIR/inputs"
 
 echo "Tools will be installed in: $TOOL_BASE/miniconda3"
-echo "Databases and config files will be in: $LOCAL_DIR"
+echo "Databases and config files will be in: $REPO_DIR"
+echo "Please place your raw .bam files in: $REPO_DIR/inputs"
 
 # --- 2. INSTALL CORE DEPENDENCIES ---
 echo "--> Checking for Miniconda..."
@@ -42,7 +44,6 @@ echo "--> Initializing Conda for this script session..."
 source "$TOOL_BASE/miniconda3/etc/profile.d/conda.sh"
 conda init bash
 export PATH="$TOOL_BASE/miniconda3/bin:$PATH"
-
 conda config --add channels bioconda --force
 conda config --add channels conda-forge --force
 conda config --set channel_priority flexible
@@ -59,14 +60,14 @@ echo "--> Installing/Verifying Nextflow..."
 if ! command -v nextflow &> /dev/null; then
     echo "Nextflow not found. Installing to local bin..."
     curl -s https://get.nextflow.io | bash
-    mv nextflow "$LOCAL_DIR/bin/"
-    PATH_LINE="export PATH=\"$LOCAL_DIR/bin:\$PATH\""
+    mv nextflow "$LOCAL_BIN/"
+    PATH_LINE="export PATH=\"$LOCAL_BIN:\$PATH\""
     if ! grep -qF "$PATH_LINE" ~/.bashrc; then
         echo "Adding local bin to your PATH in .bashrc..."
-        echo '' >> ~/.bashrc; echo '# Add local bin to PATH for Nextflow' >> ~/.bashrc; echo "$PATH_LINE" >> ~/.bashrc
+        echo '' >> ~/.bashrc; echo '# Add BACON bin to PATH for Nextflow' >> ~/.bashrc; echo "$PATH_LINE" >> ~/.bashrc
     fi
-    export PATH="$LOCAL_DIR/bin:$PATH"
-    echo "Nextflow has been installed to $LOCAL_DIR/bin."
+    export PATH="$LOCAL_BIN:$PATH"
+    echo "Nextflow has been installed to $LOCAL_BIN."
 else
     echo "Nextflow is already installed."
 fi 
@@ -74,7 +75,6 @@ fi
 # --- 4. Google, Git, and R/R-Studio Setup ---
 echo "--> Scanning the system for Google Chrome, Git, and R/R-Studio"
 
-# --- Google Chrome Installation ---
 if ! command -v google-chrome &> /dev/null; then
     echo "Google Chrome not found. Installing..."
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
@@ -84,7 +84,6 @@ else
     echo "Google Chrome is already installed."
 fi
 
-# --- System-wide Git Installation ---
 if ! command -v git &> /dev/null; then
     echo "Git not found system-wide. Installing via apt..."
     sudo apt-get update
@@ -93,7 +92,6 @@ else
     echo "Git is already installed system-wide."
 fi
 
-# --- RStudio Desktop Installation ---
 if command -v rstudio &> /dev/null; then
     echo "RStudio Desktop is already installed."
 else
@@ -102,54 +100,25 @@ else
     sudo apt-get install -y r-base gdebi-core 
     RSTUDIO_DEB_URL="https://download1.rstudio.org/electron/jammy/amd64/rstudio-2023.12.1-402-amd64.deb" 
     RSTUDIO_DEB_FILE="rstudio-desktop.deb"
-    echo "--> Downloading RStudio Desktop..."
     wget -q "$RSTUDIO_DEB_URL" -O "$RSTUDIO_DEB_FILE"
     echo "--> Installing RStudio Desktop. This step will require your sudo password."
     sudo gdebi -n "$RSTUDIO_DEB_FILE"
     rm -f "$RSTUDIO_DEB_FILE"
 fi
 
-# --- 5. PULL BACON REPOSITORY ---
-echo "--> Cloning the BACON Nextflow repository..."
-export LOCAL_DIR=$(pwd)
-export REPO_DIR="$LOCAL_DIR/BACON_pipeline"
-
-if [ -d "$REPO_DIR" ]; then
-    echo "--> Repository already exists. Pulling latest changes..."
-    cd "$REPO_DIR"
-    git pull
-    cd "$LOCAL_DIR"
-else
-    echo "--> Cloning repository from GitHub..."
-    echo "NOTE: Because the repository is private, you will be prompted for your GitHub credentials."
-    echo "Please use a Personal Access Token (PAT) as your password."
-    
-    git clone https://github.com/KMFeye/BACON.git "$REPO_DIR"
-    
-    echo "--> Repository cloned successfully into $REPO_DIR"
-fi
-export DB_BASE_PATH="$REPO_DIR/databases" 
-export BAKTA_DB_PATH="$DB_BASE_PATH/bakta_db"
-export PLATON_DB_PATH="$DB_BASE_PATH/platon_db"
-export KRAKEN_DB_PATH="$DB_BASE_PATH/kraken_db"
-
-# Create the new folders inside the repo
-mkdir -p "$BAKTA_DB_PATH" "$PLATON_DB_PATH" "$KRAKEN_DB_PATH"
-
-
-# --- 6. DATABASE INSTALLATION ---
-echo "--> Downloading necessary databases"
+# --- 5. DATABASE INSTALLATION ---
+echo "--> Downloading necessary databases into the repository"
 
 # --- BAKTA DATABASE ---
-if [ -d "$BAKTA_DB_PATH/db" ] && [ -f "$BAKTA_DB_PATH/db/manifest.txt" ]; then
+if [ -d "$BAKTA_DB_PATH/db" ] && [ -n "$(ls -A "$BAKTA_DB_PATH/db" 2>/dev/null)" ]; then
     echo "--> Bakta database found. Skipping download."
 else
     echo "--> Bakta database not found. Installing..."
-    conda create -n setup_baktadb -y -c conda-forge -c bioconda bakta
-    conda activate setup_baktadb
-    bakta_db download --output "$BAKTA_DB_PATH" --type full
-    conda deactivate
-    conda env remove -n setup_baktadb -y
+    cd "$BAKTA_DB_PATH" || exit 1
+    wget -O db.tar.xz "https://zenodo.org/records/14916843/files/db.tar.xz?download=1"
+    tar -xf db.tar.xz
+    rm db.tar.xz
+    cd "$REPO_DIR"
     echo "--> Bakta database installation complete."
 fi
 
@@ -167,50 +136,42 @@ fi
 
 # --- PLATON DATABASE ---
 echo "--> Searching for PLATON Database"
-# FIX: Platon db extracts into a folder called "db/", and the main file is "plasmids_db.fasta"
-if [ -f "$PLATON_DB_PATH/db/plasmids_db.fasta" ]; then
+if [ -f "$PLATON_DB_PATH/db/orit.nhr" ] || [ -f "$PLATON_DB_PATH/db/plasmids_db.fasta" ]; then
     echo "--> Platon database found. Skipping download."
 else
     echo "--> Platon database not found. Installing..."
     cd "$PLATON_DB_PATH" || exit 1
-    wget https://zenodo.org/record/3349652/files/db.tar.gz
+    wget -O db.tar.gz "https://zenodo.org/records/4066768/files/db.tar.gz?download=1"
     tar -xzf db.tar.gz
     rm db.tar.gz
-    cd "$LOCAL_DIR"
+    cd "$REPO_DIR"
     echo "--> Platon database installation complete."
 fi
 
 # --- KRAKEN DATABASE ---
 echo "--> Searching for KRAKEN database"
-
-# Check if the main database file exists
 if [ -f "$KRAKEN_DB_PATH/hash.k2d" ]; then
     echo "--> KRAKEN database found. Skipping download."
 else
     echo "--> KRAKEN database not found. Installing..."
     cd "$KRAKEN_DB_PATH" || exit 1
-    
-    # UPDATED to use the correct URL and filename
     wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08_GB_20260226.tar.gz
-    
     echo "--> Unpacking KRAKEN database (this may take a while)..."
     tar -xzf k2_standard_08_GB_20260226.tar.gz
-    
     echo "--> Cleaning up..."
     rm k2_standard_08_GB_20260226.tar.gz
-    
-    cd "$LOCAL_DIR"
+    cd "$REPO_DIR"
     echo "--> KRAKEN database installation complete."
 fi
 
-echo "All done setting up the other dependencies."
+echo "All done setting up the databases."
 
-
-# --- 7. Final Directions ---
+# --- 6. Final Directions ---
 echo ""
-echo "---!!! CRITICAL FINAL STEP !!!---"
-echo "The Bakta database path MUST be correct in your 'nextflow.config' file."
-echo "Please ensure it matches: params { bakta_db = '$BAKTA_DB_PATH/db' }"
-echo ""
-echo "--- SETUP COMPLETE ---"
-echo "Remember to always run Nextflow from your 'base' conda environment."
+echo "========================================================================="
+echo " 🥓 SETUP COMPLETE! "
+echo "========================================================================="
+echo "1. Place your unaligned .bam files into the new 'inputs/' folder."
+echo "2. Double-check 'nextflow.config' to ensure your RAM and CPUs are set and follow the directions in the README file"
+echo "3. Run the pipeline with: nextflow run main.nf"
+echo "========================================================================="
