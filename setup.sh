@@ -114,15 +114,14 @@ if [ -d "$BAKTA_DB_PATH/db" ] && [ -n "$(ls -A "$BAKTA_DB_PATH/db" 2>/dev/null)"
     echo "--> Bakta database found. Skipping download."
 else
     echo "--> Bakta database not found. Installing..."
-
     echo "--> Searching for Bakta Database"
     cd "$BAKTA_DB_PATH" || exit 1
-    wget https://zenodo.org/records/14916843/files/db.tar.xz?download=1 db.tar.xz
+    # Use -O to save a clean filename, then -xJf for .xz extraction
+    wget -O db.tar.xz "https://zenodo.org/records/14916843/files/db.tar.xz?download=1"
     tar -xJf db.tar.xz
-    cd "$LOCAL_DIR"
-
+    rm db.tar.xz
+    cd "$REPO_DIR"
     echo "--> Bakta database installation complete."
-fi
 fi
 
 # --- MANUALLY PRE-BUILD MOB-SUITE ENVIRONMENT ---
@@ -144,10 +143,11 @@ if [ -f "$PLATON_DB_PATH/db/orit.nhr" ] || [ -f "$PLATON_DB_PATH/db/plasmids_db.
 else
     echo "--> Platon database not found. Installing..."
     cd "$PLATON_DB_PATH" || exit 1
-    wget https://zenodo.org/records/4066768/files/db.tar.gz?download=1 db.tar.gz
+    # Use -O to save a clean filename
+    wget -O db.tar.gz "https://zenodo.org/records/4066768/files/db.tar.gz?download=1"
     tar -xzf db.tar.gz
-    rm db.tar.gz?download=1
-    cd "$LOCAL_DIR"
+    rm db.tar.gz
+    cd "$REPO_DIR"
     echo "--> Platon database installation complete."
 fi
 
@@ -176,4 +176,3 @@ echo "The Bakta database path MUST be correct in your 'nextflow.config' file."
 echo "Please ensure it matches: params { bakta_db = '$BAKTA_DB_PATH/db' }"
 echo ""
 echo "--- SETUP COMPLETE ---"
-
