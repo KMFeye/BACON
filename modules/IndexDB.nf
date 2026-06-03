@@ -4,6 +4,7 @@ process DOWNLOAD_BACTERIAL_REFERENCE {
     conda 'conda-forge::wget=1.21.4'
 
     output: path("bacterial_ref.fasta"), emit: fasta
+
     script:
     """
     wget --no-check-certificate -O bacterial_ref.fasta.gz "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/009/045/GCF_000009045.1_ASM904v1/GCF_000009045.1_ASM904v1_genomic.fna.gz"

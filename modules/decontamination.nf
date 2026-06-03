@@ -49,4 +49,3 @@ process GENERATE_CONTAMINATION_REPORT {
         "${reads}" > /dev/null
     """
 }
-
