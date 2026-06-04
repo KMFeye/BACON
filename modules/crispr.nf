@@ -3,14 +3,12 @@ process CRISPR_TYPING {
     label 'process_medium'
     conda 'bioconda::minced'
 
-    // The robust publishDir syntax
     publishDir "${params.outdir}/rawresults/crispr", mode: 'copy', saveAs: { filename -> "${sample_id}/${filename}" }
 
     input:
     tuple val(sample_id), path(assembly)
 
     output:
-    // Specifically capture the expected output files, and make them optional
     tuple val(sample_id), path("${sample_id}.minced.gff"), emit: crispr_gff, optional: true
     tuple val(sample_id), path("${sample_id}.minced.fna"), emit: crispr_fna, optional: true
     tuple val(sample_id), path("${sample_id}.minced.log"), emit: crispr_log, optional: true
