@@ -78,7 +78,6 @@ process RUN_ABRICATE {
         echo "Running ABRicate..."
         abricate --db vfdb --threads ${task.cpus} "${fasta}" > "${sample_id}_abricate_report.tsv"
     else
-        # If the database doesn't exist, create an empty file to satisfy the output channel
         echo "WARNING: ABRicate vfdb database not found. Creating empty report."
         echo -e "FILE\\tSEQUENCE\\tSTART\\tEND\\tSTRAND\\tGENE\\tCOVERAGE\\tCOVERAGE_MAP\\tGAPS\\t%COVERAGE\\t%IDENTITY\\tDATABASE\\tACCESSION\\tPRODUCT\\tRESISTANCE" > "${sample_id}_abricate_report.tsv"
     fi
