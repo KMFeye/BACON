@@ -1,7 +1,7 @@
 process BAKTA_ANNOTATION {
     tag "Running Bakta for ${sample_id}"
     label 'process_high'
-    conda 'bioconda::bakta=1.8.2 bioconda::diamond=2.1.8'
+    conda 'bioconda::bakta=1.8.2 bioconda::pyhmmer=0.10.3 bioconda::diamond=2.1.8'
 
     publishDir "${params.outdir}/rawresults/bakta", mode: 'copy', saveAs: { filename -> "${sample_id}/${filename}" }
 

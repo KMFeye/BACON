@@ -99,26 +99,35 @@ workflow {
     PLOT_PLASMID_MAPS(RUN_PLATON.out.plasmid_fasta.map { _id, fasta -> fasta })
 
 // --- 4. SNP AND FUNCTIONAL ANALYSIS OF SNP IMPACTS ON BACTERIA ---
+   
     ALIGN_TO_REFERENCE(rasusa_fastq_ch, bacterial_ref_fasta_ch)
     CALL_VARIANTS_BCFTOOLS(ALIGN_TO_REFERENCE.out.aligned_bam, bacterial_ref_fasta_ch)
     FILTER_VARIANTS_BCFTOOLS(CALL_VARIANTS_BCFTOOLS.out.raw_vcf)
     FIX_VCF_HEADER(FILTER_VARIANTS_BCFTOOLS.out.filtered_vcf)
     vcfs_after_fix = FIX_VCF_HEADER.out.vcf
 
-    // db_build_input = bakta_gff_ch.join(successful_assemblies_fasta).first() // This is unused
+    gff_for_build_ch = bakta_gff_ch.first()
+    CREATE_SNPEFF_DB(gff_for_build_ch.map{ it[1] }, bacterial_ref_fasta_ch)
+    def ref_genome_name_ch = bacterial_ref_fasta_ch.map { it.baseName }
 
-    CREATE_SNPEFF_DB(ch_samplesheet_for_snpeff)
-    SNPEFF_ANNOTATE(vcfs_after_fix.combine(CREATE_SNPEFF_DB.out.snpeff_config).combine(CREATE_SNPEFF_DB.out.snpeff_db_dir))
+    SNPEFF_ANNOTATE(
+        vcfs_after_fix,
+        CREATE_SNPEFF_DB.out.snpeff_config,
+        CREATE_SNPEFF_DB.out.snpeff_db_dir,
+        ref_genome_name_ch
+    )
+
     annotated_vcfs = SNPEFF_ANNOTATE.out.annotated_vcf
 
     EXTRACT_IMPACTFUL_GENES(annotated_vcfs.join(bakta_gff_ch))
     ch_gene_lists = EXTRACT_IMPACTFUL_GENES.out.gene_lists
 
     RUN_PANTHER_API_DIRECT(
-        ch_gene_lists.combine(channel.value(params.rbioapi_organism_id))
-                     .combine(channel.value(params.rbioapi_annot_dataset))
-    )
+    ch_gene_lists,
+    channel.value(params.panther_organism),
+    channel.value(params.panther_annot_dataset)
 
+)
 // --- 5. PANGENOME and GWAS Analysis ---
     RUN_PANAROO(bakta_gff_ch.map { _id, gff -> gff }.collect())
     RUN_PYSEER(RUN_PANAROO.out.panaroo_dir, channel.fromPath(params.traits_file))

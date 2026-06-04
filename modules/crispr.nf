@@ -3,20 +3,23 @@ process CRISPR_TYPING {
     label 'process_medium'
     conda 'bioconda::minced'
 
+    // The robust publishDir syntax
     publishDir "${params.outdir}/rawresults/crispr", mode: 'copy', saveAs: { filename -> "${sample_id}/${filename}" }
 
     input:
     tuple val(sample_id), path(assembly)
 
     output:
-    tuple val(sample_id), path("${sample_id}.minced.*"), emit: minced_files
+    // Specifically capture the expected output files, and make them optional
     tuple val(sample_id), path("${sample_id}.minced.gff"), emit: crispr_gff, optional: true
+    tuple val(sample_id), path("${sample_id}.minced.fna"), emit: crispr_fna, optional: true
+    tuple val(sample_id), path("${sample_id}.minced.log"), emit: crispr_log, optional: true
 
     script:
     """
     minced -minNR 3 -minRL 18 -maxRL 50 \
-        ${assembly} \
-        ${sample_id}.minced
+        "${assembly}" \
+        "${sample_id}.minced"
     """
 }
 
@@ -36,15 +39,11 @@ process VISUALIZE_CRISPR_RESULTS {
     script:
     """
     #!/usr/bin/env python
-    import os
-    import sys
-    import matplotlib.pyplot as plt
+    import os, sys, matplotlib.pyplot as plt
 
     all_gffs = [f for f in os.listdir('.') if f.endswith('.gff')]
-    
     data_points = []
     for gff_file in all_gffs:
-        # Assuming format 'sample_id.minced.gff'
         sample_id = gff_file.replace('.minced.gff', '')
         with open(gff_file, 'r') as f:
             num_crisprs = sum(1 for line in f if not line.startswith('#'))

@@ -1,27 +1,38 @@
 process CREATE_SNPEFF_DB {
-    tag "Create SnpEff database from ${sample_id}"
+    tag "Create SnpEff database using ${reference_fasta.baseName}"
     label 'process_low'
     conda 'bioconda::snpeff=5.1d'
 
     publishDir "${params.outdir}/rawresults/snpEff_db", mode: 'copy'
 
     input:
-    tuple val(sample_id), path(gff), path(reference_fasta)
+    path gff_for_build
+    path reference_fasta
 
     output:
     path "snpEff.config", emit: snpeff_config
     path "data", emit: snpeff_db_dir
 
     script:
+    def genome_id = reference_fasta.baseName
     """
-    mkdir -p data/${sample_id}
-    cp ${reference_fasta} data/${sample_id}/sequences.fa
-    cp ${gff} data/${sample_id}/genes.gff
+    #!/bin/bash
+    set -e -o pipefail
+
+    # Use the groovy variable inside the bash script
+    mkdir -p "data/${genome_id}"
+    
+    cp "${reference_fasta}" "data/${genome_id}/sequences.fa"
+    cp "${gff_for_build}" "data/${genome_id}/genes.gff"
+    
     echo "data.dir = ./data" > snpEff.config
-    echo "${sample_id}.genome : ${sample_id}" >> snpEff.config
-    snpEff build -gff3 -v -c snpEff.config -noCheckProtein -noCheckCds ${sample_id}
+    echo "${genome_id}.genome : ${genome_id}" >> snpEff.config
+    
+    snpEff build -gff3 -v -c snpEff.config -noCheckProtein -noCheckCds "${genome_id}"
     """
 }
+
+
 
 process FIND_FRAMESHIFTS {
     tag "Find frameshift variants in ${sample_id}"
@@ -67,20 +78,30 @@ process RUN_PANTHER_API_DIRECT {
     conda 'conda-forge::curl conda-forge::jq'
 
     publishDir "${params.outdir}/tables", mode: 'copy', pattern: "*.panther_results.tsv", saveAs: { filename -> "${sample_id}.${filename}" }
-    publishDir "${params.outdir}/rawdata/panther", mode: 'copy', pattern: "*", saveAs: { filename -> "${sample_id}/${filename}" }
 
     input:
-    tuple val(sample_id), path(target_list), path(background_list), val(organism_id), val(annot_dataset)
+    tuple val(sample_id), path(target_list), path(background_list)
+    val panther_organism // From params
+    val annot_dataset    // From params
 
     output:
-    path("${sample_id}.panther_results.tsv"), emit: results
+    tuple val(sample_id), path("${sample_id}.panther_results.tsv"), emit: results
 
     script:
     """
-    TARGET_GENES=\$(cat "${target_list}" | tr '\\n' ',' | sed 's/,\\$//')
-    BACKGROUND_GENES=\$(cat "${background_list}" | tr '\\n' ',' | sed 's/,\\$//')
-    curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" --data "geneInputList=\${TARGET_GENES}" --data "organism=${organism_id}" --data "annotDataSet=${annot_dataset}" \\
-    --data "enrichmentTestType=FISHER" --data "correction=FDR" --data "refInputList=\${BACKGROUND_GENES}" --data "refOrganism=${organism_id}" "http://pantherdb.org/services/rest/enrichment/overrepresentation" > panther_response.json
+    TARGET_GENES=\$(cat "${target_list}" | tr '\\n' ',' | sed 's/,\$//')
+    BACKGROUND_GENES=\$(cat "${background_list}" | tr '\\n' ',' | sed 's/,\$//')
+
+    curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" \
+        --data "geneInputList=\${TARGET_GENES}" \
+        --data "organism=${panther_organism}" \
+        --data "annotDataSet=${annot_dataset}" \
+        --data "enrichmentTestType=FISHER" \
+        --data "correction=FDR" \
+        --data "refInputList=\${BACKGROUND_GENES}" \
+        --data "refOrganism=${panther_organism}" \
+        "http://pantherdb.org/services/rest/enrichment/overrepresentation" > panther_response.json
+
     if [ -s "panther_response.json" ] && [ "\$(jq '.results | has("result")' panther_response.json)" == "true" ]; then
         echo -e "id\\tnumber_in_list\\texpected\\tnumber_in_reference\\tplus_minus\\tfdr\\tlabel" > "${sample_id}.panther_results.tsv"
         jq -r '.results.result[] | [.term.id, .number_in_list, .expected, .number_in_reference, .plus_minus, .fdr, .term.label] | @tsv' panther_response.json >> "${sample_id}.panther_results.tsv"

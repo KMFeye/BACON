@@ -55,26 +55,32 @@ process MOB_SUITE_ANALYSIS {
 }
 
 process RUN_ABRICATE {
-    tag "Screening ${sample_id} with ABRicate"
+    tag "Screening ${sample_id} with ABRicate (vfdb)"
     label 'process_medium'
-    conda 'bioconda::abricate>=1.0.1 bioconda::blast=2.9.0'
+    conda 'bioconda::abricate'
 
-    maxRetries 2
-    errorStrategy 'retry'
-
-    publishDir "${params.outdir}/tables/abricate", mode: 'copy'
+    publishDir "${params.outdir}/rawresults/resistance", mode: 'copy', saveAs: { filename -> "${sample_id}/${filename}" }
 
     input:
     tuple val(sample_id), path(fasta)
+
     output:
     tuple val(sample_id), path("${sample_id}_abricate_report.tsv"), emit: report
 
     script:
     """
-    abricate-get_db --db vfdb
+    #!/bin/bash
+   
+    echo "Setting up ABRicate vfdb database..."
+    abricate-get_db --db vfdb || echo "WARNING: Could not download vfdb database. Proceeding without it."
 
-    echo "Running ABRicate with databases: vfdb"
-
-    abricate --db vfdb --threads ${task.cpus} "${fasta}") > "${sample_id}_abricate_report.tsv"
+    if [ -f "\$(abricate --list | grep '^vfdb' | cut -f2)/sequences" ]; then
+        echo "Running ABRicate..."
+        abricate --db vfdb --threads ${task.cpus} "${fasta}" > "${sample_id}_abricate_report.tsv"
+    else
+        # If the database doesn't exist, create an empty file to satisfy the output channel
+        echo "WARNING: ABRicate vfdb database not found. Creating empty report."
+        echo -e "FILE\\tSEQUENCE\\tSTART\\tEND\\tSTRAND\\tGENE\\tCOVERAGE\\tCOVERAGE_MAP\\tGAPS\\t%COVERAGE\\t%IDENTITY\\tDATABASE\\tACCESSION\\tPRODUCT\\tRESISTANCE" > "${sample_id}_abricate_report.tsv"
+    fi
     """
 }

@@ -62,7 +62,7 @@ This is all you have to do!
 git clone https://github.com/KMFeye/BACON.git BACON
 
 # Step 2: Move inside the newly created folder
-cd BACON_pipeline
+cd BACON
 
 # Step 3: Run the setup script to download databases and install Nextflow
 chmod -x setup.sh
