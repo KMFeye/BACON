@@ -18,8 +18,6 @@ process CREATE_SNPEFF_DB {
     """
     #!/bin/bash
     set -e -o pipefail
-
-    # Use the groovy variable inside the bash script
     mkdir -p "data/${genome_id}"
     
     cp "${reference_fasta}" "data/${genome_id}/sequences.fa"
@@ -81,8 +79,8 @@ process RUN_PANTHER_API_DIRECT {
 
     input:
     tuple val(sample_id), path(target_list), path(background_list)
-    val panther_organism // From params
-    val annot_dataset    // From params
+    val panther_organism 
+    val annot_dataset    
 
     output:
     tuple val(sample_id), path("${sample_id}.panther_results.tsv"), emit: results
