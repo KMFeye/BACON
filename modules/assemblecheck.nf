@@ -1,5 +1,5 @@
 process FLYE_ASSEMBLY {
-    tag "Flye assembly for ${sample_id}"
+    tag "Flye assembly for ${sample_id} (Attempt ${task.attempt})"
     label 'process_high'
     conda 'bioconda::flye=2.9.1'
     maxRetries 1
@@ -9,39 +9,51 @@ process FLYE_ASSEMBLY {
             return 'retry'
         }
         else {
-            println "Flye attempt 2 for ${sample_id} also failed. Ignoring sample."
-            return 'ignore'
+            println "Flye attempt 2 for ${sample_id} also failed. Failing process."
+            return 'finish'
         }
     }
 
-    publishDir "${params.outdir}/rawresults", mode: 'copy', saveAs: { filename -> "flye/${sample_id}/${filename}" }
+    publishDir "${params.outdir}/rawresults/flye", mode: 'copy', saveAs: { filename -> "${sample_id}/${filename}" }
 
     input:
     tuple val(sample_id), path(fastq)
 
     output:
+    tuple val(sample_id), path("${sample_id}_assembly.fasta"), emit: assembly_fasta
     tuple val(sample_id), path("flye_assembly"), emit: assembly_dir
-    tuple val(sample_id), path("flye_assembly/assembly.fasta"), emit: assembly_fasta, optional: true
 
     script:
-    def command
-    if (task.attempt == 1) {
-        command = "flye --pacbio-hifi '${fastq}' --out-dir flye_assembly --threads ${task.cpus}"
-    } else {
-        command = "flye --pacbio-raw '${fastq}' --out-dir flye_assembly --threads ${task.cpus}"
-    }
     """
-    echo "Running command: ${command}"
-    ${command}
+    #!/bin/bash
+    set -e -o pipefail
+
+    if [ "${task.attempt}" == "1" ]; then
+        echo "Running Flye attempt 1 with --pacbio-hifi..."
+        flye --pacbio-hifi "${fastq}" --out-dir flye_assembly --threads ${task.cpus}
+    else
+        echo "Running Flye attempt 2 with --pacbio-raw..."
+        flye --pacbio-raw "${fastq}" --out-dir flye_assembly --threads ${task.cpus}
+    fi
+
+    if [ -f "flye_assembly/assembly.fasta" ]; then
+        mv flye_assembly/assembly.fasta "${sample_id}_assembly.fasta"
+    fi
+
+    if [ ! -s "${sample_id}_assembly.fasta" ]; then
+        echo "CRITICAL: Flye finished but the output assembly fasta is missing or empty!"
+        exit 1
+    fi
     """
 }
+
 
 process QUAST_REPORT {
     tag "Running QUAST for ${sample_id}"
     label 'process_medium'
     conda 'bioconda::quast'
-
-    publishDir "${params.outdir}/rawdata", mode: 'copy', saveAs: { filename -> "${sample_id}/quast/${filename}" }
+   
+    publishDir "${params.outdir}/rawresults/quast", mode: 'copy', saveAs: { filename -> "${sample_id}/${filename}" }
 
     input:
     tuple val(sample_id), path(assembly)
@@ -51,7 +63,7 @@ process QUAST_REPORT {
 
     script:
     """
-    quast.py ${assembly} -o quast_results
+    quast.py "${assembly}" -o quast_results
     """
 }
 
@@ -60,7 +72,7 @@ process BUSCO {
     label 'process_medium'
     conda 'bioconda::busco'
 
-    publishDir "${params.outdir}/tables", mode: 'copy', saveAs: { filename -> "busco/${sample_id}/${filename}" }
+    publishDir "${params.outdir}/rawresults/busco", mode: 'copy', saveAs: { filename -> "${sample_id}/${filename}" }
 
     input:
     tuple val(sample_id), path(fasta)

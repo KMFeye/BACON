@@ -1,1 +1,4 @@
-﻿sample_id,strain_id,isolation_source,option
+﻿sample_id,strain_id,isolation_source,hemolysis
+Sample1,SA,Clinical,1
+Sample2,SA,Clinical,0
+Sample3,SA,Clincal,0

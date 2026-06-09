@@ -58,18 +58,21 @@ process FILTER_VARIANTS_BCFTOOLS {
     """
 }
 
+// In modules/snpanalysis.nf
+
 process FIX_VCF_HEADER {
     tag "Fixing VCF header for ${sample_id}"
     label 'process_low'
-    conda 'bioconda::bcftools=1.19'
+    conda 'bioconda::bcftools=1.19' 
 
-    publishDir "${params.outdir}/rawresults/snp_analysis/final_vcfs", mode: 'copy', saveAs: { filename -> "${sample_id}.fixed.vcf.gz" }
+    publishDir "${params.outdir}/rawresults/snp_analysis/final_vcfs", mode: 'copy', saveAs: { _filename -> "${sample_id}.fixed.vcf.gz" }
 
     input:
     tuple val(sample_id), path(vcf)
 
     output:
-    tuple val(sample_id), path("${sample_id}.fixed.vcf.gz"), emit: vcf
+    // IMPORTANT: The output now includes the index file
+    tuple val(sample_id), path("${sample_id}.fixed.vcf.gz"), path("${sample_id}.fixed.vcf.gz.tbi"), emit: vcf
 
     script:
     """
@@ -78,5 +81,8 @@ process FIX_VCF_HEADER {
         -o ${sample_id}.fixed.vcf.gz \\
         -O z \\
         ${vcf}
+
+    tabix -p vcf ${sample_id}.fixed.vcf.gz
     """
 }
+

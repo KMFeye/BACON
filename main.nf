@@ -70,7 +70,8 @@ workflow {
         .filter { it != null }
 
     QUAST_REPORT(successful_assemblies_fasta)
-    MULTIQC_ASSEMBLY(QUAST_REPORT.out.quast_report.collect().ifEmpty([]))
+    MULTIQC_ASSEMBLY(QUAST_REPORT.out.quast_report)
+
 
 // --- 3. Annotation and Characterization ---
     BAKTA_ANNOTATION(successful_assemblies_fasta)
@@ -131,7 +132,10 @@ workflow {
 // --- 5. PANGENOME and GWAS Analysis ---
     RUN_PANAROO(bakta_gff_ch.map { _id, gff -> gff }.collect())
     RUN_PYSEER(RUN_PANAROO.out.panaroo_dir, channel.fromPath(params.traits_file))
-    ch_vcfs_for_phylo = vcfs_after_fix.map { _id, vcf -> vcf }.collect().filter { list -> list.size() > 1 }
+    ch_vcfs_for_phylo = vcfs_after_fix
+    .map { sample_id, vcf, tbi -> [vcf, tbi] }
+    .collect()
+    .filter { list -> list.size() > 1 }
     CREATE_SNP_ALIGNMENT(ch_vcfs_for_phylo, bacterial_ref_fasta_ch)
     BUILD_PHYLO_TREE(CREATE_SNP_ALIGNMENT.out.alignment)
     ch_assemblies_for_mauve = successful_assemblies_fasta.map { _id, fasta -> fasta }.collect().filter { list -> list.size() > 1 }

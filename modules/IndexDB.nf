@@ -7,7 +7,7 @@ process DOWNLOAD_BACTERIAL_REFERENCE {
 
     script:
     """
-    wget --no-check-certificate -O bacterial_ref.fasta.gz "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/009/045/GCF_000009045.1_ASM904v1/GCF_000009045.1_ASM904v1_genomic.fna.gz"
+    wget --no-check-certificate -O bacterial_ref.fasta.gz "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/013/425/GCF_000013425.1_ASM1342v1/GCF_000013425.1_ASM1342v1_genomic.fna.gz"
     gunzip bacterial_ref.fasta.gz
     """
 }
