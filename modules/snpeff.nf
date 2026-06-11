@@ -6,7 +6,7 @@ process SNPEFF_ANNOTATE {
     publishDir "${params.outdir}/rawresults/variant_annotation/annotated_vcfs", mode: 'copy'
 
     input:
-    tuple val(sample_id), path(vcf)
+    tuple val(sample_id), path(vcf), path(tbi)
     path snpeff_config
     path snpeff_db_dir
     val ref_genome_name

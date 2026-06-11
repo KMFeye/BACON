@@ -1,39 +1,105 @@
-process GENERATE_FINAL_REPORT {
-    tag "Generating Final Publication Package"
-    label 'process_high'
-    conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-ape conda-forge::r-pheatmap conda-forge::r-rio conda-forge::r-kableextra'
-
-    publishDir "${params.outdir}/figures", mode: 'copy'
+process SUMMARIZE_AND_ORGANIZE {
+    tag "Consolidating all results and organizing final files"
+    label 'process_low'
+    conda 'conda-forge::r-base conda-forge::r-tidyverse'
+    publishDir "${params.outdir}/files", mode: 'copy'
 
     input:
-    path summary_tables_dir
-    path panaroo_dir
-    path phylo_tree
-    path merged_vcf
+    val(done_signal)
+    path(assemblies)
+    path(raw_results_dir)
+    path(tables_dir)
+
     output:
-    path "publication_figures"
-    path "publication_tables"
-    path "summary_report.html" // Placeholder for RMarkdown
+    path "final_files"
 
     script:
     '''
     #!/usr/bin/env Rscript
-    if (!requireNamespace("BiocManager", quietly = TRUE)) {
-        install.packages("BiocManager", repos = "http://cran.us.r-project.org")
+    library(tidyverse)
+
+    dir.create("final_files/summary_csvs", recursive = TRUE, showWarnings = FALSE)
+    dir.create("final_files/assemblies", recursive = TRUE, showWarnings = FALSE)
+
+    fasta_files <- list.files(pattern = "\\\\.fasta$")
+    for (f in fasta_files) {
+        tryCatch({ file.copy(f, "final_files/assemblies/") }, error = function(e) {})
     }
-    pkgs_to_install <- c("SNPRelate", "ggtree", "ggtreeExtra")
-    for (pkg in pkgs_to_install) {
-        if (!requireNamespace(pkg, quietly = TRUE)) {
-            BiocManager::install(pkg)
+
+    safe_read_and_concat <- function(search_dir, glob_pattern, out_name, id_level, comment_char = "") {
+        cmd <- paste0("find -L ", search_dir, " -type f")
+        all_files <- system(cmd, intern = TRUE)
+        regex_pattern <- glob_pattern %>% str_replace_all("\\\\.", "\\\\.")
+        matched_files <- all_files[str_detect(all_files, regex_pattern)]
+        
+        if (length(matched_files) == 0) return(NULL)
+        
+        merged_df <- list()
+        for (f in matched_files) {
+            tryCatch({
+                if (file.info(f)$size > 0) {
+                    path_parts <- str_split(f, "/")[[1]]
+                    sample_id <- path_parts[id_level]
+                    delim <- if (str_detect(f, "\\\\.(tsv|txt|tab)$")) "\\t" else ","
+                    
+                    df <- read_delim(f, delim = delim, show_col_types = FALSE, comment = comment_char)
+                    
+                    if (nrow(df) > 0) {
+                        df$sample_id <- sample_id
+                        merged_df[[f]] <- df
+                    }
+                }
+            }, error = function(e) {})
+        }
+        
+        if (length(merged_df) > 0) {
+            final_df <- bind_rows(merged_df)
+            out_path <- file.path("final_files/summary_csvs", out_name)
+            write_csv(final_df, out_path)
         }
     }
+
+    safe_read_and_concat("rawresults", "resistance/.*/.*_abricate_report\\\\.tsv$", "all_abricate_data.csv", 3)
+    safe_read_and_concat("tables", "amrfinder/.*_amrfinder\\\\.txt$", "all_amrfinder_data.csv", 3)
+    safe_read_and_concat("tables", "mobsuite/.*contig_report\\\\.txt$", "all_mobsuite_data.csv", 3)
+    safe_read_and_concat("rawresults", "quast/.*_quast_results/report\\\\.tsv$", "all_quast_metrics.csv", 3)
+    safe_read_and_concat("rawresults", "busco/.*short_summary.*\\\\.txt$", "all_busco_summaries.csv", 3, comment_char="#")
+    safe_read_and_concat("rawresults", ".*platon/.*\\\\.tsv$", "all_platon_data.csv", 3)
+    safe_read_and_concat("rawresults", "crispr/crispr_output/spacers\\\\.tab$", "all_crispr_spacers.csv", 3)
+    safe_read_and_concat("rawresults", "flye/.*/assembly_info\\\\.txt$", "all_flye_info.csv", 3)
+    safe_read_and_concat("rawresults", ".*/rasusa/.*rasusa_stats\\\\.txt$", "all_rasusa_stats.csv", 3)
+    safe_read_and_concat("rawresults", "functional_analysis/panther_results/.*\\\\.tsv$", "all_panther_results.csv", 3)
+    '''
+}
+
+
+process GENERATE_FINAL_REPORT {
+    tag "Generating Final Publication Package"
+    label 'process_high'
+    
+    conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-ape conda-forge::r-pheatmap conda-forge::r-rio conda-forge::r-kableextra'
+    
+    publishDir "${params.outdir}/figures", mode: 'copy'
+
+    input:
+    path("summary_tables_dir")
+    path("panaroo_dir")
+    path("phylo_tree")
+    path("merged_vcf")
+
+    output:
+    path "publication_figures"
+    path "publication_tables"
+    path "summary_report.html"
+
+    script:
+    '''
+    #!/usr/bin/env Rscript
+
     suppressPackageStartupMessages({
         library(tidyverse)
         library(kableExtra)
-        library(ggtree)
-        library(ggtreeExtra)
         library(ape)
-        library(SNPRelate)
         library(pheatmap)
         library(rio)
     })
@@ -43,18 +109,18 @@ process GENERATE_FINAL_REPORT {
 
     tryCatch({
         print("Creating Master QC Table...")
-        multiqc_file <- file.path("${summary_tables_dir}", "multiqc_data", "multiqc_general_stats.txt")
+        multiqc_file <- file.path("summary_tables_dir", "multiqc_data", "multiqc_general_stats.txt")
         if(file.exists(multiqc_file)) {
             qc_data <- read_tsv(multiqc_file, col_types = cols(.default = "c"))
             qc_data %>%
                 kbl(caption="Master Quality Control Summary") %>%
                 kable_styling(bootstrap_options = "striped") %>%
                 save_kable("publication_tables/master_qc_table.html")
-            file.copy(file.path("${summary_tables_dir}", "multiqc_report.html"), ".")
+            file.copy(file.path("summary_tables_dir", "multiqc_report.html"), ".")
         }
     }, error = function(e) { print(paste("Error in QC section:", e)) })
 
-    all_summary_files <- list.files(path = "${summary_tables_dir}", pattern = "*.csv", full.names = TRUE)
+    all_summary_files <- list.files(path = "summary_tables_dir", pattern = "\\\\.csv$", full.names = TRUE)
     for (f in all_summary_files) {
         tryCatch({
             table_name <- basename(f) %>% str_replace(".csv", "")
@@ -70,7 +136,7 @@ process GENERATE_FINAL_REPORT {
 
     tryCatch({
         print("Attempting to generate ABRicate heatmap...")
-        abricate_file <- file.path("${summary_tables_dir}", "all_abricate_data.csv")
+        abricate_file <- file.path("summary_tables_dir", "all_abricate_data.csv")
         if (file.exists(abricate_file) && file.info(abricate_file)$size > 0) {
             all_abricate_data <- read_csv(abricate_file, col_types = cols(.default = "c")) %>%
                 rename(SAMPLE_ID = sample_id)
@@ -82,97 +148,8 @@ process GENERATE_FINAL_REPORT {
             }
         }
     }, error = function(e) { print(paste("Error in ABRicate heatmap section:", e)) })
-    
-    tryCatch({
-        print("Generating annotated phylogenetic tree...")
-        if (file.exists("${phylo_tree}") && file.info("${phylo_tree}")$size > 0) {
-             # Your ggtree plotting code here ...
-        }
-    }, error = function(e) { print(paste("Error generating annotated tree:", e)) })
-
-    tryCatch({
-        print("Attempting to run SNP PCA...")
-         if (file.exists("${merged_vcf}") && file.info("${merged_vcf}")$size > 0) {
-            # Your SNPRelate PCA code here ...
-         }
-    }, error = function(e) { print(paste("An error occurred during SNP PCA analysis:", e)) })
 
     file.create("summary_report.html")
     print("--- Final Report Generation Complete ---")
     '''
 }
-
-process SUMMARIZE_AND_ORGANIZE {
-    tag "Consolidating all results and organizing final files"
-    label 'process_low'
-    
-    publishDir "${params.outdir}/files", mode: 'copy'
-
-    input:
-    val(done_signal)
-    path(assemblies)
-    path(raw_results_dir)
-    path(tables_dir)
-
-    output:
-    path "final_files"
-
-    script:
-    '''
-    #!/usr/bin/env python
-    import pandas as pd
-    import glob
-    import os
-    import shutil
-
-    print("--- Starting Final Summary and Organization ---")
-    
-    os.makedirs('final_files/summary_csvs', exist_ok=True)
-    os.makedirs('final_files/assemblies', exist_ok=True)
-
-    print("Organizing final assembly files...")
-    for f in glob.glob("*.fasta"):
-        if os.path.isfile(f):
-            try:
-                shutil.copy(f, "final_files/assemblies/")
-            except Exception as e:
-                print(f"Could not copy assembly {f}: {e}")
-    
-    def safe_read_and_concat(search_dir, glob_pattern, out_name, id_level, sep='\\t', comment=None, header=0):
-        files = glob.glob(f"{search_dir}/**/{glob_pattern}", recursive=True)
-        if not files:
-            print(f"Warning: No files found for pattern '{glob_pattern}' in '{search_dir}'")
-            return
-        
-        dfs = []
-        for f in files:
-            try:
-                if os.path.getsize(f) > 0:
-                    sample_id = f.split('/')[id_level]
-                    df = pd.read_csv(f, sep=sep, comment=comment, low_memory=False, header=header)
-                    df['sample_id'] = sample_id
-                    dfs.append(df)
-            except Exception as e:
-                print(f"Warning: Could not read or process file {f}: {e}")
-        
-        if dfs:
-            out_path = os.path.join('final_files/summary_csvs', out_name)
-            pd.concat(dfs, ignore_index=True).to_csv(out_path, index=False)
-            print(f"Successfully created {out_path}")
-
-    print("Consolidating analysis reports into summary CSVs...")
-    safe_read_and_concat(str(tables_dir), 'abricate/*.tsv', 'all_abricate_data.csv', 2)
-    safe_read_and_concat(str(tables_dir), 'amrfinder/*.txt', 'all_amrfinder_data.csv', 2)
-    safe_read_and_concat(str(tables_dir), 'mobsuite/contig_report.txt', 'all_mobsuite_data.csv', 3)
-    safe_read_and_concat(str(tables_dir), 'quast/report.tsv', 'all_quast_metrics.csv', 2)
-    safe_read_and_concat(str(tables_dir), 'bosco/short_summary.specific.*.txt', 'all_busco_summaries.csv', 2, comment='#', header=None)
-    safe_read_and_concat(str(raw_results_dir), '*/platon/*.tsv', 'all_platon_data.csv', 3)
-    safe_read_and_concat(str(raw_results_dir), '*/crispr/crispr_output/spacers.tab', 'all_crispr_spacers.csv', 3)
-    safe_read_and_concat(str(raw_results_dir), '*/flye/assembly_info.txt', 'all_flye_info.csv', 2)
-    safe_read_and_concat(str(raw_results_dir), '*/subsampling/*.rasusa_stats.txt', 'all_rasusa_stats.csv', 3, header=None)
-    safe_read_and_concat(str(raw_results_dir), '*/functional_analysis/panther_results/*.tsv', 'all_panther_results.csv', 4)
-    
-    print("--- Final Organization Complete ---")
-    '''
-}
-

@@ -1,0 +1,711 @@
+Jun-11 03:47:23.693 [main] DEBUG nextflow.cli.Launcher - $> nextflow run main.nf -resume
+Jun-11 03:47:23.831 [main] DEBUG nextflow.cli.CmdRun - N E X T F L O W  ~  version 26.04.3
+Jun-11 03:47:23.856 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/home/dnanexus/.nextflow/plugins; core-plugins: nf-amazon@3.9.1,nf-azure@1.22.5,nf-cloudcache@0.6.0,nf-codecommit@0.5.2,nf-console@1.3.0,nf-google@1.27.3,nf-k8s@1.5.4,nf-seqera@0.20.1,nf-tower@1.28.0,nf-wave@1.21.0
+Jun-11 03:47:23.884 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jun-11 03:47:23.885 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jun-11 03:47:23.889 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.14.1 in 'deployment' mode
+Jun-11 03:47:23.918 [main] DEBUG nextflow.util.RetryConfig - Missing nextflow session - using default retry config
+Jun-11 03:47:24.094 [main] DEBUG nextflow.plugin.PluginUpdater - Using plugin repository: HttpPluginRepository [registry]; url=https://registry.nextflow.io/api
+Jun-11 03:47:24.100 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jun-11 03:47:24.141 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /home/dnanexus/Desktop/BACON/nextflow.config
+Jun-11 03:47:24.145 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /home/dnanexus/Desktop/BACON/nextflow.config
+Jun-11 03:47:24.151 [main] DEBUG nextflow.config.ConfigParserFactory - Using config parser v2
+Jun-11 03:47:24.176 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Jun-11 03:47:24.640 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Jun-11 03:47:24.641 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[]
+Jun-11 03:47:24.658 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /home/dnanexus/.nextflow/secrets/store.json
+Jun-11 03:47:24.661 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@534180a2] - activable => nextflow.secret.LocalSecretsProvider@534180a2
+Jun-11 03:47:24.677 [main] DEBUG nextflow.cli.CmdRun - Launching `main.nf` [magical_stonebraker] - revision: bbd27c2532
+Jun-11 03:47:24.768 [main] DEBUG nextflow.Session - Session UUID: 66838fd5-c940-441d-9f46-1279970d78e0
+Jun-11 03:47:24.769 [main] DEBUG nextflow.Session - Run name: magical_stonebraker
+Jun-11 03:47:24.769 [main] DEBUG nextflow.Session - Executor pool size: 16
+Jun-11 03:47:24.779 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+Jun-11 03:47:24.787 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=48; workQueue=LinkedBlockingQueue[-1]; allowCoreThreadTimeout=false
+Jun-11 03:47:24.813 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 26.04.3 build 12259
+  Created: 28-05-2026 08:48 UTC 
+  System: Linux 5.15.0-1108-aws
+  Runtime: Groovy 4.0.31 on OpenJDK 64-Bit Server VM 17.0.14+1-b1367.22
+  Encoding: UTF-8 (UTF-8)
+  Process: 1556229@job-J8YKF000P8K3gfYVjzZ5F3G2 [127.0.0.1]
+  CPUs: 16 - Mem: 29.2 GB (5.6 GB) - Swap: 0 (0)
+Jun-11 03:47:24.865 [main] DEBUG nextflow.Session - Work-dir: /home/dnanexus/Desktop/BACON/work [btrfs]
+Jun-11 03:47:24.936 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Jun-11 03:47:24.951 [main] DEBUG nextflow.Session - Observer factory (v2): LinObserverFactory
+Jun-11 03:47:24.954 [main] DEBUG nextflow.Session - Observer factory (v2): DefaultObserverFactory
+Jun-11 03:47:25.033 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Jun-11 03:47:25.047 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 17; maxThreads: 1000
+Jun-11 03:47:25.133 [main] DEBUG nextflow.Session - Session start
+Jun-11 03:47:25.141 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow started -- trace file: /home/dnanexus/Desktop/BACON/results/pipeline_info/execution_trace.html
+Jun-11 03:47:25.144 [main] DEBUG nextflow.script.ScriptLoaderFactory - Using script parser v2
+Jun-11 03:47:26.548 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Jun-11 03:47:26.922 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name DOWNLOAD_BACTERIAL_REFERENCE
+Jun-11 03:47:26.926 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:26.926 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:26.935 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Jun-11 03:47:26.942 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=36; memory=256 GB; capacity=16; pollInterval=100ms; dumpInterval=5m
+Jun-11 03:47:26.944 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+Jun-11 03:47:26.986 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'DOWNLOAD_BACTERIAL_REFERENCE': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.062 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name INDEX_BACTERIAL_GENOME
+Jun-11 03:47:27.063 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.064 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.065 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'INDEX_BACTERIAL_GENOME': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.070 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name INITIALIZE_AMRFINDER_DB
+Jun-11 03:47:27.070 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.071 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.071 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'INITIALIZE_AMRFINDER_DB': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.073 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name PREPARE_PLASMIDFINDER_DB
+Jun-11 03:47:27.074 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.074 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.075 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'PREPARE_PLASMIDFINDER_DB': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.102 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name BAM_TO_FASTQ
+Jun-11 03:47:27.103 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.103 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.104 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'BAM_TO_FASTQ': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.122 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_high` matches labels `process_high` for process with name INITIAL_READ_QC
+Jun-11 03:47:27.123 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.123 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.124 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'INITIAL_READ_QC': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.133 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name GENERATE_CONTAMINATION_REPORT
+Jun-11 03:47:27.134 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.134 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.135 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'GENERATE_CONTAMINATION_REPORT': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.139 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name EXTRACT_TARGET_READS
+Jun-11 03:47:27.140 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.140 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.141 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'EXTRACT_TARGET_READS': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.152 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name SUBSAMPLE_RASUSA
+Jun-11 03:47:27.153 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.153 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.153 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'SUBSAMPLE_RASUSA': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.162 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_high` matches labels `process_high` for process with name POSTFILTER_READ_QC
+Jun-11 03:47:27.163 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.163 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.164 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'POSTFILTER_READ_QC': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.171 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_high` matches labels `process_high` for process with name FLYE_ASSEMBLY
+Jun-11 03:47:27.172 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.172 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.173 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'FLYE_ASSEMBLY': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.178 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name QUAST_REPORT
+Jun-11 03:47:27.179 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.180 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.181 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'QUAST_REPORT': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.186 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name BUSCO
+Jun-11 03:47:27.187 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.187 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.188 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'BUSCO': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.194 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name MULTIQC_ASSEMBLY
+Jun-11 03:47:27.196 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.197 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.198 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'MULTIQC_ASSEMBLY': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.203 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_high` matches labels `process_high` for process with name BAKTA_ANNOTATION
+Jun-11 03:47:27.204 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.205 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.206 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'BAKTA_ANNOTATION': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.225 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name CREATE_SAMPLESHEET
+Jun-11 03:47:27.226 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.226 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.227 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'CREATE_SAMPLESHEET': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.232 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name AMRFINDER_ANALYSIS
+Jun-11 03:47:27.233 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.233 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.234 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'AMRFINDER_ANALYSIS': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.240 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name PLASMIDFINDER_ANALYSIS
+Jun-11 03:47:27.241 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.241 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.241 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'PLASMIDFINDER_ANALYSIS': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.244 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name MOB_SUITE_ANALYSIS
+Jun-11 03:47:27.245 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.245 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.246 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'MOB_SUITE_ANALYSIS': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.249 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name RUN_ABRICATE
+Jun-11 03:47:27.250 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.250 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.250 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'RUN_ABRICATE': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.253 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name CRISPR_TYPING
+Jun-11 03:47:27.254 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.254 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.255 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'CRISPR_TYPING': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.259 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name RUN_PLATON
+Jun-11 03:47:27.261 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.261 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.262 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'RUN_PLATON': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.269 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.270 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.270 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'PLOT_PLASMID_MAPS': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.274 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name ALIGN_TO_REFERENCE
+Jun-11 03:47:27.275 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.275 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.276 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'ALIGN_TO_REFERENCE': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.280 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name CALL_VARIANTS_BCFTOOLS
+Jun-11 03:47:27.281 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.281 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.282 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'CALL_VARIANTS_BCFTOOLS': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.285 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name FILTER_VARIANTS_BCFTOOLS
+Jun-11 03:47:27.286 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.286 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.287 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'FILTER_VARIANTS_BCFTOOLS': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.291 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name FIX_VCF_HEADER
+Jun-11 03:47:27.292 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.292 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.292 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'FIX_VCF_HEADER': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.300 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name CREATE_SNPEFF_DB
+Jun-11 03:47:27.300 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.300 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.301 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'CREATE_SNPEFF_DB': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.308 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name SNPEFF_ANNOTATE
+Jun-11 03:47:27.308 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.309 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.309 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'SNPEFF_ANNOTATE': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.322 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.323 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.324 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'EXTRACT_IMPACTFUL_GENES': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.329 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name RUN_PANTHER_API_DIRECT
+Jun-11 03:47:27.330 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.330 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.331 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'RUN_PANTHER_API_DIRECT': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.339 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.339 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.340 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'RUN_PANAROO': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.345 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.345 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.346 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'RUN_PYSEER': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.356 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.357 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.358 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'CREATE_SNP_ALIGNMENT': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.363 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.363 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.364 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'BUILD_PHYLO_TREE': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.372 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_high` matches labels `process_high` for process with name RUN_PROGRESSIVE_MAUVE
+Jun-11 03:47:27.373 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.373 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.374 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'RUN_PROGRESSIVE_MAUVE': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.386 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name SUMMARIZE_AND_ORGANIZE
+Jun-11 03:47:27.388 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.388 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.389 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'SUMMARIZE_AND_ORGANIZE': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.396 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name PLOT_RESISTANCE_HEATMAP
+Jun-11 03:47:27.397 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.397 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.398 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'PLOT_RESISTANCE_HEATMAP': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.401 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name PLOT_VIRULENCE_HEATMAP
+Jun-11 03:47:27.402 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.402 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.403 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'PLOT_VIRULENCE_HEATMAP': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.406 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name PLOT_PLASMID_SUMMARY
+Jun-11 03:47:27.407 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.407 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.408 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'PLOT_PLASMID_SUMMARY': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.411 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name PLOT_PANTHER_DOTPLOT
+Jun-11 03:47:27.411 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.412 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.412 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'PLOT_PANTHER_DOTPLOT': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.426 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name PLOT_GENOME_SYNTENY
+Jun-11 03:47:27.427 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.427 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.428 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'PLOT_GENOME_SYNTENY': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.437 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_medium` matches labels `process_medium` for process with name PLOT_KRAKEN_REPORTS
+Jun-11 03:47:27.438 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.438 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.439 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'PLOT_KRAKEN_REPORTS': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.451 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_low` matches labels `process_low` for process with name VISUALIZE_CRISPR_RESULTS
+Jun-11 03:47:27.453 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.453 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.454 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'VISUALIZE_CRISPR_RESULTS': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.462 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_high` matches labels `process_high` for process with name GENERATE_FINAL_REPORT
+Jun-11 03:47:27.463 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.463 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.464 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'GENERATE_FINAL_REPORT': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.471 [main] DEBUG n.script.dsl.ProcessConfigBuilder - Config settings `withLabel:process_high` matches labels `process_high` for process with name PLOT_ANNOTATED_TREE
+Jun-11 03:47:27.471 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Jun-11 03:47:27.472 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jun-11 03:47:27.472 [main] DEBUG nextflow.processor.TaskProcessor - Creating process 'PLOT_ANNOTATED_TREE': maxForks=0; fair=false; array=0
+Jun-11 03:47:27.476 [main] DEBUG nextflow.Session - Process names: BUSCO, RUN_PYSEER, FIND_FRAMESHIFTS, FIX_VCF_HEADER, RUN_ABRICATE, FLYE_ASSEMBLY, GENERATE_FINAL_REPORT, CRISPR_TYPING, MOB_SUITE_ANALYSIS, PLOT_PLASMID_MAPS, INDEX_GENOME, SNPEFF_ANNOTATE, DOWNLOAD_BACTERIAL_REFERENCE, PLOT_GENOME_SYNTENY, PLOT_ANNOTATED_TREE, BAKTA_ANNOTATION, CREATE_SNP_ALIGNMENT, INDEX_BACTERIAL_GENOME, MULTIQC_ASSEMBLY, RUN_PANAROO, ALIGN_TO_REFERENCE, MULTIQC_GENERAL, SUBSAMPLE_RASUSA, AMRFINDER_ANALYSIS, PLOT_KRAKEN_REPORTS, CREATE_SAMPLESHEET, POSTFILTER_READ_QC, BAM_TO_FASTQ, RUN_PLATON, EXTRACT_TARGET_READS, GENERATE_CONTAMINATION_REPORT, CALL_VARIANTS_BCFTOOLS, PLOT_GENE_HEATMAP, RUN_PROGRESSIVE_MAUVE, BUILD_PHYLO_TREE, RUN_PANTHER_API_DIRECT, PLOT_PYSEER_MANHATTAN, MULTIQC, PLASMIDFINDER_ANALYSIS, CLEAN_QAQC, FILTER_VARIANTS_BCFTOOLS, PLOT_RESISTANCE_HEATMAP, VISUALIZE_CRISPR_RESULTS, CREATE_SNPEFF_DB, INITIALIZE_AMRFINDER_DB, PREPARE_PLASMIDFINDER_DB, EXTRACT_IMPACTFUL_GENES, PLOT_PLASMID_SUMMARY, QUAST_REPORT, INITIAL_READ_QC, PLOT_PANTHER_DOTPLOT, SUMMARIZE_AND_ORGANIZE, PLOT_VIRULENCE_HEATMAP
+Jun-11 03:47:27.479 [main] DEBUG nextflow.Session - Igniting dataflow network (56)
+Jun-11 03:47:27.479 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > DOWNLOAD_BACTERIAL_REFERENCE
+Jun-11 03:47:27.480 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > INDEX_BACTERIAL_GENOME
+Jun-11 03:47:27.480 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > INITIALIZE_AMRFINDER_DB
+Jun-11 03:47:27.480 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > PREPARE_PLASMIDFINDER_DB
+Jun-11 03:47:27.485 [PathVisitor-1] DEBUG nextflow.file.PathVisitor - files for syntax: glob; folder: inputs/; pattern: *.bam; options: [:]
+Jun-11 03:47:27.486 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > BAM_TO_FASTQ
+Jun-11 03:47:27.486 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > INITIAL_READ_QC
+Jun-11 03:47:27.487 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > GENERATE_CONTAMINATION_REPORT
+Jun-11 03:47:27.487 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > EXTRACT_TARGET_READS
+Jun-11 03:47:27.488 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SUBSAMPLE_RASUSA
+Jun-11 03:47:27.488 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > POSTFILTER_READ_QC
+Jun-11 03:47:27.489 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > FLYE_ASSEMBLY
+Jun-11 03:47:27.489 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > QUAST_REPORT
+Jun-11 03:47:27.489 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > BUSCO
+Jun-11 03:47:27.489 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > MULTIQC_ASSEMBLY
+Jun-11 03:47:27.489 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > BAKTA_ANNOTATION
+Jun-11 03:47:27.489 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > CREATE_SAMPLESHEET
+Jun-11 03:47:27.489 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > AMRFINDER_ANALYSIS
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > PLASMIDFINDER_ANALYSIS
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > MOB_SUITE_ANALYSIS
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > RUN_ABRICATE
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > CRISPR_TYPING
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > RUN_PLATON
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > PLOT_PLASMID_MAPS
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > ALIGN_TO_REFERENCE
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > CALL_VARIANTS_BCFTOOLS
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > FILTER_VARIANTS_BCFTOOLS
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > FIX_VCF_HEADER
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > CREATE_SNPEFF_DB
+Jun-11 03:47:27.490 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SNPEFF_ANNOTATE
+Jun-11 03:47:27.491 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > EXTRACT_IMPACTFUL_GENES
+Jun-11 03:47:27.491 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > RUN_PANTHER_API_DIRECT
+Jun-11 03:47:27.491 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > RUN_PANAROO
+Jun-11 03:47:27.491 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > RUN_PYSEER
+Jun-11 03:47:27.491 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > CREATE_SNP_ALIGNMENT
+Jun-11 03:47:27.491 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > BUILD_PHYLO_TREE
+Jun-11 03:47:27.492 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > RUN_PROGRESSIVE_MAUVE
+Jun-11 03:47:27.492 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > SUMMARIZE_AND_ORGANIZE
+Jun-11 03:47:27.492 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > PLOT_RESISTANCE_HEATMAP
+Jun-11 03:47:27.492 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > PLOT_VIRULENCE_HEATMAP
+Jun-11 03:47:27.492 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > PLOT_PLASMID_SUMMARY
+Jun-11 03:47:27.492 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > PLOT_PANTHER_DOTPLOT
+Jun-11 03:47:27.492 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > PLOT_GENOME_SYNTENY
+Jun-11 03:47:27.492 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > PLOT_KRAKEN_REPORTS
+Jun-11 03:47:27.492 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > VISUALIZE_CRISPR_RESULTS
+Jun-11 03:47:27.492 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > GENERATE_FINAL_REPORT
+Jun-11 03:47:27.493 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > PLOT_ANNOTATED_TREE
+Jun-11 03:47:27.494 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  _nf_script_667a627f4c93704b: /home/dnanexus/Desktop/BACON/modules/assemblecheck.nf
+  _nf_script_6d465d571cf78945: /home/dnanexus/Desktop/BACON/modules/wholegenomealignment.nf
+  _nf_script_9ad3e893e7086642: /home/dnanexus/Desktop/BACON/modules/snpanalysis.nf
+  _nf_script_383d519eb1994dfe: /home/dnanexus/Desktop/BACON/modules/bamtofastq.nf
+  _nf_script_e4042721d3629b5d: /home/dnanexus/Desktop/BACON/modules/visualization.nf
+  _nf_script_2b8d05a4d68f0227: /home/dnanexus/Desktop/BACON/modules/functionalanalysis.nf
+  _nf_script_723addf4119ae985: /home/dnanexus/Desktop/BACON/modules/phylogenetics.nf
+  _nf_script_ec73715f173b885d: /home/dnanexus/Desktop/BACON/modules/platonmodule.nf
+  _nf_script_5ec256be6998f1b5: /home/dnanexus/Desktop/BACON/modules/snpeff.nf
+  _nf_script_ffd1ea33d9d68c75: /home/dnanexus/Desktop/BACON/modules/decontamination.nf
+  _nf_script_6701d4015cf2dcfc: /home/dnanexus/Desktop/BACON/modules/resistance.nf
+  _nf_script_a75977990bb11fc2: /home/dnanexus/Desktop/BACON/modules/subsample.nf
+  _nf_script_3852c8fb30f7bd27: /home/dnanexus/Desktop/BACON/modules/multiqc.nf
+  _nf_script_f599fa4cce04fbad: /home/dnanexus/Desktop/BACON/modules/finalreport.nf
+  _nf_script_d962d641ccc9a756: /home/dnanexus/Desktop/BACON/modules/IndexDB.nf
+  _nf_script_e41445c335deebe5: /home/dnanexus/Desktop/BACON/modules/crispr.nf
+  _nf_script_6fa2663409437924: /home/dnanexus/Desktop/BACON/modules/annotation.nf
+  _nf_script_900fc65d9c5946cb: /home/dnanexus/Desktop/BACON/modules/fastqc.nf
+  Main: /home/dnanexus/Desktop/BACON/main.nf
+  _nf_script_1d90cb2bbbeb7e9e: /home/dnanexus/Desktop/BACON/modules/create_samplesheet.nf
+  _nf_script_29ad556691637c3e: /home/dnanexus/Desktop/BACON/modules/pangenomeanalysis.nf
+Jun-11 03:47:27.494 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+Jun-11 03:47:27.494 [main] DEBUG nextflow.Session - Session await
+Jun-11 03:47:27.577 [Actor Thread 13] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::samtools=1.19.2 conda-forge::pigz; path=/home/dnanexus/Desktop/BACON/conda/env-e02b361b56679a76b6d4ac2e4705ccfa
+Jun-11 03:47:27.577 [Actor Thread 6] DEBUG nextflow.conda.CondaCache - conda found local env for environment=conda-forge::wget=1.21.4; path=/home/dnanexus/Desktop/BACON/conda/env-f8dc26b7f21179d5630790354d39e8c4
+Jun-11 03:47:27.577 [Actor Thread 7] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::ncbi-amrfinderplus; path=/home/dnanexus/Desktop/BACON/conda/env-8c2cd90f1d332eb853e6668307aef8bc
+Jun-11 03:47:27.577 [Actor Thread 5] DEBUG nextflow.conda.CondaCache - conda found local env for environment=conda-forge::git conda-forge::python=3.9 bioconda::kma; path=/home/dnanexus/Desktop/BACON/conda/env-d693d5468039d4032dc44a9e01297391
+Jun-11 03:47:27.667 [Actor Thread 8] INFO  nextflow.processor.TaskProcessor - [49/23ed40] Cached process > BAM_TO_FASTQ (BAM to FASTQ for Sample2)
+Jun-11 03:47:27.667 [Actor Thread 16] INFO  nextflow.processor.TaskProcessor - [06/16468d] Cached process > INITIALIZE_AMRFINDER_DB (Initializing AMRFinderPlus database)
+Jun-11 03:47:27.667 [Actor Thread 9] INFO  nextflow.processor.TaskProcessor - [d5/9b3b8b] Cached process > PREPARE_PLASMIDFINDER_DB (Preparing PlasmidFinder database)
+Jun-11 03:47:27.667 [Actor Thread 12] INFO  nextflow.processor.TaskProcessor - [a1/ce06d6] Cached process > BAM_TO_FASTQ (BAM to FASTQ for Sample3)
+Jun-11 03:47:27.667 [Actor Thread 10] INFO  nextflow.processor.TaskProcessor - [64/428276] Cached process > DOWNLOAD_BACTERIAL_REFERENCE (Downloading Bacterial Reference)
+Jun-11 03:47:27.701 [Actor Thread 16] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::bwa=0.7.17; path=/home/dnanexus/Desktop/BACON/conda/env-4ef8c6a5be346cb5d53e6d710ad59813
+Jun-11 03:47:27.708 [Actor Thread 16] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::fastqc=0.11.9; path=/home/dnanexus/Desktop/BACON/conda/env-e92705f017a3fab1fca3da28471361dd
+Jun-11 03:47:27.712 [Actor Thread 7] INFO  nextflow.processor.TaskProcessor - [bf/7a1788] Cached process > INDEX_BACTERIAL_GENOME (Indexing bacterial_ref)
+Jun-11 03:47:27.716 [Actor Thread 11] INFO  nextflow.processor.TaskProcessor - [eb/b3e194] Cached process > INITIAL_READ_QC (FastQC on Sample3 (initial_raw_qc))
+Jun-11 03:47:27.717 [Actor Thread 9] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::kraken2; path=/home/dnanexus/Desktop/BACON/conda/env-401be878f36fb6237724f4a42e28a66f
+Jun-11 03:47:27.721 [Actor Thread 8] INFO  nextflow.processor.TaskProcessor - [5c/b111a2] Cached process > INITIAL_READ_QC (FastQC on Sample2 (initial_raw_qc))
+Jun-11 03:47:27.723 [Actor Thread 16] INFO  nextflow.processor.TaskProcessor - [59/c767ad] Cached process > GENERATE_CONTAMINATION_REPORT (Generating contamination report for Sample3)
+Jun-11 03:47:27.728 [Actor Thread 3] INFO  nextflow.processor.TaskProcessor - [48/88ad5d] Cached process > GENERATE_CONTAMINATION_REPORT (Generating contamination report for Sample2)
+Jun-11 03:47:27.742 [Actor Thread 8] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'PublishDir' minSize=10; maxSize=48; workQueue=LinkedBlockingQueue[-1]; allowCoreThreadTimeout=false
+Jun-11 03:47:27.753 [Actor Thread 16] DEBUG nextflow.conda.CondaCache - conda found local env for environment=conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-rcolorbrewer; path=/home/dnanexus/Desktop/BACON/conda/env-d510f439d7d8f61b41a02a016e6bc716
+Jun-11 03:47:27.757 [Actor Thread 10] INFO  nextflow.processor.TaskProcessor - [9e/791ec5] Cached process > PLOT_KRAKEN_REPORTS (Generating Kraken2 summary plot)
+Jun-11 03:47:27.881 [Actor Thread 16] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::kraken2 bioconda::krakentools; path=/home/dnanexus/Desktop/BACON/conda/env-d12bd600193822141fe96c9f24269fe8
+Jun-11 03:47:27.888 [Actor Thread 15] INFO  nextflow.processor.TaskProcessor - [94/f0fa3e] Cached process > EXTRACT_TARGET_READS (Extracting target reads for Sample2)
+Jun-11 03:47:27.888 [Actor Thread 17] INFO  nextflow.processor.TaskProcessor - [97/bcc1aa] Cached process > EXTRACT_TARGET_READS (Extracting target reads for Sample3)
+Jun-11 03:47:27.896 [Actor Thread 15] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::rasusa=0.7.0; path=/home/dnanexus/Desktop/BACON/conda/env-62c431d0c7ce44d66b1fb33a8b782e23
+Jun-11 03:47:27.902 [Actor Thread 10] INFO  nextflow.processor.TaskProcessor - [58/6403c7] Cached process > SUBSAMPLE_RASUSA (Subsampling Sample3)
+Jun-11 03:47:27.902 [Actor Thread 11] INFO  nextflow.processor.TaskProcessor - [06/ce98d8] Cached process > SUBSAMPLE_RASUSA (Subsampling Sample2)
+Jun-11 03:47:27.910 [Actor Thread 2] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::minimap2=2.24 bioconda::samtools=1.15; path=/home/dnanexus/Desktop/BACON/conda/env-8cc7f8e022fa3eca1770f6957fc87431
+Jun-11 03:47:27.917 [Actor Thread 6] INFO  nextflow.processor.TaskProcessor - [e1/8e0552] Cached process > POSTFILTER_READ_QC (FastQC on Sample2 (postfilter_subsampled_qc))
+Jun-11 03:47:27.918 [Actor Thread 7] INFO  nextflow.processor.TaskProcessor - [a0/58a0e0] Cached process > ALIGN_TO_REFERENCE (Align reads for Sample2 with minimap2)
+Jun-11 03:47:27.919 [Actor Thread 16] INFO  nextflow.processor.TaskProcessor - [98/788b0b] Cached process > ALIGN_TO_REFERENCE (Align reads for Sample3 with minimap2)
+Jun-11 03:47:27.919 [Actor Thread 17] INFO  nextflow.processor.TaskProcessor - [a6/5180cf] Cached process > POSTFILTER_READ_QC (FastQC on Sample3 (postfilter_subsampled_qc))
+Jun-11 03:47:27.921 [Actor Thread 9] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::flye=2.9.1; path=/home/dnanexus/Desktop/BACON/conda/env-4897858a0ea40b1c04a80a02f78d80d2
+Jun-11 03:47:27.927 [Actor Thread 3] INFO  nextflow.processor.TaskProcessor - [fc/533a0c] Cached process > FLYE_ASSEMBLY (Flye assembly for Sample3 (Attempt 1))
+Jun-11 03:47:27.927 [Actor Thread 10] INFO  nextflow.processor.TaskProcessor - [c0/647a64] Cached process > FLYE_ASSEMBLY (Flye assembly for Sample2 (Attempt 1))
+Jun-11 03:47:27.933 [Actor Thread 8] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::samtools=1.15 bioconda::bcftools=1.15; path=/home/dnanexus/Desktop/BACON/conda/env-cd64cca0bc4e280162506eb45cc52ef1
+Jun-11 03:47:27.935 [Actor Thread 7] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::abricate; path=/home/dnanexus/Desktop/BACON/conda/env-6934c39480e8432f135b0c8e3c84164c
+Jun-11 03:47:27.937 [Actor Thread 16] INFO  nextflow.processor.TaskProcessor - [34/058b02] Cached process > CALL_VARIANTS_BCFTOOLS (Call variants for Sample2 with bcftools)
+Jun-11 03:47:27.938 [Actor Thread 17] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::busco; path=/home/dnanexus/Desktop/BACON/conda/env-3853c98ab7801699bc3e556879200edf
+Jun-11 03:47:27.938 [Actor Thread 14] INFO  nextflow.processor.TaskProcessor - [86/c19c04] Cached process > CALL_VARIANTS_BCFTOOLS (Call variants for Sample3 with bcftools)
+Jun-11 03:47:27.940 [Actor Thread 18] DEBUG nextflow.conda.CondaCache - Failed to check for @EXPLICIT marker in file: /home/dnanexus/miniconda3/envs/mobsuite_env - Is a directory
+Jun-11 03:47:27.940 [Actor Thread 29] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::minced; path=/home/dnanexus/Desktop/BACON/conda/env-2fe11f1e5b6ed0dfa67acc27b79ea4d7
+Jun-11 03:47:27.940 [Actor Thread 7] DEBUG nextflow.conda.CondaCache - conda found local env for environment=/home/dnanexus/miniconda3/envs/mobsuite_env; path=/home/dnanexus/miniconda3/envs/mobsuite_env
+Jun-11 03:47:27.945 [Actor Thread 4] INFO  nextflow.processor.TaskProcessor - [f9/546364] Cached process > BUSCO (Busco report for Sample3)
+Jun-11 03:47:27.946 [Actor Thread 13] INFO  nextflow.processor.TaskProcessor - [09/327532] Cached process > RUN_ABRICATE (Screening Sample3 with ABRicate (vfdb))
+Jun-11 03:47:27.949 [Actor Thread 27] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::quast; path=/home/dnanexus/Desktop/BACON/conda/env-59d7d4c9dbd0d27028a21cf022ad5f7b
+Jun-11 03:47:27.953 [Actor Thread 24] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::plasmidfinder; path=/home/dnanexus/Desktop/BACON/conda/env-5775824f8c77ba1051c1d5663f9e5181
+Jun-11 03:47:27.959 [Actor Thread 27] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::bakta=1.8.2 bioconda::pyhmmer=0.10.3 bioconda::diamond=2.1.8; path=/home/dnanexus/Desktop/BACON/conda/env-d915c5c5cdba125d5393d17a927fa22c
+Jun-11 03:47:27.960 [Actor Thread 7] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::platon; path=/home/dnanexus/Desktop/BACON/conda/env-e75c31d3d5f49b158906b2051f661e6a
+Jun-11 03:47:27.963 [Actor Thread 12] INFO  nextflow.processor.TaskProcessor - [c1/ecd0f9] Cached process > PLASMIDFINDER_ANALYSIS (PlasmidFinder analysis for Sample2)
+Jun-11 03:47:27.964 [Actor Thread 1] INFO  nextflow.processor.TaskProcessor - [a8/af6dc1] Cached process > QUAST_REPORT (Running QUAST for Sample3)
+Jun-11 03:47:27.966 [Actor Thread 11] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::bcftools=1.15; path=/home/dnanexus/Desktop/BACON/conda/env-d0e8f15c98f79aa9726f3a4bcea91a61
+Jun-11 03:47:27.966 [Actor Thread 26] DEBUG nextflow.conda.CondaCache - Failed to check for @EXPLICIT marker in file: /home/dnanexus/miniconda3/envs/mobsuite_env - Is a directory
+Jun-11 03:47:27.967 [Actor Thread 19] DEBUG n.processor.TaskFileCollector - Process `CRISPR_TYPING (1)` is unable to find [UnixPath]: `/home/dnanexus/Desktop/BACON/work/ac/16579b293ac7256693b2c750ce734a/Sample3.minced.gff` (pattern: `Sample3.minced.gff`)
+Jun-11 03:47:27.967 [Actor Thread 23] INFO  nextflow.processor.TaskProcessor - [0f/6ea441] Cached process > PLASMIDFINDER_ANALYSIS (PlasmidFinder analysis for Sample3)
+Jun-11 03:47:27.969 [Actor Thread 19] DEBUG n.processor.TaskFileCollector - Process `CRISPR_TYPING (1)` is unable to find [UnixPath]: `/home/dnanexus/Desktop/BACON/work/ac/16579b293ac7256693b2c750ce734a/Sample3.minced.fna` (pattern: `Sample3.minced.fna`)
+Jun-11 03:47:27.970 [Actor Thread 19] DEBUG n.processor.TaskFileCollector - Process `CRISPR_TYPING (1)` is unable to find [UnixPath]: `/home/dnanexus/Desktop/BACON/work/ac/16579b293ac7256693b2c750ce734a/Sample3.minced.log` (pattern: `Sample3.minced.log`)
+Jun-11 03:47:27.971 [Actor Thread 17] INFO  nextflow.processor.TaskProcessor - [e1/9f6d58] Cached process > RUN_ABRICATE (Screening Sample2 with ABRicate (vfdb))
+Jun-11 03:47:27.971 [Actor Thread 19] INFO  nextflow.processor.TaskProcessor - [ac/16579b] Cached process > CRISPR_TYPING (Finding CRISPR arrays for Sample3)
+Jun-11 03:47:27.971 [Actor Thread 7] INFO  nextflow.processor.TaskProcessor - [6a/6a096f] Cached process > FILTER_VARIANTS_BCFTOOLS (Filter variants for Sample3)
+Jun-11 03:47:27.971 [Actor Thread 29] INFO  nextflow.processor.TaskProcessor - [ea/3a2a81] Cached process > RUN_PLATON (Platon plasmid prediction for Sample2)
+Jun-11 03:47:27.973 [Actor Thread 15] DEBUG n.processor.TaskFileCollector - Process `CRISPR_TYPING (2)` is unable to find [UnixPath]: `/home/dnanexus/Desktop/BACON/work/0f/8a1b024474f3a4e05271d93dccdb57/Sample2.minced.gff` (pattern: `Sample2.minced.gff`)
+Jun-11 03:47:27.974 [Actor Thread 15] DEBUG n.processor.TaskFileCollector - Process `CRISPR_TYPING (2)` is unable to find [UnixPath]: `/home/dnanexus/Desktop/BACON/work/0f/8a1b024474f3a4e05271d93dccdb57/Sample2.minced.fna` (pattern: `Sample2.minced.fna`)
+Jun-11 03:47:27.975 [Actor Thread 3] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::multiqc=1.14 conda-forge::python=3.9; path=/home/dnanexus/Desktop/BACON/conda/env-5096bc1efaaf7fc9df0d73d06a550958
+Jun-11 03:47:27.979 [Actor Thread 15] DEBUG n.processor.TaskFileCollector - Process `CRISPR_TYPING (2)` is unable to find [UnixPath]: `/home/dnanexus/Desktop/BACON/work/0f/8a1b024474f3a4e05271d93dccdb57/Sample2.minced.log` (pattern: `Sample2.minced.log`)
+Jun-11 03:47:27.980 [Actor Thread 15] INFO  nextflow.processor.TaskProcessor - [0f/8a1b02] Cached process > CRISPR_TYPING (Finding CRISPR arrays for Sample2)
+Jun-11 03:47:27.981 [Actor Thread 27] INFO  nextflow.processor.TaskProcessor - [08/bb4e1f] Cached process > FILTER_VARIANTS_BCFTOOLS (Filter variants for Sample2)
+Jun-11 03:47:27.983 [Actor Thread 32] INFO  nextflow.processor.TaskProcessor - [6b/eaecea] Cached process > MULTIQC_ASSEMBLY (Aggregating QC reports)
+Jun-11 03:47:27.984 [Actor Thread 31] INFO  nextflow.processor.TaskProcessor - [cc/de9ecd] Cached process > BUSCO (Busco report for Sample2)
+Jun-11 03:47:27.987 [Actor Thread 18] INFO  nextflow.processor.TaskProcessor - [77/4f0e28] Cached process > MOB_SUITE_ANALYSIS (MOB-suite analysis for Sample3)
+Jun-11 03:47:27.988 [Actor Thread 7] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::progressivemauve; path=/home/dnanexus/Desktop/BACON/conda/env-695089269e1f3bf1f4742622bcadf3d4
+Jun-11 03:47:27.989 [Actor Thread 14] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::bcftools=1.19; path=/home/dnanexus/Desktop/BACON/conda/env-19ef46d422f71f6dc952528a7437dfee
+Jun-11 03:47:27.994 [Actor Thread 4] INFO  nextflow.processor.TaskProcessor - [e0/4cd8d1] Cached process > AMRFINDER_ANALYSIS (AMRFinder analysis for Sample2)
+Jun-11 03:47:28.015 [Actor Thread 30] INFO  nextflow.processor.TaskProcessor - [27/5f3773] Cached process > QUAST_REPORT (Running QUAST for Sample2)
+Jun-11 03:47:28.017 [Actor Thread 6] INFO  nextflow.processor.TaskProcessor - [23/aa431a] Cached process > BAKTA_ANNOTATION (Running Bakta for Sample3)
+Jun-11 03:47:28.017 [Actor Thread 21] INFO  nextflow.processor.TaskProcessor - [9c/b4be9c] Cached process > AMRFINDER_ANALYSIS (AMRFinder analysis for Sample3)
+Jun-11 03:47:28.018 [Actor Thread 5] INFO  nextflow.processor.TaskProcessor - [13/e135f2] Cached process > FIX_VCF_HEADER (Fixing VCF header for Sample2)
+Jun-11 03:47:28.018 [Actor Thread 1] INFO  nextflow.processor.TaskProcessor - [cc/edfa40] Cached process > FIX_VCF_HEADER (Fixing VCF header for Sample3)
+Jun-11 03:47:28.028 [Actor Thread 20] INFO  nextflow.processor.TaskProcessor - [93/0d0049] Cached process > RUN_PLATON (Platon plasmid prediction for Sample3)
+Jun-11 03:47:28.030 [Actor Thread 30] DEBUG nextflow.conda.CondaCache - conda found local env for environment=conda-forge::r-base conda-forge::r-tidyverse bioconda::bakta; path=/home/dnanexus/Desktop/BACON/conda/env-84049c9c8eae6c8e3674516b5bb35de2
+Jun-11 03:47:28.036 [Actor Thread 7] INFO  nextflow.processor.TaskProcessor - [7a/2287b8] Cached process > MULTIQC_ASSEMBLY (Aggregating QC reports)
+Jun-11 03:47:28.037 [Actor Thread 30] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::snpeff=5.1d; path=/home/dnanexus/Desktop/BACON/conda/env-4c250044d2270f56637174d188a528fc
+Jun-11 03:47:28.038 [Actor Thread 5] DEBUG nextflow.conda.CondaCache - conda found local env for environment=conda-forge::r-base conda-forge::r-tidyverse; path=/home/dnanexus/Desktop/BACON/conda/env-de0cfb16d7fbf0c1076e3ee77ee360c0
+Jun-11 03:47:28.040 [Actor Thread 6] INFO  nextflow.processor.TaskProcessor - [35/7c9100] Cached process > SUMMARIZE_AND_ORGANIZE (Consolidating all results and organizing final files)
+Jun-11 03:47:28.043 [Actor Thread 3] INFO  nextflow.processor.TaskProcessor - [21/902e18] Cached process > PLOT_PLASMID_MAPS (Plotting plasmid map for Sample2.platon_plasmids)
+Jun-11 03:47:28.043 [Actor Thread 25] INFO  nextflow.processor.TaskProcessor - [38/89ff5c] Cached process > PLOT_PLASMID_MAPS (Plotting plasmid map for Sample3.platon_plasmids)
+Jun-11 03:47:28.047 [Actor Thread 23] DEBUG nextflow.conda.CondaCache - conda found local env for environment=conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis; path=/home/dnanexus/Desktop/BACON/conda/env-67c3cf0481aaef2b8879cfdf80b35b7a
+Jun-11 03:47:28.049 [Actor Thread 36] INFO  nextflow.processor.TaskProcessor - [87/8e9cbd] Cached process > CREATE_SNPEFF_DB (Create SnpEff database using bacterial_ref)
+Jun-11 03:47:28.053 [Actor Thread 24] INFO  nextflow.conda.CondaCache - Creating env using conda: conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-viridis [cache /home/dnanexus/Desktop/BACON/conda/env-d415d4c3e384fc8d7c1c58585e1a883e]
+Jun-11 03:47:28.055 [Actor Thread 9] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::samtools bioconda::htslib bioconda::bcftools; path=/home/dnanexus/Desktop/BACON/conda/env-7656da1d00d330b96c058482e1dd34fc
+Jun-11 03:47:28.058 [Actor Thread 26] INFO  nextflow.processor.TaskProcessor - [0c/12453d] Cached process > CREATE_SNP_ALIGNMENT (Create Core SNP Alignment)
+Jun-11 03:47:28.058 [Actor Thread 6] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::snpeff=5.1d bioconda::htslib; path=/home/dnanexus/Desktop/BACON/conda/env-21e5f0bf7ab07f425469f7ea49fe0927
+Jun-11 03:47:28.063 [Actor Thread 32] INFO  nextflow.processor.TaskProcessor - [b8/f2cda4] Cached process > SNPEFF_ANNOTATE (Annotate variants for Sample2 with SnpEff)
+Jun-11 03:47:28.063 [Actor Thread 34] INFO  nextflow.processor.TaskProcessor - [25/ffa2c6] Cached process > SNPEFF_ANNOTATE (Annotate variants for Sample3 with SnpEff)
+Jun-11 03:47:28.064 [Actor Thread 22] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::iqtree; path=/home/dnanexus/Desktop/BACON/conda/env-91293040df52288a6886fa7c1c4a6dd2
+Jun-11 03:47:28.070 [Actor Thread 9] INFO  nextflow.processor.TaskProcessor - [bf/926c1a] Cached process > BUILD_PHYLO_TREE (Build Phylogenetic Tree)
+Jun-11 03:47:28.073 [Actor Thread 34] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::bcftools; path=/home/dnanexus/Desktop/BACON/conda/env-79257f57316b55592d972ab063d632a0
+Jun-11 03:47:28.076 [Actor Thread 20] INFO  nextflow.processor.TaskProcessor - [28/584f0f] Cached process > EXTRACT_IMPACTFUL_GENES (Extract impactful genes for Sample3)
+Jun-11 03:47:28.083 [Actor Thread 34] DEBUG nextflow.conda.CondaCache - conda found local env for environment=conda-forge::curl conda-forge::jq; path=/home/dnanexus/Desktop/BACON/conda/env-e9962a5921dc9939627122085561a701
+Jun-11 03:47:28.089 [Actor Thread 11] INFO  nextflow.processor.TaskProcessor - [d2/8f588b] Cached process > RUN_PANTHER_API_DIRECT (Querying PANTHER API for Sample3)
+Jun-11 03:47:28.092 [Actor Thread 9] INFO  nextflow.conda.CondaCache - Creating env using conda: conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis conda-forge::r-ggnewscale bioconductor-ggtree bioconductor-ggtreeextra [cache /home/dnanexus/Desktop/BACON/conda/env-8672d71e0d65f919e632903ef2d1198a]
+Jun-11 03:47:28.111 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:47:28.114 [Task submitter] INFO  nextflow.Session - [5e/8545d5] Submitted process > MOB_SUITE_ANALYSIS (MOB-suite analysis for Sample2)
+Jun-11 03:47:28.137 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:47:28.138 [Task submitter] INFO  nextflow.Session - [ca/20f054] Submitted process > BAKTA_ANNOTATION (Running Bakta for Sample2)
+Jun-11 03:47:28.143 [Actor Thread 19] DEBUG nextflow.processor.TaskProcessor - Process CRISPR_TYPING > Skipping output binding because one or more optional files are missing: fileoutparam<0:1>
+Jun-11 03:47:28.144 [Actor Thread 19] DEBUG nextflow.processor.TaskProcessor - Process CRISPR_TYPING > Skipping output binding because one or more optional files are missing: fileoutparam<1:1>
+Jun-11 03:47:28.144 [Actor Thread 19] DEBUG nextflow.processor.TaskProcessor - Process CRISPR_TYPING > Skipping output binding because one or more optional files are missing: fileoutparam<2:1>
+Jun-11 03:47:28.145 [Actor Thread 15] DEBUG nextflow.processor.TaskProcessor - Process CRISPR_TYPING > Skipping output binding because one or more optional files are missing: fileoutparam<0:1>
+Jun-11 03:47:28.145 [Actor Thread 15] DEBUG nextflow.processor.TaskProcessor - Process CRISPR_TYPING > Skipping output binding because one or more optional files are missing: fileoutparam<1:1>
+Jun-11 03:47:28.145 [Actor Thread 15] DEBUG nextflow.processor.TaskProcessor - Process CRISPR_TYPING > Skipping output binding because one or more optional files are missing: fileoutparam<2:1>
+Jun-11 03:47:28.148 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:47:28.149 [Task submitter] INFO  nextflow.Session - [f0/bb3f2b] Submitted process > PLOT_RESISTANCE_HEATMAP (Generating resistance gene summary heatmap)
+Jun-11 03:47:28.153 [Actor Thread 15] DEBUG nextflow.conda.CondaCache - conda found local env for environment=conda-forge::matplotlib-base; path=/home/dnanexus/Desktop/BACON/conda/env-1ffab15044e0cbfb98d94f1c73a31eb9
+Jun-11 03:47:28.156 [Actor Thread 12] INFO  nextflow.processor.TaskProcessor - [50/d7d449] Cached process > VISUALIZE_CRISPR_RESULTS (Visualizing CRISPR results for all samples)
+Jun-11 03:47:28.171 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:47:28.172 [Task submitter] INFO  nextflow.Session - [dd/2fdf02] Submitted process > PLOT_VIRULENCE_HEATMAP (Generating ABRicate VFDB virulence heatmap)
+Jun-11 03:47:31.619 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 55; name: PLOT_VIRULENCE_HEATMAP (Generating ABRicate VFDB virulence heatmap); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/dd/2fdf02ea1ef070a486283c79f52e66]
+Jun-11 03:47:31.621 [Task monitor] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'TaskFinalizer' minSize=10; maxSize=48; workQueue=LinkedBlockingQueue[-1]; allowCoreThreadTimeout=false
+Jun-11 03:47:31.626 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:47:31.626 [Task submitter] INFO  nextflow.Session - [81/e58665] Submitted process > PLOT_PLASMID_SUMMARY (Generating plasmid distribution plots)
+Jun-11 03:47:31.717 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 56; name: PLOT_RESISTANCE_HEATMAP (Generating resistance gene summary heatmap); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/f0/bb3f2bb59c72371ff0f3961d659693]
+Jun-11 03:47:34.855 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 53; name: PLOT_PLASMID_SUMMARY (Generating plasmid distribution plots); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/81/e58665a971ff1d92aa1536bd1e1e80]
+Jun-11 03:47:49.137 [Actor Thread 24] DEBUG nextflow.conda.CondaCache - 'conda' create complete env=conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-viridis path=/home/dnanexus/Desktop/BACON/conda/env-d415d4c3e384fc8d7c1c58585e1a883e
+Jun-11 03:47:49.865 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:47:49.865 [Task submitter] INFO  nextflow.Session - [1a/bb8737] Submitted process > PLOT_PANTHER_DOTPLOT (Generating PANTHER enrichment dot plot)
+Jun-11 03:47:53.000 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 54; name: PLOT_PANTHER_DOTPLOT (Generating PANTHER enrichment dot plot); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/1a/bb87377848f726fceb89623a544f46]
+Jun-11 03:48:35.644 [Actor Thread 9] DEBUG nextflow.conda.CondaCache - 'conda' create complete env=conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis conda-forge::r-ggnewscale bioconductor-ggtree bioconductor-ggtreeextra path=/home/dnanexus/Desktop/BACON/conda/env-8672d71e0d65f919e632903ef2d1198a
+Jun-11 03:48:59.034 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 42; name: MOB_SUITE_ANALYSIS (MOB-suite analysis for Sample2); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/5e/8545d5ab71d99006149bf2ab17ece5]
+Jun-11 03:48:59.040 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:48:59.044 [Task submitter] INFO  nextflow.Session - [9e/22cc22] Submitted process > RUN_PROGRESSIVE_MAUVE (Running ProgressiveMauve on 2 genomes)
+Jun-11 03:49:28.430 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 46; name: RUN_PROGRESSIVE_MAUVE (Running ProgressiveMauve on 2 genomes); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/9e/22cc225eb92ce38c8c4a16720e3aed]
+Jun-11 03:49:28.437 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:49:28.459 [Actor Thread 1] DEBUG nextflow.conda.CondaCache - conda found local env for environment=conda-forge::r-base conda-forge::r-stringr conda-forge::r-ggplot2 bioconda::samtools; path=/home/dnanexus/Desktop/BACON/conda/env-761c2292d5fc30de3734590dc0e5f6c9
+Jun-11 03:49:28.463 [Task submitter] INFO  nextflow.Session - [64/ca3fb4] Submitted process > PLOT_ANNOTATED_TREE (Generating annotated phylogenetic tree)
+Jun-11 03:49:32.667 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 62; name: PLOT_ANNOTATED_TREE (Generating annotated phylogenetic tree); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/64/ca3fb46fe1fc90d3551c088848daf0]
+Jun-11 03:49:32.671 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:49:32.672 [Task submitter] INFO  nextflow.Session - [71/3af9df] Submitted process > PLOT_GENOME_SYNTENY (Linear Synteny Plotting)
+Jun-11 03:49:36.408 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 65; name: PLOT_GENOME_SYNTENY (Linear Synteny Plotting); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/71/3af9dffc43199558cbe4bae3a82023]
+Jun-11 03:52:27.132 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor local > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 39; name: BAKTA_ANNOTATION (Running Bakta for Sample2); status: RUNNING; exit: -; error: -; workDir: /home/dnanexus/Desktop/BACON/work/ca/20f054daf579cb041ffe0ea6469036]
+Jun-11 03:56:17.830 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 39; name: BAKTA_ANNOTATION (Running Bakta for Sample2); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/ca/20f054daf579cb041ffe0ea6469036]
+Jun-11 03:56:17.848 [Actor Thread 9] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::panaroo; path=/home/dnanexus/Desktop/BACON/conda/env-233a857de44a86fbe10aba4f2c4f54fc
+Jun-11 03:56:17.854 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:56:17.854 [Task submitter] INFO  nextflow.Session - [7f/8a4b7b] Submitted process > EXTRACT_IMPACTFUL_GENES (Extract impactful genes for Sample2)
+Jun-11 03:56:17.861 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:56:17.861 [Task submitter] INFO  nextflow.Session - [92/3bb928] Submitted process > CREATE_SAMPLESHEET (Creating SnpEff samplesheet)
+Jun-11 03:56:17.865 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:56:17.866 [Task submitter] INFO  nextflow.Session - [46/72da8b] Submitted process > RUN_PANAROO (Panaroo pangenome analysis)
+Jun-11 03:56:17.971 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 67; name: CREATE_SAMPLESHEET (Creating SnpEff samplesheet); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/92/3bb928a16c9323c4e19d1210caece1]
+Jun-11 03:56:20.363 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 68; name: RUN_PANAROO (Panaroo pangenome analysis); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/46/72da8b3b16d099e6aa4bd986f0ce51]
+Jun-11 03:56:20.368 [Actor Thread 19] DEBUG nextflow.conda.CondaCache - conda found local env for environment=bioconda::pyseer; path=/home/dnanexus/Desktop/BACON/conda/env-b3d9704283d4825487b51b44d5382590
+Jun-11 03:56:20.369 [Actor Thread 9] INFO  nextflow.conda.CondaCache - Creating env using conda: conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-ape conda-forge::r-pheatmap conda-forge::r-rio conda-forge::r-kableextra [cache /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0]
+Jun-11 03:56:20.374 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:56:20.375 [Task submitter] INFO  nextflow.Session - [49/f23f97] Submitted process > RUN_PYSEER (Pyseer LMM-GWAS)
+Jun-11 03:56:20.439 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 66; name: EXTRACT_IMPACTFUL_GENES (Extract impactful genes for Sample2); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/7f/8a4b7bec70d833f06b172549557c14]
+Jun-11 03:56:20.452 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:56:20.453 [Task submitter] INFO  nextflow.Session - [54/989802] Submitted process > RUN_PANTHER_API_DIRECT (Querying PANTHER API for Sample2)
+Jun-11 03:56:22.160 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 69; name: RUN_PYSEER (Pyseer LMM-GWAS); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/49/f23f97444dfa108c89c8f4eba84cd1]
+Jun-11 03:56:22.381 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 71; name: RUN_PANTHER_API_DIRECT (Querying PANTHER API for Sample2); status: COMPLETED; exit: 0; error: -; workDir: /home/dnanexus/Desktop/BACON/work/54/9898029049d78927f8493cd73132b9]
+Jun-11 03:56:42.132 [Actor Thread 9] DEBUG nextflow.conda.CondaCache - 'conda' create complete env=conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-ape conda-forge::r-pheatmap conda-forge::r-rio conda-forge::r-kableextra path=/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0
+Jun-11 03:56:42.139 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jun-11 03:56:42.139 [Task submitter] INFO  nextflow.Session - [16/eae0d8] Submitted process > GENERATE_FINAL_REPORT (Generating Final Publication Package)
+Jun-11 03:57:27.152 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor local > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 70; name: GENERATE_FINAL_REPORT (Generating Final Publication Package); status: RUNNING; exit: -; error: -; workDir: /home/dnanexus/Desktop/BACON/work/16/eae0d824720293b6cc3e0bfd940a12]
+Jun-11 04:01:09.343 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 70; name: GENERATE_FINAL_REPORT (Generating Final Publication Package); status: COMPLETED; exit: 1; error: -; workDir: /home/dnanexus/Desktop/BACON/work/16/eae0d824720293b6cc3e0bfd940a12]
+Jun-11 04:01:09.349 [TaskFinalizer-5] DEBUG nextflow.processor.TaskProcessor - Handling unexpected condition for
+  task: name=GENERATE_FINAL_REPORT (Generating Final Publication Package); work-dir=/home/dnanexus/Desktop/BACON/work/16/eae0d824720293b6cc3e0bfd940a12
+  error [nextflow.exception.ProcessFailedException]: Process `GENERATE_FINAL_REPORT (Generating Final Publication Package)` terminated with an error exit status (1)
+Jun-11 04:01:09.370 [TaskFinalizer-5] ERROR nextflow.processor.TaskProcessor - Error executing process > 'GENERATE_FINAL_REPORT (Generating Final Publication Package)'
+
+Caused by:
+  Process `GENERATE_FINAL_REPORT (Generating Final Publication Package)` terminated with an error exit status (1)
+
+
+Command executed:
+
+  #!/usr/bin/env Rscript
+  if (!requireNamespace("BiocManager", quietly = TRUE)) {
+      install.packages("BiocManager", repos = "http://cran.us.r-project.org")
+  }
+  pkgs_to_install <- c("SNPRelate", "ggtree", "ggtreeExtra")
+  for (pkg in pkgs_to_install) {
+      if (!requireNamespace(pkg, quietly = TRUE)) {
+          BiocManager::install(pkg)
+      }
+  }
+  suppressPackageStartupMessages({
+      library(tidyverse)
+      library(kableExtra)
+      library(ggtree)
+      library(ggtreeExtra)
+      library(ape)
+      library(SNPRelate)
+      library(pheatmap)
+      library(rio)
+  })
+  
+  dir.create("publication_figures", showWarnings = FALSE)
+  dir.create("publication_tables", showWarnings = FALSE)
+  
+  tryCatch({
+      print("Creating Master QC Table...")
+      multiqc_file <- file.path("${summary_tables_dir}", "multiqc_data", "multiqc_general_stats.txt")
+      if(file.exists(multiqc_file)) {
+          qc_data <- read_tsv(multiqc_file, col_types = cols(.default = "c"))
+          qc_data %>%
+              kbl(caption="Master Quality Control Summary") %>%
+              kable_styling(bootstrap_options = "striped") %>%
+              save_kable("publication_tables/master_qc_table.html")
+          file.copy(file.path("${summary_tables_dir}", "multiqc_report.html"), ".")
+      }
+  }, error = function(e) { print(paste("Error in QC section:", e)) })
+  
+  all_summary_files <- list.files(path = "${summary_tables_dir}", pattern = "*.csv", full.names = TRUE)
+  for (f in all_summary_files) {
+      tryCatch({
+          table_name <- basename(f) %>% str_replace(".csv", "")
+          df <- read_csv(f)
+          if(nrow(df) > 0){
+              df %>%
+                  kbl(caption = paste("Summary of", table_name)) %>%
+                  kable_styling(bootstrap_options = c("striped", "hover", "responsive"), full_width = F) %>%
+                  save_kable(paste0("publication_tables/", table_name, "_summary.html"))
+          }
+      }, error = function(e) { print(paste("Could not format table", f, ":", e)) })
+  }
+  
+  tryCatch({
+      print("Attempting to generate ABRicate heatmap...")
+      abricate_file <- file.path("${summary_tables_dir}", "all_abricate_data.csv")
+      if (file.exists(abricate_file) && file.info(abricate_file)$size > 0) {
+          all_abricate_data <- read_csv(abricate_file, col_types = cols(.default = "c")) %>%
+              rename(SAMPLE_ID = sample_id)
+          heatmap_data <- all_abricate_data %>% count(SAMPLE_ID, GENE, name = "dose")
+          if (n_distinct(heatmap_data$SAMPLE_ID) > 1 && n_distinct(heatmap_data$GENE) > 1) {
+              p <- ggplot(heatmap_data, aes(x=SAMPLE_ID, y=GENE, fill=dose)) + geom_tile()
+              ggsave("publication_figures/abricate_heatmap.png", plot = p, width = 12, height = 8, dpi = 300)
+              print("... ABRicate heatmap successfully generated.")
+          }
+      }
+  }, error = function(e) { print(paste("Error in ABRicate heatmap section:", e)) })
+  
+  tryCatch({
+      print("Generating annotated phylogenetic tree...")
+      if (file.exists("${phylo_tree}") && file.info("${phylo_tree}")$size > 0) {
+           # Your ggtree plotting code here ...
+      }
+  }, error = function(e) { print(paste("Error generating annotated tree:", e)) })
+  
+  tryCatch({
+      print("Attempting to run SNP PCA...")
+       if (file.exists("${merged_vcf}") && file.info("${merged_vcf}")$size > 0) {
+          # Your SNPRelate PCA code here ...
+       }
+  }, error = function(e) { print(paste("An error occurred during SNP PCA analysis:", e)) })
+  
+  file.create("summary_report.html")
+  print("--- Final Report Generation Complete ---")
+
+Command exit status:
+  1
+
+Command output:
+  x86_64-conda-linux-gnu-c++ -std=gnu++17 -shared -L/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/lib -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib -L/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib -o SNPRelate.so ConvToGDS.o R_SNPRelate.o SNPRelate.o ThreadPool.o dGenGWAS.o dVect.o genBeta.o genEIGMIX.o genFst.o genHWE.o genIBD.o genIBS.o genKING.o genLD.o genPCA.o genSlideWin.o -lpthread -llapack -lblas -lgfortran -lm -lquadmath -L/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/lib -lR
+  No man pages found in package  ‘fontBitstreamVera’ 
+  No man pages found in package  ‘fontLiberation’ 
+  x86_64-conda-linux-gnu-cc -std=gnu23 -I"/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/include" -DNDEBUG -I./rlang  -DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -I/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib    -fpic  -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/r-base-split_1781102078699/work=/usr/local/src/conda/r-base-4.5.3 -fdebug-prefix-map=/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0=/usr/local/src/conda-prefix  -c expr.c -o expr.o
+  x86_64-conda-linux-gnu-cc -std=gnu23 -I"/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/include" -DNDEBUG -I./rlang  -DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -I/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib    -fpic  -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/r-base-split_1781102078699/work=/usr/local/src/conda/r-base-4.5.3 -fdebug-prefix-map=/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0=/usr/local/src/conda-prefix  -c init.c -o init.o
+  x86_64-conda-linux-gnu-cc -std=gnu23 -I"/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/include" -DNDEBUG -I./rlang  -DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -I/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib    -fpic  -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/r-base-split_1781102078699/work=/usr/local/src/conda/r-base-4.5.3 -fdebug-prefix-map=/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0=/usr/local/src/conda-prefix  -c interp.c -o interp.o
+  x86_64-conda-linux-gnu-cc -std=gnu23 -I"/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/include" -DNDEBUG -I./rlang  -DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -I/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib    -fpic  -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/r-base-split_1781102078699/work=/usr/local/src/conda/r-base-4.5.3 -fdebug-prefix-map=/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0=/usr/local/src/conda-prefix  -c lazy.c -o lazy.o
+  x86_64-conda-linux-gnu-cc -std=gnu23 -I"/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/include" -DNDEBUG -I./rlang  -DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -I/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib    -fpic  -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/r-base-split_1781102078699/work=/usr/local/src/conda/r-base-4.5.3 -fdebug-prefix-map=/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0=/usr/local/src/conda-prefix  -c name.c -o name.o
+  x86_64-conda-linux-gnu-cc -std=gnu23 -I"/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/include" -DNDEBUG -I./rlang  -DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -I/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib    -fpic  -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/r-base-split_1781102078699/work=/usr/local/src/conda/r-base-4.5.3 -fdebug-prefix-map=/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0=/usr/local/src/conda-prefix  -c rlang.c -o rlang.o
+  x86_64-conda-linux-gnu-cc -std=gnu23 -I"/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/include" -DNDEBUG -I./rlang  -DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -I/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib    -fpic  -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/r-base-split_1781102078699/work=/usr/local/src/conda/r-base-4.5.3 -fdebug-prefix-map=/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0=/usr/local/src/conda-prefix  -c utils.c -o utils.o
+  x86_64-conda-linux-gnu-cc -std=gnu23 -shared -L/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/lib -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib -L/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib -o lazyeval.so expr.o init.o interp.o lazy.o name.o rlang.o utils.o -L/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/lib -lR
+  x86_64-conda-linux-gnu-cc -std=gnu23 -I"/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/include" -DNDEBUG   -DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -I/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib    -fpic  -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/r-base-split_1781102078699/work=/usr/local/src/conda/r-base-4.5.3 -fdebug-prefix-map=/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0=/usr/local/src/conda-prefix  -c MASS.c -o MASS.o
+  x86_64-conda-linux-gnu-cc -std=gnu23 -I"/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/include" -DNDEBUG   -DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -I/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib    -fpic  -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/include -fdebug-prefix-map=/home/conda/feedstock_root/build_artifacts/r-base-split_1781102078699/work=/usr/local/src/conda/r-base-4.5.3 -fdebug-prefix-map=/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0=/usr/local/src/conda-prefix  -c lqs.c -o lqs.o
+  x86_64-conda-linux-gnu-cc -std=gnu23 -shared -L/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/lib -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib -Wl,-rpath-link,/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib -L/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib -o MASS.so MASS.o lqs.o -L/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/lib -lR
+  Using PKG_CFLAGS=
+  Using PKG_LIBS=-lcairo -lfreetype
+  -----------------------------[ ANTICONF ]-------------------------------
+  Configuration failed to find libraries. Try installing:
+   * deb: libcairo2-dev (Debian, Ubuntu)
+   * rpm: cairo-devel (Fedora, CentOS, RHEL)
+   * csw: libcairo_dev (Solaris)
+   * brew: cairo fontconfig gettext (OSX)
+  If cairo freetype2 are already installed, check that 'pkg-config' is in your
+  PATH and PKG_CONFIG_PATH contains a cairo freetype2.pc file. If pkg-config
+  is unavailable you can set INCLUDE_DIR and LIB_DIR manually via:
+  R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=...'
+  ---------------------------[ ERROR MESSAGE ]----------------------------
+  src/tests/sysdeps.c:1:10: fatal error: cairo-ft.h: No such file or directory
+      1 | #include <cairo-ft.h>
+        |          ^~~~~~~~~~~~
+  compilation terminated.
+  ------------------------------------------------------------------------
+  Using PKG_CFLAGS=
+  Using PKG_LIBS=-lcairo -lfreetype
+  -----------------------------[ ANTICONF ]-------------------------------
+  Configuration failed to find libraries. Try installing:
+   * deb: libcairo2-dev (Debian, Ubuntu)
+   * rpm: cairo-devel (Fedora, CentOS, RHEL)
+   * csw: libcairo_dev (Solaris)
+   * brew: cairo fontconfig gettext (OSX)
+  If cairo freetype2 are already installed, check that 'pkg-config' is in your
+  PATH and PKG_CONFIG_PATH contains a cairo freetype2.pc file. If pkg-config
+  is unavailable you can set INCLUDE_DIR and LIB_DIR manually via:
+  R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=...'
+  ---------------------------[ ERROR MESSAGE ]----------------------------
+  src/tests/sysdeps.c:1:10: fatal error: cairo-ft.h: No such file or directory
+      1 | #include <cairo-ft.h>
+        |          ^~~~~~~~~~~~
+  compilation terminated.
+  ------------------------------------------------------------------------
+
+Command error:
+  * installing *source* package ‘ggnewscale’ ...
+  ** this is package ‘ggnewscale’ version ‘0.5.2’
+  ** package ‘ggnewscale’ successfully unpacked and MD5 sums checked
+  ** using staged installation
+  ** R
+  ** byte-compile and prepare package for lazy loading
+  ** help
+  *** installing help indices
+  *** copying figures
+  ** building package indices
+  ** testing if installed package can be loaded from temporary location
+  ** testing if installed package can be loaded from final location
+  ** testing if installed package keeps a record of temporary installation path
+  * DONE (ggnewscale)
+  ERROR: dependency ‘gdtools’ is not available for package ‘ggiraph’
+  Perhaps try a variation of:
+  install.packages('gdtools')
+  * removing ‘/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/library/ggiraph’
+  ERROR: dependency ‘ggiraph’ is not available for package ‘ggtree’
+  Perhaps try a variation of:
+  install.packages('ggiraph')
+  * removing ‘/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/library/ggtree’
+  ERROR: dependency ‘ggtree’ is not available for package ‘ggtreeExtra’
+  Perhaps try a variation of:
+  install.packages('ggtree')
+  * removing ‘/home/dnanexus/Desktop/BACON/conda/env-c008a56486280036457d18af8804c9f0/lib/R/library/ggtreeExtra’
+  
+  The downloaded source packages are in
+  	‘/tmp/RtmpkAFdj6/downloaded_packages’
+  Updating HTML index of packages in '.Library'
+  Making 'packages.html' ... done
+  Old packages: 'callr', 'data.table', 'xfun'
+  Warning messages:
+  1: In install.packages(...) :
+    installation of package ‘gdtools’ had non-zero exit status
+  2: In install.packages(...) :
+    installation of package ‘ggiraph’ had non-zero exit status
+  3: In install.packages(...) :
+    installation of package ‘ggtree’ had non-zero exit status
+  4: In install.packages(...) :
+    installation of package ‘gdtools’ had non-zero exit status
+  5: In install.packages(...) :
+    installation of package ‘ggiraph’ had non-zero exit status
+  6: In install.packages(...) :
+    installation of package ‘ggtree’ had non-zero exit status
+  7: In install.packages(...) :
+    installation of package ‘ggtreeExtra’ had non-zero exit status
+  Error in library(ggtree) : there is no package called ‘ggtree’
+  Calls: suppressPackageStartupMessages -> withCallingHandlers -> library
+  Execution halted
+
+Work dir:
+  /home/dnanexus/Desktop/BACON/work/16/eae0d824720293b6cc3e0bfd940a12
+
+Tip: view the complete command output by changing to the process work dir and entering the command `cat .command.out`
+Jun-11 04:01:09.373 [main] DEBUG nextflow.Session - Session await > all processes finished
+Jun-11 04:01:09.374 [TaskFinalizer-5] DEBUG nextflow.Session - Session aborted -- Cause: Process `GENERATE_FINAL_REPORT (Generating Final Publication Package)` terminated with an error exit status (1)
+Jun-11 04:01:09.410 [TaskFinalizer-5] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=14; failedCount=1; ignoredCount=0; cachedCount=56; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=2h 4m 26s; failedDuration=53m 26s; cachedDuration=6h 14m 12s;loadCpus=0; loadMemory=0; peakRunning=4; peakCpus=36; peakMemory=240 GB; ]
+Jun-11 04:01:09.417 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local) - terminating tasks monitor poll loop
+Jun-11 04:01:09.418 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Jun-11 04:01:09.420 [main] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=14; failedCount=1; ignoredCount=0; cachedCount=56; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=2h 4m 26s; failedDuration=53m 26s; cachedDuration=6h 14m 12s;loadCpus=0; loadMemory=0; peakRunning=4; peakCpus=36; peakMemory=240 GB; ]
+Jun-11 04:01:09.420 [TaskFinalizer-5] DEBUG nextflow.Session - null
+java.lang.InterruptedException
+	at java.base/java.lang.Object.wait(Native Method)
+	at java.base/java.lang.Thread.join(Thread.java:1313)
+	at java.base/java.lang.Thread.join(Thread.java:1381)
+	at nextflow.trace.AnsiLogObserver.onFlowComplete(AnsiLogObserver.groovy:559)
+	at nextflow.Session$_notifyFlowComplete_lambda38.doCall(Session.groovy:1093)
+	at nextflow.Session.notifyEvent(Session.groovy:1123)
+	at nextflow.Session.notifyFlowComplete(Session.groovy:1093)
+	at nextflow.Session.shutdown0(Session.groovy:775)
+	at nextflow.Session.abort(Session.groovy:830)
+	at nextflow.Session.fault(Session.groovy:792)
+	at nextflow.processor.TaskPollingMonitor.finalizeTask(TaskPollingMonitor.groovy:753)
+	at nextflow.processor.TaskPollingMonitor.safeFinalizeTask(TaskPollingMonitor.groovy:736)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1341)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1096)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1009)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:645)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:628)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethodSafe(InvokerHelper.java:82)
+	at nextflow.processor.TaskPollingMonitor$_checkTaskStatus_lambda8.doCall(TaskPollingMonitor.groovy:726)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Jun-11 04:01:09.457 [TaskFinalizer-5] DEBUG nextflow.trace.ReportObserver - Workflow completed -- rendering execution report
+Jun-11 04:01:09.609 [main] DEBUG nextflow.trace.ReportObserver - Workflow completed -- rendering execution report
+Jun-11 04:01:10.111 [TaskFinalizer-5] DEBUG nextflow.trace.TimelineObserver - Workflow completed -- rendering execution timeline
+Jun-11 04:01:10.134 [main] DEBUG nextflow.trace.TimelineObserver - Workflow completed -- rendering execution timeline
+Jun-11 04:01:10.236 [main] DEBUG nextflow.trace.TraceFileObserver - Workflow completed -- saving trace file
+Jun-11 04:01:10.236 [TaskFinalizer-5] DEBUG nextflow.trace.TraceFileObserver - Workflow completed -- saving trace file
+Jun-11 04:01:10.247 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Jun-11 04:01:10.264 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

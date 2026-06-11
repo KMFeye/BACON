@@ -1,7 +1,10 @@
 process EXTRACT_TARGET_READS {
     tag "Extracting target reads for ${sample_id}"
     label 'process_medium'
-    conda 'bioconda::kraken2'
+    memory '16 GB' 
+    cpus 4
+
+    conda 'bioconda::kraken2 bioconda::krakentools'
 
     publishDir "${params.outdir}/rawresults", mode: 'copy', saveAs: { filename -> "${sample_id}/kraken2/${filename}" }
 
@@ -13,22 +16,35 @@ process EXTRACT_TARGET_READS {
 
     script:
     """
-    kraken2 \
-        --db "${db_path}" \
-        --threads ${task.cpus} \
-        --gzip-compressed \
-        --classified-out /dev/stdout \
-        --report /dev/null \
-        --output /dev/null \
-        --include-children \
-        --taxa ${params.target_taxid} \
-        "${reads}" | gzip -c > "${sample_id}.target_reads.fastq.gz"
+    kraken2 \\
+        --db "${db_path}" \\
+        --threads ${task.cpus} \\
+        --gzip-compressed \\
+        --memory-mapping \\
+        --output "${sample_id}.kraken2_output.txt" \\
+        --report "${sample_id}.kraken_report.txt" \\
+        "${reads}"
+
+    extract_kraken_reads.py \\
+        -k "${sample_id}.kraken2_output.txt" \\
+        -s "${reads}" \\
+        -t ${params.target_taxid} \\
+        --include-children \\
+        -r "${sample_id}.kraken_report.txt" \\
+        --fastq-output \\
+        -o "${sample_id}.target_reads.fastq"
+
+    gzip "${sample_id}.target_reads.fastq"
     """
 }
 
+
+ 
 process GENERATE_CONTAMINATION_REPORT {
     tag "Generating contamination report for ${sample_id}"
     label 'process_medium'
+    memory '16 GB' 
+    cpus 4
     conda 'bioconda::kraken2'
 
     publishDir "${params.outdir}/rawresults", mode: 'copy', saveAs: { filename -> "${sample_id}/kraken2/${filename}" }

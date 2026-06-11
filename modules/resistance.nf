@@ -55,10 +55,9 @@ process MOB_SUITE_ANALYSIS {
 }
 
 process RUN_ABRICATE {
-    tag "Screening ${sample_id} with ABRicate (vfdb)"
+    tag "Screening ${sample_id} with ABRicate"
     label 'process_medium'
     conda 'bioconda::abricate'
-
     publishDir "${params.outdir}/rawresults/resistance", mode: 'copy', saveAs: { filename -> "${sample_id}/${filename}" }
 
     input:
@@ -71,15 +70,8 @@ process RUN_ABRICATE {
     """
     #!/bin/bash
    
-    echo "Setting up ABRicate vfdb database..."
-    abricate-get_db --db vfdb || echo "WARNING: Could not download vfdb database. Proceeding without it."
-
-    if [ -f "\$(abricate --list | grep '^vfdb' | cut -f2)/sequences" ]; then
-        echo "Running ABRicate..."
-        abricate --db vfdb --threads ${task.cpus} "${fasta}" > "${sample_id}_abricate_report.tsv"
-    else
-        echo "WARNING: ABRicate vfdb database not found. Creating empty report."
-        echo -e "FILE\\tSEQUENCE\\tSTART\\tEND\\tSTRAND\\tGENE\\tCOVERAGE\\tCOVERAGE_MAP\\tGAPS\\t%COVERAGE\\t%IDENTITY\\tDATABASE\\tACCESSION\\tPRODUCT\\tRESISTANCE" > "${sample_id}_abricate_report.tsv"
-    fi
+    echo "Running ABRicate with default database..."
+    
+    abricate --threads ${task.cpus} "${fasta}" > "${sample_id}_abricate_report.tsv"
     """
 }
