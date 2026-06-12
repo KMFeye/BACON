@@ -1,4 +1,5 @@
 #!/usr/bin/env nextflow
+
 nextflow.enable.dsl = 2
 
 // =================================================================
@@ -22,8 +23,7 @@ include { CREATE_SNP_ALIGNMENT; BUILD_PHYLO_TREE } from './modules/phylogenetics
 include { CREATE_SNPEFF_DB; FIND_FRAMESHIFTS; EXTRACT_IMPACTFUL_GENES; RUN_PANTHER_API_DIRECT } from './modules/functionalanalysis.nf'
 include { RUN_PROGRESSIVE_MAUVE } from './modules/wholegenomealignment.nf'
 include { RUN_PANAROO; RUN_PYSEER; PLOT_PYSEER_MANHATTAN } from './modules/pangenomeanalysis.nf'
-include { GENERATE_FINAL_REPORT; SUMMARIZE_AND_ORGANIZE } from './modules/finalreport.nf'
-include { PLOT_GENOME_SYNTENY; PLOT_PLASMID_MAPS; PLOT_RESISTANCE_HEATMAP; PLOT_VIRULENCE_HEATMAP; PLOT_PLASMID_SUMMARY; PLOT_PANTHER_DOTPLOT; PLOT_ANNOTATED_TREE; PLOT_KRAKEN_REPORTS } from './modules/visualization.nf'
+include { AGGREGATE_CSVS } from './modules/finalreport.nf'
 
 // =================================================================
 // === WORKFLOW ===
@@ -58,7 +58,6 @@ workflow {
 // --- 2. Assembly and QAQC ---
     FLYE_ASSEMBLY(rasusa_fastq_ch)
     successful_assemblies_fasta = FLYE_ASSEMBLY.out.assembly_fasta
-
     QUAST_REPORT(successful_assemblies_fasta)
     BUSCO(successful_assemblies_fasta)
     MULTIQC_ASSEMBLY(QUAST_REPORT.out.quast_report.map{ it[1] })
@@ -80,10 +79,6 @@ workflow {
     RUN_ABRICATE(successful_assemblies_fasta)
     CRISPR_TYPING(successful_assemblies_fasta)
     RUN_PLATON(successful_assemblies_fasta)
-    ch_platon_plasmids = RUN_PLATON.out.plasmid_fasta.map { id, fasta -> fasta }
-    ch_mobsuite_plasmids = MOB_SUITE_ANALYSIS.out.mobsuite_report.map { id, dir -> file("${dir}/plasmid_*.fasta") }.flatten()
-    ch_all_plasmids_to_plot = ch_platon_plasmids.mix(ch_mobsuite_plasmids)
-    PLOT_PLASMID_MAPS(ch_all_plasmids_to_plot)
 
 // --- 4. SNP and Functional Analysis ---
     ALIGN_TO_REFERENCE(rasusa_fastq_ch, bacterial_ref_fasta_ch)
@@ -119,54 +114,51 @@ workflow {
     ch_vcfs_for_phylo = vcfs_after_fix
         .map { sample_id, vcf, tbi -> [vcf, tbi] }
         .collect()
-        .filter { list -> list.size() > 1 }
+        .filter { list -> list.size() > 2 }
         
     CREATE_SNP_ALIGNMENT(ch_vcfs_for_phylo, bacterial_ref_fasta_ch)
     BUILD_PHYLO_TREE(CREATE_SNP_ALIGNMENT.out.alignment)
-
     ch_assemblies_for_mauve = successful_assemblies_fasta.map { _id, fasta -> fasta }.collect().filter { list -> list.size() > 1 }
     RUN_PROGRESSIVE_MAUVE(ch_assemblies_for_mauve)
 
-// --- 6. Visualizations & Aggregation ---
-    ch_done_signal = RUN_PLATON.out.plasmid_fasta.collect()
+// --- 6. Data Aggregation for R Markdown ---
 
-    SUMMARIZE_AND_ORGANIZE(
-        ch_done_signal,
-        successful_assemblies_fasta.map { id, fasta -> fasta }.collect(),
-        file("${params.outdir}/rawresults"),
-        file("${params.outdir}/tables")
-    )
-    
-    ch_summary_csvs = SUMMARIZE_AND_ORGANIZE.out.map { final_files -> file("${final_files}/summary_csvs") }
+    ch_abricate       = RUN_ABRICATE.out.report.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_amrfinder      = AMRFINDER_ANALYSIS.out.amrfinder_report.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_plasmidfinder  = PLASMIDFINDER_ANALYSIS.out.plasmidfinder_report.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_mobsuite       = MOB_SUITE_ANALYSIS.out.mobsuite_report.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_platon         = RUN_PLATON.out.platon_tsv.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([]) 
+    ch_quast          = QUAST_REPORT.out.quast_report.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_busco          = BUSCO.out.busco_report.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_flye           = FLYE_ASSEMBLY.out.assembly_dir.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_rasusa         = SUBSAMPLE_RASUSA.out.stats.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_bakta          = BAKTA_ANNOTATION.out.summary_table.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_crispr         = CRISPR_TYPING.out.crispr_gff.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_snpeff         = SNPEFF_ANNOTATE.out.summary_csv.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_panther        = RUN_PANTHER_API_DIRECT.out.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_panaroo        = RUN_PANAROO.out.panaroo_dir.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_pyseer         = RUN_PYSEER.out.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_multiqc        = MULTIQC_ASSEMBLY.out.report.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
+    ch_kraken = GENERATE_CONTAMINATION_REPORT.out.report.map{ it instanceof List ? it[1] : it }.collect().ifEmpty([])
 
-    PLOT_RESISTANCE_HEATMAP(ch_summary_csvs)
-    PLOT_VIRULENCE_HEATMAP(ch_summary_csvs)
-    PLOT_PLASMID_SUMMARY(ch_summary_csvs)
-    PLOT_PANTHER_DOTPLOT(ch_summary_csvs)
 
-    ch_names_for_plot = successful_assemblies_fasta.map { id, fasta -> id }.collect()
-    ch_fastas_for_plot = successful_assemblies_fasta.map { id, fasta -> fasta }.collect()
-
-    PLOT_GENOME_SYNTENY(
-        RUN_PROGRESSIVE_MAUVE.out.backbone, // Note: Make sure progressiveMauve emits this in its module
-        ch_fastas_for_plot,
-        ch_names_for_plot
-    )
-    
-    PLOT_KRAKEN_REPORTS(GENERATE_CONTAMINATION_REPORT.out.report.map { _id, report -> report }.collect())
-    VISUALIZE_CRISPR_RESULTS(CRISPR_TYPING.out.crispr_gff.collect().ifEmpty([]))
-
-// --- 7. Concatenate Reports ---
-    GENERATE_FINAL_REPORT(
-        ch_summary_csvs,
-        RUN_PANAROO.out.panaroo_dir.ifEmpty(file("dummy_panaroo")),
-        BUILD_PHYLO_TREE.out.treefile.ifEmpty(file("dummy_tree")),
-        CREATE_SNP_ALIGNMENT.out.merged_vcf.ifEmpty(file("dummy_vcf"))
-    )
-
-    PLOT_ANNOTATED_TREE(
-        BUILD_PHYLO_TREE.out.treefile.ifEmpty(file("dummy_tree")),
-        ch_summary_csvs,
-        channel.fromPath(params.traits_file)
+    AGGREGATE_CSVS(
+        ch_abricate,
+        ch_amrfinder,
+        ch_plasmidfinder,
+        ch_mobsuite,
+        ch_platon,
+        ch_quast,
+        ch_busco,
+        ch_flye,
+        ch_rasusa,
+        ch_bakta,
+        ch_crispr,
+        ch_snpeff,
+        ch_panther,
+        ch_panaroo,
+        ch_pyseer,
+        ch_multiqc,
+        ch_kraken
     )
 }

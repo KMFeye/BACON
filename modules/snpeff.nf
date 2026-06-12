@@ -12,17 +12,18 @@ process SNPEFF_ANNOTATE {
     val ref_genome_name
 
     output:
-    tuple val(sample_id), path("${sample_id}.ann.vcf.gz"), emit: annotated_vcf
-    path "snpEff_summary.genes.txt", emit: genes_report
-    path "snpEff_summary.html", emit: summary_report
+    tuple val(sample_id), path("*.vcf.gz"), emit: annotated_vcf
+    tuple val(sample_id), path("snpEff_summary.html"), emit: summary_html
+    tuple val(sample_id), path("snpEff_summary.csv"), emit: summary_csv
 
     script:
     """
     snpEff ann -v \\
         -stats snpEff_summary.html \\
-        -config ${snpeff_config} \\
-        -dataDir ${snpeff_db_dir} \\
-        ${ref_genome_name} \\
+        -csvStats snpEff_summary.csv \\
+        -config snpEff.config \\
+        -dataDir data \\
+        bacterial_ref \\
         ${vcf} | bgzip -c > "${sample_id}.ann.vcf.gz"
     """
 }

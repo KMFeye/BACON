@@ -144,7 +144,7 @@ process PLOT_PLASMID_MAPS {
     tag "Plotting plasmid map for ${fasta.baseName}"
     memory '8.GB'
     
-    conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-ggforce bioconda::bakta'
+    conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-ggforce bioconda::bakta=1.8.2 bioconda::pyhmmer=0.10.3 bioconda::diamond=2.1.8'
     
     publishDir "${params.outdir}/figures/plasmid_maps", mode: 'copy'
 
@@ -158,17 +158,20 @@ process PLOT_PLASMID_MAPS {
     script:
     def prefix = fasta.baseName.replaceAll('.platon_plasmids', '')
     """#!/usr/bin/env bash
+    
+    set -e
     mkdir -p plots
 
     if [ ! -s "${fasta}" ]; then
         echo "Input FASTA is empty, no plasmids to plot."
-        # Use Rscript to draw the empty placeholder!
         Rscript -e "pdf('plots/${prefix}_plasmid_map.pdf'); plot(1, type='n', axes=FALSE, xlab='', ylab=''); text(1, 1, 'No plasmid sequences found in this sample.', cex=1); dev.off()"
         touch "plots/${prefix}_plasmid_map.png"
         exit 0
     fi
 
-    bakta --db ${params.bakta_db} --output bakta_out ${fasta} --prefix ${prefix}
+    amrfinder_update --force_update --database ${params.bakta_db}/amrfinderplus-db || true
+
+    bakta --db ${params.bakta_db} --output bakta_out ${fasta} --prefix ${prefix} --skip-amr
 
     Rscript - <<'EOF'
     library(tidyverse)
@@ -177,7 +180,6 @@ process PLOT_PLASMID_MAPS {
     gff_file <- list.files("bakta_out", pattern="\\\\.gff3", full.names=TRUE)[1]
     
     if(!is.na(gff_file) && file.exists(gff_file)) {
-        # Parse GFF
         gff_data <- read_tsv(gff_file, comment="#", col_names=c("seqid", "source", "type", "start", "end", "score", "strand", "phase", "attributes")) %>%
                     filter(type == "CDS")
         
@@ -204,7 +206,7 @@ process PLOT_PLASMID_MAPS {
             quit(save="no", status=0)
         }
     }
-
+    
     pdf(paste0("plots/", "${prefix}", "_plasmid_map.pdf"))
     plot(1, type="n", axes=FALSE, xlab="", ylab="")
     text(1, 1, "Failed to parse annotation for plasmid map.", cex=1)
@@ -214,13 +216,11 @@ EOF
     """
 }
 
-
 process PLOT_RESISTANCE_HEATMAP {
     tag "Generating resistance gene summary heatmap"
     label 'process_medium'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis'
     publishDir "${params.outdir}/figures", mode: 'copy'
-
     input:
     path(summary_csvs)
 
@@ -278,7 +278,8 @@ process PLOT_RESISTANCE_HEATMAP {
         gene_annotation <- all_resistance_data %>%
                             select(GENE, RESISTANCE) %>%
                             filter(!is.na(RESISTANCE)) %>%
-                            distinct() %>%
+                            # FIXED: Keep only unique gene names to prevent rowname duplication crashes!
+                            distinct(GENE, .keep_all = TRUE) %>%
                             column_to_rownames("GENE")
                             
         if (nrow(heatmap_matrix) > 1 && ncol(heatmap_matrix) > 1) {
@@ -298,7 +299,7 @@ process PLOT_RESISTANCE_HEATMAP {
 }
 
 process PLOT_VIRULENCE_HEATMAP {
-    tag "Generating ABRicate VFDB virulence heatmap"
+    tag "Generating ABRicate NCBI heatmap"
     label 'process_medium'
     conda 'conda-forge::r-base conda-forge::r-tidyverse conda-forge::r-pheatmap conda-forge::r-viridis'
     publishDir "${params.outdir}/figures", mode: 'copy'
@@ -322,11 +323,14 @@ process PLOT_VIRULENCE_HEATMAP {
         print("ABricate summary CSV not found."); file.create("virulence_factor_heatmap.png"); file.create("virulence_factor_heatmap.pdf"); quit()
     }
     
-    abricate_data <- read_csv(abricate_file) %>% filter(DATABASE == 'vfdb') %>% select(sample_id, GENE, PRODUCT) %>% distinct()
+    # ADDED safety distinct filter here
+    abricate_data <- read_csv(abricate_file) %>% filter(DATABASE == 'vfdb') %>% select(sample_id, GENE, PRODUCT) %>% distinct(sample_id, GENE, .keep_all = TRUE)
     
     if (nrow(abricate_data) > 0) {
         heatmap_matrix <- abricate_data %>% mutate(present = 1) %>% pivot_wider(id_cols = sample_id, names_from = GENE, values_from = present, values_fill = 0) %>% column_to_rownames("sample_id")
-        gene_annotation <- abricate_data %>% select(GENE, PRODUCT) %>% distinct() %>% column_to_rownames("GENE")
+        
+        # PROACTIVE FIX: strict distinct(GENE) to prevent column_to_rownames crash!
+        gene_annotation <- abricate_data %>% select(GENE, PRODUCT) %>% distinct(GENE, .keep_all = TRUE) %>% column_to_rownames("GENE")
         
         if (nrow(heatmap_matrix) > 1 && ncol(heatmap_matrix) > 1) {
             heatmap_colors <- c("#212121", "#440154FF")
@@ -453,6 +457,7 @@ process PLOT_PANTHER_DOTPLOT {
     '''
 }
 
+
 process PLOT_ANNOTATED_TREE {
     tag "Generating annotated phylogenetic tree"
     label 'process_high'
@@ -469,55 +474,54 @@ process PLOT_ANNOTATED_TREE {
     path("annotated_phylogenetic_tree.pdf"), emit: pdf
     
     script:
-    """
-    #!/usr/bin/env Rscript
+    """#!/usr/bin/env Rscript
     library(tidyverse)
     library(ggtree)
     library(ggtreeExtra)
     library(viridis)
     library(ggnewscale)
     
-    tree <- read.tree("${treefile}")
-    
-    if (file.exists("${metadata}")) {
-        sample_metadata <- read_csv("${metadata}", show_col_types = FALSE)
-    } else {
-        sample_metadata <- tibble(sample_id = tree[['tip.label']])
-    }
-    
-    plasmid_data_file <- file.path("summary_csvs", "all_platon_data.csv")
-    resistance_data_file <- file.path("summary_csvs", "all_abricate_data.csv")
-    
-    if (file.exists(plasmid_data_file) && file.info(plasmid_data_file)[['size']] > 0) {
-        plasmid_counts <- read_csv(plasmid_data_file, show_col_types = FALSE) %>% group_by(sample_id) %>% summarise(plasmid_count = n())
-    } else {
-        plasmid_counts <- tibble(sample_id = character(), plasmid_count = numeric())
-    }
-    
-    if (file.exists(resistance_data_file) && file.info(resistance_data_file)[['size']] > 0) {
-        resistance_matrix <- read_csv(resistance_data_file, show_col_types = FALSE) %>% 
-                             mutate(present = 1) %>% 
-                             select(sample_id, GENE, present) %>%
-                             pivot_wider(id_cols = sample_id, names_from = GENE, values_from = present, values_fill = 0) %>% 
-                             column_to_rownames("sample_id")
-    } else {
-        resistance_matrix <- data.frame()
-    }
-                         
-    annotation_data <- sample_metadata %>% 
-                       left_join(plasmid_counts, by = "sample_id") %>%
-                       mutate(plasmid_count = ifelse(is.na(plasmid_count), 0, plasmid_count))
-    
-    tree_layout <- if (length(tree[['tip.label']]) > 2) "circular" else "rectangular"
-    
     tryCatch({
-        # 1. Build the base tree plot
-        p <- ggtree(tree, layout = tree_layout)
+        if (!file.exists("${treefile}") || "${treefile}" == "dummy_tree" || file.info("${treefile}")[['size']] == 0) {
+            stop("No valid phylogenetic tree file was generated (requires 2 or more samples).")
+        }
+        tree <- read.tree("${treefile}")
         
-        # 2. BYPASS THE %<+% BUG: Manually merge the annotation data straight into the plot's data frame!
+        if (file.exists("${metadata}")) {
+            sample_metadata <- read_csv("${metadata}", show_col_types = FALSE)
+        } else {
+            sample_metadata <- tibble(sample_id = tree[['tip.label']])
+        }
+        
+        plasmid_data_file <- file.path("summary_csvs", "all_platon_data.csv")
+        resistance_data_file <- file.path("summary_csvs", "all_abricate_data.csv")
+        
+        if (file.exists(plasmid_data_file) && file.info(plasmid_data_file)[['size']] > 0) {
+            plasmid_counts <- read_csv(plasmid_data_file, show_col_types = FALSE) %>% group_by(sample_id) %>% summarise(plasmid_count = n())
+        } else {
+            plasmid_counts <- tibble(sample_id = character(), plasmid_count = numeric())
+        }
+        
+        if (file.exists(resistance_data_file) && file.info(resistance_data_file)[['size']] > 0) {
+            resistance_matrix <- read_csv(resistance_data_file, show_col_types = FALSE) %>% 
+                                 distinct(sample_id, GENE, .keep_all = TRUE) %>%
+                                 mutate(present = 1) %>% 
+                                 select(sample_id, GENE, present) %>%
+                                 pivot_wider(id_cols = sample_id, names_from = GENE, values_from = present, values_fill = 0) %>% 
+                                 column_to_rownames("sample_id")
+        } else {
+            resistance_matrix <- data.frame()
+        }
+                             
+        annotation_data <- sample_metadata %>% 
+                           left_join(plasmid_counts, by = "sample_id") %>%
+                       mutate(plasmid_count = ifelse(is.na(plasmid_count), 0, plasmid_count))
+        
+        tree_layout <- if (length(tree[['tip.label']]) > 2) "circular" else "rectangular"
+        
+        p <- ggtree(tree, layout = tree_layout)
         p[['data']] <- p[['data']] %>% left_join(annotation_data, by = c("label" = "sample_id"))
         
-        # 3. Add aesthetics safely
         color_by_column <- "${params.tree_color_column}"
         if (color_by_column %in% colnames(annotation_data)) {
             p <- p + geom_tippoint(aes_string(color = color_by_column), size = 3) +
@@ -544,13 +548,12 @@ process PLOT_ANNOTATED_TREE {
     }, error = function(e) {
         pdf("annotated_phylogenetic_tree.pdf")
         plot(1, type="n", axes=FALSE, xlab="", ylab="")
-        text(1, 1, paste("Failed to generate tree:\\n", e[['message']]), cex=0.8)
+        text(1, 1, paste("No tree generated (requires 2 or more samples).\\n\\n(Error:", e[['message']], ")"), cex=0.8)
         dev.off()
         file.create("annotated_phylogenetic_tree.png")
     })
     """
 }
-
 
 process PLOT_KRAKEN_REPORTS {
     tag "Generating Kraken2 summary plot"

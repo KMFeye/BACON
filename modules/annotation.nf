@@ -2,6 +2,7 @@ process BAKTA_ANNOTATION {
     tag "Running Bakta for ${sample_id}"
     label 'process_high'
     conda 'bioconda::bakta=1.8.2 bioconda::pyhmmer=0.10.3 bioconda::diamond=2.1.8'
+    
 
     publishDir "${params.outdir}/rawresults/bakta", mode: 'copy', saveAs: { filename -> "${sample_id}/${filename}" }
 
@@ -16,7 +17,18 @@ process BAKTA_ANNOTATION {
     tuple val(sample_id), path("${sample_id}"),                     emit: bakta_dir
 
     script:
-    """
+    """#!/usr/bin/env bash
+    set -e
+    
+    if [ ! -f "${params.bakta_db}/amrfinderplus-db/.patched" ]; then
+        echo "Updating Bakta internal AMRFinder database (one-time setup)..."
+        amrfinder_update --force_update --database ${params.bakta_db}/amrfinderplus-db || true
+        touch "${params.bakta_db}/amrfinderplus-db/.patched" || true
+    fi
+
     bakta --db ${params.bakta_db} --output ${sample_id} --prefix ${sample_id} ${assembly}
+
     """
 }
+
+
